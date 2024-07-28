@@ -25,3 +25,17 @@
 //     )
 //     rgb(var(--background-start-rgb));
 // }
+
+body {
+    .sidebar {
+        float: left;
+        margin: 8px;
+        padding: 4px;
+        border: 2px solid;
+        border-radius: 5%;
+
+        a {
+            display: block;
+        }
+    }
+}
