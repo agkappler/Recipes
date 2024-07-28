@@ -1,6 +1,6 @@
 
 export default function Home() {
     return (
-        <h1>Fargod</h1>
+        <h1>Alex Kappler</h1>
     );
 }
