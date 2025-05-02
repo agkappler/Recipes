@@ -1,14 +1,9 @@
+import { ProjectCards } from "./components/home/ProjectCards";
 
-export default function Home({ children
-    // @ts-ignore
+export default function Home({
 }: {
-    children: React.ReactNode;
     params: { id: string };
     searchParams: { [key: string]: string | string[] | undefined };
 }) {
-    return (<>
-    <h1>Fargod</h1>
-    </>
-        
-    );
+    return <ProjectCards />
 }
