@@ -1,26 +1,18 @@
-import Link from 'next/link';
-import Recipe from '../models/Recipe';
+import { RecipeCard } from '../_components/recipes/RecipeCard';
+import { RecipeForm } from '../_components/recipes/RecipeForm';
+import Recipe from '../_models/Recipe';
 // import useSWR from 'swr';
 
 export default async function Recipes() {
-    // const [data, setData] = useState([]);
-    let recipeData: Recipe[] = [];
-
-    const data = await fetch('http://localhost:8080/recipes')
-        .then(response => response.json())
-        .then(data => recipeData = data);
+    const recipeData: Recipe[] = await fetch('http://localhost:8080/api/recipes')
+        .then(response => response.json());
 
     return (
         <div>
-            <ul>
-                {recipeData.map(r => (
-                    <>
-                        <li key={r.recipeId}>
-                            <Link href={`/recipes/${r.recipeId}`}>{r.name}</Link>
-                        </li>
-                    </>
-                ))}
-            </ul>
+            <RecipeForm recipeData={undefined} />
+            {recipeData.map(r => (
+                <RecipeCard key={r.recipeId} recipeData={r} />
+            ))}
         </div>
     );
 }

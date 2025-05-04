@@ -1,4 +1,4 @@
-import { ProjectCards } from "./components/home/ProjectCards";
+import { ProjectCards } from "./_components/home/ProjectCards";
 
 export default function Home({
 }: {

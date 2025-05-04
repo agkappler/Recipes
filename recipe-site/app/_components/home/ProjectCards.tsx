@@ -1,7 +1,7 @@
 import { Checklist, Description, ListAlt } from "@mui/icons-material";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Paper, Typography } from "@mui/material";
 import { StatusChip } from "../ui/StatusChip";
-import { ProjectStatus } from "@/app/constants/Status";
+import { ProjectStatus } from "@/app/_constants/Status";
 
 export const ProjectCards = () => {
     const projects = [
