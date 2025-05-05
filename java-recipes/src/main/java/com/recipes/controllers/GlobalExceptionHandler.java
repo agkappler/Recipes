@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleBadRequest(IllegalArgumentException ex) {
-        return new ResponseEntity<>("Invalid input: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorModel> handleBadRequest(IllegalArgumentException ex) {
+        return new ResponseEntity<ErrorModel>(new ErrorModel("Invalid input: " + ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneric(Exception ex) {
+    public ResponseEntity<ErrorModel> handleGeneric(Exception ex) {
     	System.out.println(ex.getMessage());
-        return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<ErrorModel>(new ErrorModel(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 

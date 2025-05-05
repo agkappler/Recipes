@@ -38,6 +38,7 @@ public class RecipeService extends BaseService {
 			(PreparedStatement ps) -> ps.setInt(1, recipeId),
 			(ResultSet rs) -> mapRecipe(rs)
 		);
+		
 		return results.size() == 0 ? new Recipe() : results.get(0);
 	}
 	
@@ -73,7 +74,6 @@ public class RecipeService extends BaseService {
 		Recipe r = new Recipe();
 		r.setRecipeId(rs.getInt("id"));
 		r.setName(rs.getString("name"));
-		r.setRecipeId(rs.getInt("id"));
 		Integer cookTime = rs.getInt("cookTimeMinutes");
 		r.setCookTimeMinutes(cookTime != null ? cookTime : -1);
 		Integer prepTime = rs.getInt("prepTimeMinutes");

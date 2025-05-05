@@ -8,11 +8,10 @@ export default class RequestManager {
                 "Content-Type": "application/json",
             },
         });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
+
+        return await this.handleResponse(response);
     }
+
     static async post(url: string, data: any): Promise<any> {
         const response = await fetch(this.baseUrl + url, {
             method: "POST",
@@ -21,10 +20,8 @@ export default class RequestManager {
             },
             body: JSON.stringify(data),
         });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
+
+        return await this.handleResponse(response);
     }
     static async put(url: string, data: any): Promise<any> {
         const response = await fetch(this.baseUrl + url, {
@@ -34,9 +31,17 @@ export default class RequestManager {
             },
             body: JSON.stringify(data),
         });
+
+        return await this.handleResponse(response);
+    }
+
+    private static async handleResponse(response: Response): Promise<any> {
+        const responseData = await response.json();
+
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(responseData.errorMessage || "An error occurred while fetching data.");
         }
-        return await response.json();
+
+        return responseData;
     }
 }

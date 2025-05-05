@@ -34,7 +34,7 @@ public class RecipesController {
     }
 
     @GetMapping("/recipe/{recipeId}")
-    public ResponseEntity<Recipe> Recipe(@PathVariable Integer recipeId) throws Exception {
+    public ResponseEntity<Recipe> Recipe(@PathVariable("recipeId") Integer recipeId) throws Exception {
     	System.out.println("Recipe Endpoint id: " + recipeId);
 		Recipe recipe = this.recipeService.getRecipe(recipeId);
 		return ResponseEntity.ok(recipe);

@@ -1,6 +1,10 @@
 import { RecipeForm } from "@/app/_components/recipes/RecipeForm";
+import { ErrorMessage } from "@/app/_components/ui/ErrorMessage";
+import RequestManager from "@/app/_helpers/RequestManager";
+import RecipeModel from "@/app/_models/Recipe";
 import { ChevronLeft } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
+import Error from "next/error";
 
 interface RecipeProps {
     params: {
@@ -9,8 +13,13 @@ interface RecipeProps {
 }
 
 export default async function Recipe({ params }: RecipeProps) {
-    const response = await fetch(`http://localhost:8080/api/recipe/${params.id}`);
-    const recipeData = await response.json();
+    let recipeData: RecipeModel;
+    try {
+        recipeData = (await RequestManager.get(`/recipe/${params.id}`)) as RecipeModel;
+    } catch (error: Error | any) {
+        return <ErrorMessage errorMessage={error.message} />;
+    }
+
     return <>
         <Box className="flex items-center justify-between mt-2 w-full">
             <Button variant="text" startIcon={<ChevronLeft />} href="/recipes" className="float-left">
