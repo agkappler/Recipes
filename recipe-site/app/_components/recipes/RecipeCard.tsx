@@ -10,7 +10,7 @@ interface RecipeCardProps {
 
 export const RecipeCard: React.FC<RecipeCardProps> = ({ recipeData }) => {
     const router = useRouter();
-    return <Paper elevation={3} className="m-2 p-2" role="button" onClick={() => router.push(`/recipes/${recipeData.recipeId}`)}>
+    return <Paper elevation={3} className="p-2" role="button" onClick={() => router.push(`/recipes/${recipeData.recipeId}`)}>
         <Typography variant="h6">{recipeData.name}</Typography>
         <Typography variant="body1">Prep Time: {recipeData.prepTimeMinutes}</Typography>
         <Typography variant="body1">Cook Time: {recipeData.cookTimeMinutes}</Typography>
