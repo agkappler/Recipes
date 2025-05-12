@@ -17,13 +17,25 @@ public class Data {
 		this.dataSource = dataSource;
 	}
 	
-	public void NonQuery(String sql) throws SQLException {
+	public void Execute(String sql) throws SQLException {
 		PreparedStatement ps = null;
 		try (Connection conn = dataSource.getConnection()) {
 			ps = conn.prepareStatement(sql);
 			ps.execute();
 		} finally {
 			this.close(ps, null);
+		}
+	}
+	
+	public void Execute(String sql, ParamSetter paramSetter) throws SQLException {
+		PreparedStatement ps = null;
+		ResultSet generatedKeys = null;
+		try (Connection conn = dataSource.getConnection()) {
+			ps = conn.prepareStatement(sql);
+			paramSetter.set(ps);
+			ps.executeUpdate();
+		} finally {
+			this.close(ps, generatedKeys);
 		}
 	}
 	
