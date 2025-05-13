@@ -12,8 +12,11 @@ export const PROJECTS = [
         todo: [
             "About page, w/linked in photo and link.",
             "Deployments/hosting",
-            "Stores/request manager?",
-            "Tech aspects for each project"
+            "Tech aspects for each project",
+            "i18n",
+            "Swap to pnpm",
+            "JUnit and Jest tests",
+            "Logging"
         ]
     },
     {
@@ -24,9 +27,8 @@ export const PROJECTS = [
         icon: <ListAlt className="mr-1" />,
         url: "/recipes",
         todo: [
-            "Ingredients, for shopping list and calories",
-            "Total calories/quantity",
-            "Clean up recipe table"
+            "Transaction handling for new ingredient",
+            "Total calories and portions",
         ]
     },
     {
@@ -45,6 +47,6 @@ export const PROJECTS = [
         status: ProjectStatus.Concept,
         icon: <Description className="mr-1" />,
         // url: "/",
-        todo: ["Explore api", "Figure out desired features"]
+        todo: ["Explore api", "Figure out desired features", "Add AI chatbot"]
     },
 ];
