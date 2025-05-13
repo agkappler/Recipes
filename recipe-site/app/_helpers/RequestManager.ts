@@ -1,3 +1,4 @@
+
 export default class RequestManager {
     private static baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -23,6 +24,7 @@ export default class RequestManager {
 
         return await this.handleResponse(response);
     }
+
     static async put(url: string, data: any): Promise<any> {
         const response = await fetch(this.baseUrl + url, {
             method: "PUT",
@@ -36,12 +38,18 @@ export default class RequestManager {
     }
 
     private static async handleResponse(response: Response): Promise<any> {
-        const responseData = await response.json();
-
         if (!response.ok) {
-            throw new Error(responseData.errorMessage || "An error occurred while fetching data.");
+            let errorData = { errorMessage: "An error occurred while fetching data." };
+            try {
+                errorData = await response.json();
+            } catch (error) {
+                console.error("Error parsing error response:", error);
+            }
+
+            throw new Error(errorData.errorMessage || "An error occurred while fetching data.");
         }
 
+        const responseData = await response.json();
         return responseData;
     }
 }

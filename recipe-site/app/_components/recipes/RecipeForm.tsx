@@ -6,12 +6,14 @@ import { Add, Edit } from "@mui/icons-material";
 import Recipe from "@/app/_models/Recipe";
 import RequestManager from "@/app/_helpers/RequestManager";
 import { useForm } from "react-hook-form";
+import { ErrorMessage } from "../ui/ErrorMessage";
 
 interface RecipeFormProps {
     recipeData: Recipe | undefined;
+    updateRecipe: () => void;
 }
 
-export const RecipeForm: React.FC<RecipeFormProps> = ({ recipeData }) => {
+export const RecipeForm: React.FC<RecipeFormProps> = ({ recipeData, updateRecipe }) => {
     const [isOpen, setIsOpen] = useState(false);
     const onClose = () => {
         setIsOpen(false);
@@ -19,28 +21,35 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ recipeData }) => {
 
     const isEdit = recipeData !== undefined;
     const { control, handleSubmit, formState: { errors } } = useForm({ defaultValues: recipeData ?? {} });
-    const onSubmit = (data: Recipe) => {
-        console.log(data);
-        if (isEdit) {
-            RequestManager.post("/updateRecipe", data);
-        } else {
-            RequestManager.post("/createRecipe", data);
+
+    const [errorMessage, setErrorMessage] = useState<string>();
+    const onSubmit = async (data: Recipe) => {
+        try {
+            if (isEdit) {
+                await RequestManager.post("/updateRecipe", data);
+            } else {
+                await RequestManager.post("/createRecipe", data);
+            }
+        } catch (error: any) {
+            setErrorMessage(error.message);
+            return;
         }
 
+        if (updateRecipe) updateRecipe();
         onClose();
     }
 
     return <>
-        {isEdit && <IconButton className="float-right" aria-label="edit" onClick={() => setIsOpen(!isOpen)}><Edit /></IconButton>}
+        {isEdit && <IconButton className="float-right" size="medium" aria-label="edit" onClick={() => setIsOpen(!isOpen)}><Edit /></IconButton>}
         {!isEdit && <Button variant='text' onClick={() => setIsOpen(!isOpen)} startIcon={<Add />}>Add Recipe</Button>}
         <Modal open={isOpen} onClose={onClose}>
             <DialogContent>
                 <Paper elevation={3} className="m-2 p-2">
                     <Typography variant="h4" className="mb-4" textAlign="center">{isEdit ? "Edit Recipe" : "Add Recipe"}</Typography>
+                    <ErrorMessage errorMessage={errorMessage} />
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Grid container spacing={2} className="mb-2">
                             <Grid size={12}>
-                                {/* <TextInput /> */}
                                 <TextField
                                     fullWidth
                                     label="Name"

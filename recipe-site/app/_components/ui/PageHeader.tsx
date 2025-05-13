@@ -9,13 +9,13 @@ interface PageHeaderProps extends PropsWithChildren {
 
 export const PageHeader: React.FC<PageHeaderProps> = ({ children, title, leftContainer, rightContainer }) => {
     return <Grid container spacing={1}>
-        <Box className="mt-2 w-full flex">
+        <Box className="mt-2 w-full flex mb-3">
             <Grid size={3}>
                 {leftContainer !== undefined && leftContainer}
             </Grid>
             <Grid size={6}>
                 {title !== undefined &&
-                    <Typography variant="h4" className="mb-3" textAlign="center">
+                    <Typography variant="h4" textAlign="center">
                         {title}
                     </Typography>}
                 {children}
