@@ -17,9 +17,11 @@ export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose,
     const isEdit = ingredient !== undefined;
     const { control, handleSubmit, formState: { errors } } = useForm<Ingredient>({ defaultValues: ingredient ?? {} });
     const [errorMessage, setErrorMessage] = useState<string>();
+    const [isLoading, setIsLoading] = useState(false);
 
     const onSubmit = async (data: Ingredient) => {
         try {
+            setIsLoading(true);
             if (isEdit) {
                 await RequestManager.post("/updateIngredient", data);
             } else {
@@ -28,6 +30,8 @@ export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose,
         } catch (error: ErrorEvent | any) {
             setErrorMessage(error.message);
             return;
+        } finally {
+            setIsLoading(false);
         }
 
         updateIngredients();
@@ -72,7 +76,7 @@ export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose,
                     </Grid>
                     <Box className="flex justify-between py-2">
                         <Button type="button" variant="outlined" color="secondary" onClick={onClose}>Close</Button>
-                        <Button type="submit" variant="contained" color="primary">Submit</Button>
+                        <Button type="submit" variant="contained" color="primary" loading={isLoading}>Submit</Button>
                     </Box>
                 </form>
             </Paper>

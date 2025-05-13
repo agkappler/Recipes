@@ -3,6 +3,7 @@ import { IngredientList } from "@/app/_components/recipes/IngredientList";
 import { RecipeForm } from "@/app/_components/recipes/RecipeForm";
 import { ErrorMessage } from "@/app/_components/ui/ErrorMessage";
 import { LinkButton } from "@/app/_components/ui/LinkButton";
+import { LoadingSpinner } from "@/app/_components/ui/LoadingSpinner";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
 import RequestManager from "@/app/_helpers/RequestManager";
 import SlugProps from "@/app/_helpers/SlugProps";
@@ -13,7 +14,7 @@ import useSWR from "swr";
 export default function Recipe({ params }: SlugProps) {
     const { data: recipeData, error, isLoading, mutate } = useSWR<RecipeModel>(`/recipe/${params.id}`, () => RequestManager.get(`/recipe/${params.id}`));
     if (isLoading) {
-        return <Typography variant="h4" textAlign="center">Loading...</Typography>;
+        return <LoadingSpinner message="Loading recipe data..." />;
     }
     if (error || recipeData === undefined) {
         return <ErrorMessage errorMessage={error.message} />;

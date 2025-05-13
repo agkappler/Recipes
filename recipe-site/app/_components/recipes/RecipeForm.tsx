@@ -23,8 +23,10 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ recipeData, updateRecipe
     const { control, handleSubmit, formState: { errors } } = useForm({ defaultValues: recipeData ?? {} });
 
     const [errorMessage, setErrorMessage] = useState<string>();
+    const [isLoading, setIsLoading] = useState(false);
     const onSubmit = async (data: Recipe) => {
         try {
+            setIsLoading(true);
             if (isEdit) {
                 await RequestManager.post("/updateRecipe", data);
             } else {
@@ -33,6 +35,8 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ recipeData, updateRecipe
         } catch (error: any) {
             setErrorMessage(error.message);
             return;
+        } finally {
+            setIsLoading(false);
         }
 
         if (updateRecipe) updateRecipe();
@@ -92,7 +96,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ recipeData, updateRecipe
                         </Grid>
                         <Box className="flex justify-between py-2">
                             <Button type="button" variant="outlined" color="secondary" onClick={onClose}>Close</Button>
-                            <Button type="submit" variant="contained" color="primary">Submit</Button>
+                            <Button type="submit" variant="contained" color="primary" loading={isLoading}>Submit</Button>
                         </Box>
                     </form>
                 </Paper>

@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import useSWR from "swr";
 import { ErrorMessage } from "../ui/ErrorMessage";
 import { IngredientForm } from "./IngredientForm";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface IngredientListProps {
     recipeId: number;
@@ -23,7 +24,7 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
 
     const { data: ingredients, error, isLoading, mutate } = useSWR<Ingredient[]>(`/ingredientsForRecipe/${recipeId}`, () => RequestManager.get(`/ingredientsForRecipe/${recipeId}`));
     if (isLoading) {
-        return <Typography variant="h4" textAlign="center">Loading...</Typography>;
+        return <LoadingSpinner message="Loading ingredients..." />;
     }
     if (error || ingredients === undefined) {
         return <ErrorMessage errorMessage={error.message} />;
