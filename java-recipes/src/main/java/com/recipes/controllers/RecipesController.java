@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.recipes.models.Recipe;
@@ -17,8 +16,7 @@ import com.recipes.services.RecipeService;
 //import com.repositories.RecipeRepository;
 
 @RestController
-@RequestMapping("/api")
-public class RecipesController {
+public class RecipesController extends BaseApiController {
 //    private RecipeRepository recipeRepository;
     private RecipeService recipeService;
 
@@ -26,11 +24,6 @@ public class RecipesController {
     public RecipesController(RecipeService recipeService){
 //        this.recipeRepository = recipeRepository;
         this.recipeService = recipeService;
-    }
-
-    @GetMapping("/")
-    public String Index(){
-        return "Greetings from Spring Boot!";
     }
 
     @GetMapping("/recipe/{recipeId}")

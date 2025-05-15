@@ -38,7 +38,7 @@ export const PROJECTS = [
         imageUrl: "https://via.placeholder.com/150",
         status: ProjectStatus.Concept,
         icon: <Checklist className="mr-1" />,
-        // url: "/",
+        url: "/bounties",
         todo: ["Task table", "Task Object", "Task List View"]
     },
     {
