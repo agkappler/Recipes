@@ -16,7 +16,8 @@ export const PROJECTS = [
             "i18n",
             "Swap to pnpm",
             "JUnit and Jest tests",
-            "Logging"
+            "Logging",
+            "BaseEnum class?"
         ]
     },
     {
