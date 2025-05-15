@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.recipes.Ingredient;
+import com.recipes.models.Ingredient;
 import com.recipes.services.IngredientService;
 
 @RestController

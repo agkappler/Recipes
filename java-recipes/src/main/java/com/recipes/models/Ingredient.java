@@ -1,4 +1,4 @@
-package com.recipes;
+package com.recipes.models;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

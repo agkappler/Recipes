@@ -2,7 +2,8 @@ package com.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import com.recipes.Recipe;
+
+import com.recipes.models.Recipe;
 
 import java.util.List;
 public class TempClass {}

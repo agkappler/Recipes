@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 
 import org.springframework.stereotype.Service;
 
-import com.recipes.Recipe;
+import com.recipes.models.Recipe;
 import com.utils.Data;
 
 @Service

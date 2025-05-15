@@ -9,8 +9,7 @@ import javax.sql.DataSource;
 
 import org.springframework.stereotype.Service;
 
-import com.recipes.Ingredient;
-import com.recipes.Recipe;
+import com.recipes.models.Ingredient;
 import com.utils.Data;
 
 @Service
@@ -50,6 +49,7 @@ public class IngredientService extends BaseService {
 		
 		ingredient.setIngredientId(ingredientId);
 		
+		// TODO: If this fails we end up w/o a mapping to the new ingredient.
 		this.data.Execute(
 			INSERT_REL_RECIPE_INGREDIENT_SQL,
 			(PreparedStatement ps) -> {

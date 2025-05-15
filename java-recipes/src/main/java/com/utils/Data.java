@@ -10,6 +10,8 @@ import java.util.function.Function;
 
 import javax.sql.DataSource;
 
+import org.springframework.transaction.annotation.Transactional;
+
 public class Data {
 	private final DataSource dataSource;
 	
@@ -37,6 +39,35 @@ public class Data {
 		} finally {
 			this.close(ps, generatedKeys);
 		}
+	}
+	
+	@Transactional
+	public List<Integer> ExecuteTransaction(List<String> sqlStrings, List<ParamSetter> paramSetters) throws SQLException {
+		if (sqlStrings.size() != paramSetters.size()) {
+            throw new IllegalArgumentException("SQL list and ParamSetter list must be the same size");
+        }
+		
+		List<Integer> generatedKeys = new ArrayList<>();
+		
+		try (Connection conn = dataSource.getConnection()) {
+			for (int i = 0; i < sqlStrings.size(); i++) {
+				String sql = sqlStrings.get(i);
+				ParamSetter setter = paramSetters.get(i);
+				
+				try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+					setter.set(stmt);
+                    stmt.executeUpdate();
+                    
+                    try (ResultSet rs = stmt.getGeneratedKeys()) {
+                        while (rs.next()) {
+                            generatedKeys.add(rs.getInt(1));
+                        }
+                    }
+                }
+			}
+		}
+		
+		return generatedKeys;
 	}
 	
 	public Integer InsertWithKey(String sql, ParamSetter paramSetter) throws SQLException {
