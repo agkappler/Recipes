@@ -4,7 +4,7 @@ import javax.sql.DataSource;
 
 import org.springframework.stereotype.Service;
 
-import com.utils.Data;
+import com.utils.data.Data;
 
 @Service
 public class BaseService {

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
-import com.utils.Data;
+import com.utils.data.Data;
 
 @Configuration
 public class RecipesDataSourceConfig {

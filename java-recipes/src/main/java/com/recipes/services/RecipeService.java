@@ -10,7 +10,8 @@ import javax.sql.DataSource;
 import org.springframework.stereotype.Service;
 
 import com.recipes.models.Recipe;
-import com.utils.Data;
+import com.utils.data.Data;
+import com.utils.exceptions.ObjectNotFoundException;
 
 @Service
 public class RecipeService extends BaseService {
@@ -32,14 +33,18 @@ public class RecipeService extends BaseService {
 		);
 	}
 	
-	public Recipe getRecipe(Integer recipeId) throws SQLException {
+	public Recipe getRecipe(Integer recipeId) throws SQLException, ObjectNotFoundException {
 		List<Recipe> results = this.data.Query(
 			GET_RECIPE_BY_ID_SQL,
 			(PreparedStatement ps) -> ps.setInt(1, recipeId),
 			(ResultSet rs) -> mapRecipe(rs)
 		);
 		
-		return results.size() == 0 ? new Recipe() : results.get(0);
+		if (results.size() == 0) {
+			throw new ObjectNotFoundException("Failed to load Recipe with id: " + recipeId);
+		}
+		
+		return results.get(0);
 	}
 	
 	public Integer createRecipe(Recipe recipe) throws SQLException {
