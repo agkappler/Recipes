@@ -8,7 +8,7 @@ interface LinkButtonProps {
 }
 
 export const LinkButton: React.FC<LinkButtonProps> = ({ url, label, isForward = true }) => {
-    return <Button variant="text" startIcon={isForward ? <ChevronRight /> : <ChevronLeft />} href={url}>
+    return <Button variant="text" startIcon={isForward ? undefined : <ChevronLeft />} endIcon={isForward ? <ChevronRight /> : undefined} href={url}>
         {label}
     </Button>;
 }

@@ -46,7 +46,7 @@ export const PROJECTS = [
         imageUrl: "https://via.placeholder.com/150",
         status: ProjectStatus.Concept,
         icon: <Description className="mr-1" />,
-        // url: "/",
+        url: "/dnd",
         todo: ["Explore api", "Figure out desired features", "Add AI chatbot"]
     },
 ];

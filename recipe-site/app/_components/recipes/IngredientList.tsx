@@ -36,6 +36,9 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
                 <Typography variant="h6">Ingredients</Typography>
                 <Button variant='text' onClick={() => setIsOpen(!isOpen)} startIcon={<Add />}>Add Ingredient</Button>
             </Box>
+            <Typography variant="body1" className="mb-2">
+                Total Calories: {ingredients.reduce((total, ingredient) => total + (ingredient.calories || 0), 0)}
+            </Typography>
             <TableContainer component={Paper}>
                 <Table aria-label="ingredient table">
                     <TableHead>
