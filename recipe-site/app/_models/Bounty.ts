@@ -2,11 +2,11 @@ export default class Bounty {
     bountyId!: number;
     title: string;
     description: string;
-    status: number;
+    status: string;
     expirationDate: string;
-    cadence: number;
+    cadence: string;
 
-    constructor(bountyId: number, title: string, description: string, status: number, expirationDate: string, cadence: number) {
+    constructor(bountyId: number, title: string, description: string, status: string, expirationDate: string, cadence: string) {
         this.bountyId = bountyId;
         this.title = title;
         this.description = description;

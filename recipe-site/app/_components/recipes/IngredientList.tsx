@@ -7,8 +7,8 @@ import { Box, Button, IconButton, Paper, Table, TableBody, TableCell, TableConta
 import React, { useState } from "react";
 import useSWR from "swr";
 import { ErrorMessage } from "../ui/ErrorMessage";
-import { IngredientForm } from "./IngredientForm";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { IngredientForm } from "./IngredientForm";
 
 interface IngredientListProps {
     recipeId: number;

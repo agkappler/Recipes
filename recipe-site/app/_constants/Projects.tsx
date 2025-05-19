@@ -36,7 +36,7 @@ export const PROJECTS = [
         name: "Daily Bounties",
         description: "This converts repeatable tasks into bounties, similar to a video game.",
         imageUrl: "https://via.placeholder.com/150",
-        status: ProjectStatus.Concept,
+        status: ProjectStatus.InProgress,
         icon: <Checklist className="mr-1" />,
         url: "/bounties",
         todo: ["Task table", "Task Object", "Task List View"]
