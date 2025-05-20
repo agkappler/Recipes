@@ -12,12 +12,19 @@ import { Box, Typography } from "@mui/material";
 import useSWR from "swr";
 
 export default function Recipe({ params }: SlugProps) {
-    const { data: recipeData, error, isLoading, mutate } = useSWR<RecipeModel>(`/recipe/${params.id}`, () => RequestManager.get(`/recipe/${params.id}`));
-    if (isLoading) {
+    // const { data: recipeData, error, isLoading, mutate } = useSWR<RecipeModel>(`/recipe/${params.id}`, () => RequestManager.get(`/recipe/${params.id}`));
+    // if (isLoading) {
+    //     return <LoadingSpinner message="Loading recipe data..." />;
+    // }
+    // if (error || recipeData === undefined) {
+    //     return <ErrorMessage errorMessage={error.message} />;
+    // }
+
+    const recipeData = {} as RecipeModel,
+        mutate = () => { };
+
+    if (recipeData === undefined || recipeData.name === undefined) {
         return <LoadingSpinner message="Loading recipe data..." />;
-    }
-    if (error || recipeData === undefined) {
-        return <ErrorMessage errorMessage={error.message} />;
     }
 
     return <>

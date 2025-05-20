@@ -11,13 +11,16 @@ import Recipe from '../_models/Recipe';
 import { LoadingSpinner } from '../_components/ui/LoadingSpinner';
 
 export default function Recipes() {
-    const { data: recipes, error, isLoading, mutate } = useSWR<Recipe[]>('/recipes', () => RequestManager.get('/recipes'));
-    if (isLoading) {
-        return <LoadingSpinner message="Loading recipes..." />;
-    }
-    if (error || recipes === undefined) {
-        return <ErrorMessage errorMessage={error.message} />;
-    }
+    // const { data: recipes, error, isLoading, mutate } = useSWR<Recipe[]>('/recipes', () => RequestManager.get('/recipes'));
+    // if (isLoading) {
+    //     return <LoadingSpinner message="Loading recipes..." />;
+    // }
+    // if (error || recipes === undefined) {
+    //     return <ErrorMessage errorMessage={error.message} />;
+    // }
+
+    const recipes = [] as Recipe[],
+        mutate = () => { };
 
     return (
         <Box className="mx-2">
