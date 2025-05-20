@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 
 import org.springframework.stereotype.Service;
 
-import com.recipes.enums.BountyCadence;
 import com.recipes.enums.BountyStatus;
 import com.recipes.models.Bounty;
 import com.utils.data.Data;
@@ -17,9 +16,9 @@ import com.utils.exceptions.ObjectNotFoundException;
 
 @Service
 public class BountyService extends BaseService {
-	private static String GET_BOUNTIES_SQL = "SELECT * FROM bounty";
-	private static String GET_BOUNTY_SQL = "SELECT * FROM bounty WHERE id = ?";
-	private static String INSERT_BOUNTY_SQL = "INSERT INTO bounty (title, description, status, expiration_date, cadence) VALUES (?,?,?,?,?)";
+	private static String GET_BOUNTIES_SQL = "SELECT * FROM bounties ORDER BY bounty_id";
+	private static String GET_BOUNTY_SQL = "SELECT * FROM bounties WHERE bounty_id = ?";
+	private static String INSERT_BOUNTY_SQL = "INSERT INTO bounties (title, description, status, category_id, expiration_date) VALUES (?,?,?,?,?) RETURNING bounty_id";
 	
 	public BountyService(DataSource dataSource, Data data) {
 		super(dataSource, data);
@@ -54,9 +53,9 @@ public class BountyService extends BaseService {
 				ps.setString(1, bounty.getTitle());
 				ps.setString(2, bounty.getDescription());
 				ps.setInt(3, bounty.getStatus().getValue());
+				ps.setInt(4, bounty.getCategoryId());
 				// TODO: Expiration date.
-				ps.setString(4, null);
-				ps.setInt(5, bounty.getCadence().getValue());
+				ps.setDate(5, null);
 			}
 		);
 		
@@ -66,12 +65,12 @@ public class BountyService extends BaseService {
 	
 	private Bounty mapBounty(ResultSet rs) throws SQLException {
 		Bounty b = new Bounty();
-		b.setBountyId(rs.getInt("id"));
+		b.setBountyId(rs.getInt("bounty_id"));
 		b.setTitle(rs.getString("title"));
 		b.setDescription(rs.getString("description"));
 		b.setStatus(BountyStatus.getByValue(rs.getInt("status")));
+		b.setCategoryId(rs.getInt("category_id"));
 //		b.setExpirationDate(LocalDate.of(rs.getString("expiration_date")));
-		b.setCadence(BountyCadence.getByValue(rs.getInt("cadence")));
 		return b;
 	}
 }

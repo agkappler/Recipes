@@ -16,10 +16,10 @@ import com.utils.exceptions.ObjectNotFoundException;
 @Service
 public class RecipeService extends BaseService {
 	
-	private final static String GET_RECIPES_SQL = "SELECT * FROM Recipe";
-	private final static String GET_RECIPE_BY_ID_SQL = "SELECT * FROM Recipe WHERE id = ?";
-	private final static String INSERT_RECIPE_SQL = "INSERT INTO RECIPE (name, prepTimeMinutes, cookTimeMinutes, instructions) VALUES (?, ?, ?, ?)";
-	private final static String UPDATE_RECIPE_SQL = "UPDATE RECIPE SET name = ?, prepTimeMinutes = ?, cookTimeMinutes = ?, instructions = ? WHERE id = ?";
+	private final static String GET_RECIPES_SQL = "SELECT * FROM recipes ORDER BY recipe_id";
+	private final static String GET_RECIPE_BY_ID_SQL = "SELECT * FROM recipes WHERE recipe_id = ?";
+	private final static String INSERT_RECIPE_SQL = "INSERT INTO recipes (name, prep_time_minutes, cook_time_minutes, instructions) VALUES (?, ?, ?, ?) RETURNING recipe_id";
+	private final static String UPDATE_RECIPE_SQL = "UPDATE recipes SET name = ?, prep_time_minutes = ?, cook_time_minutes = ?, instructions = ? WHERE recipe_id = ?";
 
 	public RecipeService(DataSource dataSource, Data data) {
 		super(dataSource, data);
@@ -63,7 +63,7 @@ public class RecipeService extends BaseService {
 	}
 	
 	public void updateRecipe(Recipe recipe) throws SQLException {
-		this.data.InsertWithKey(
+		this.data.Execute(
 			UPDATE_RECIPE_SQL,
 			(PreparedStatement ps) -> {
 				ps.setString(1, recipe.getName());
@@ -77,11 +77,11 @@ public class RecipeService extends BaseService {
 	
 	private Recipe mapRecipe(ResultSet rs) throws SQLException {
 		Recipe r = new Recipe();
-		r.setRecipeId(rs.getInt("id"));
+		r.setRecipeId(rs.getInt("recipe_id"));
 		r.setName(rs.getString("name"));
-		Integer cookTime = rs.getInt("cookTimeMinutes");
+		Integer cookTime = rs.getInt("cook_time_minutes");
 		r.setCookTimeMinutes(cookTime != null ? cookTime : -1);
-		Integer prepTime = rs.getInt("prepTimeMinutes");
+		Integer prepTime = rs.getInt("prep_time_minutes");
 		r.setPrepTimeMinutes(prepTime != null ? prepTime : -1);
 		String instructions = rs.getString("instructions");
 		r.setInstructions(instructions != null ? instructions : "No instructions yet!");

@@ -26,7 +26,7 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
                 // await RequestManager.post("/updateIngredient", data);
             } else {
                 data.status = "IN_PROGRESS";
-                data.cadence = "ONE_TIME";
+                data.categoryId = 1;
                 await RequestManager.post(`/createBounty`, data);
             }
         } catch (error: ErrorEvent | any) {

@@ -17,13 +17,14 @@ public class IngredientService extends BaseService {
 	
 	public static String GET_INGREDIENTS_BY_RECIPE_SQL = """
 			SELECT i.*
-			FROM ingredient i
-			INNER JOIN rel_recipe_ingredient rri ON i.id = rri.ingredient_id
+			FROM ingredients i
+			INNER JOIN rel_recipe_ingredient rri ON i.ingredient_id = rri.ingredient_id
 			WHERE rri.recipe_id = ?
+			ORDER BY ingredient_id
 			""";
-	public static String INSERT_INGREDIENT_SQL = "INSERT INTO ingredient (name, quantity, calories) VALUES (?,?,?)";
+	public static String INSERT_INGREDIENT_SQL = "INSERT INTO ingredients (name, quantity, calories) VALUES (?,?,?) RETURNING ingredient_id";
 	public static String INSERT_REL_RECIPE_INGREDIENT_SQL = "INSERT INTO rel_recipe_ingredient (recipe_id, ingredient_id) VALUES (?,?)";
-	public static String UPDATE_INGREDIENT_SQL = "UPDATE ingredient SET name = ?, quantity = ?, calories = ? WHERE id = ?";
+	public static String UPDATE_INGREDIENT_SQL = "UPDATE ingredients SET name = ?, quantity = ?, calories = ? WHERE ingredient_id = ?";
 	
 	public IngredientService(DataSource dataSource, Data data) {
 		super(dataSource, data);
@@ -75,7 +76,7 @@ public class IngredientService extends BaseService {
 	
 	private Ingredient mapIngredient(ResultSet rs) throws SQLException {
 		Ingredient i = new Ingredient();
-		i.setIngredientId(rs.getInt("id"));
+		i.setIngredientId(rs.getInt("ingredient_id"));
 		i.setName(rs.getString("name"));
 		i.setQuantity(rs.getString("quantity"));
 		i.setCalories(rs.getInt("calories"));

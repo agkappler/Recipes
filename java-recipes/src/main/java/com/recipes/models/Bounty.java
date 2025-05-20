@@ -2,7 +2,6 @@ package com.recipes.models;
 
 import java.time.LocalDate;
 
-import com.recipes.enums.BountyCadence;
 import com.recipes.enums.BountyStatus;
 
 import lombok.Getter;
@@ -17,6 +16,6 @@ public class Bounty {
 	private String title;
 	private String description;
 	private BountyStatus status;
+	private Integer categoryId;
 	private LocalDate expirationDate;
-	private BountyCadence cadence;
 }
