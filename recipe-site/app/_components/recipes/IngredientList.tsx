@@ -22,13 +22,16 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
         setSelectedIngredient(undefined);
     }
 
-    const { data: ingredients, error, isLoading, mutate } = useSWR<Ingredient[]>(`/ingredientsForRecipe/${recipeId}`, () => RequestManager.get(`/ingredientsForRecipe/${recipeId}`));
-    if (isLoading) {
-        return <LoadingSpinner message="Loading ingredients..." />;
-    }
-    if (error || ingredients === undefined) {
-        return <ErrorMessage errorMessage={error.message} />;
-    }
+    // const { data: ingredients, error, isLoading, mutate } = useSWR<Ingredient[]>(`/ingredientsForRecipe/${recipeId}`, () => RequestManager.get(`/ingredientsForRecipe/${recipeId}`));
+    // if (isLoading) {
+    //     return <LoadingSpinner message="Loading ingredients..." />;
+    // }
+    // if (error || ingredients === undefined) {
+    //     return <ErrorMessage errorMessage={error.message} />;
+    // }
+
+    const ingredients = [] as Ingredient[],
+        mutate = () => { };
 
     return <>
         <Box>
