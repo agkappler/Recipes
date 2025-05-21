@@ -3,14 +3,13 @@
 import { Box, Grid, Typography } from "@mui/material";
 import { PageHeader } from "../_components/ui/PageHeader";
 import useSWR from "swr";
-// import { getAllSpells } from "../api/dnd";
+import { getAllSpells } from "../api/dnd";
 
 export default function Dnd() {
-    // const { data, isLoading } = useSWR("/classes", () => getAllSpells());
-    // if (isLoading) {
-    //     return <Typography variant="body1">Loading Dungeons and Dragons data...</Typography>;
-    // }
-    const data = { results: [] };
+    const { data, isLoading } = useSWR("/classes", () => getAllSpells());
+    if (isLoading) {
+        return <Typography variant="body1">Loading Dungeons and Dragons data...</Typography>;
+    }
 
     return (
         <Box className="mx-2">

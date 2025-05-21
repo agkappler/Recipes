@@ -18,16 +18,13 @@ export default function BountiesPage() {
         setIsOpen(false);
     }
 
-    // const { data: bounties, error, isLoading, mutate } = useSWR<Bounty[]>('/bounties', () => RequestManager.get('/bounties'));
-    // if (isLoading) {
-    //     return <LoadingSpinner message="Loading bounties..." />;
-    // }
-    // if (error || bounties === undefined) {
-    //     return <ErrorMessage errorMessage={error.message} />;
-    // }
-
-    const bounties = [] as Bounty[],
-        mutate = () => { };
+    const { data: bounties, error, isLoading, mutate } = useSWR<Bounty[]>('/bounties', () => RequestManager.get('/bounties'));
+    if (isLoading) {
+        return <LoadingSpinner message="Loading bounties..." />;
+    }
+    if (error || bounties === undefined) {
+        return <ErrorMessage errorMessage={error.message} />;
+    }
 
     return <>
         <PageHeader
