@@ -2,9 +2,6 @@
 const nextConfig = {
     reactStrictMode: true,
     output: 'standalone',
-    experimental: {
-        serverActions: true, // only if using App Router
-    },
     // webpack: { devtool: false }
 };
 
