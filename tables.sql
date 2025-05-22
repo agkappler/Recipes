@@ -49,3 +49,9 @@ CREATE TABLE IF NOT EXISTS rel_recipe_ingredient
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS users (
+	user_id SERIAL PRIMARY KEY,
+	email text  NOT NULL,
+	password text NOT NULL
+);
