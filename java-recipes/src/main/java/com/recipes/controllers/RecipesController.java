@@ -29,6 +29,8 @@ public class RecipesController extends BaseApiController {
     @GetMapping("/recipe/{recipeId}")
     public ResponseEntity<Recipe> Recipe(@PathVariable("recipeId") Integer recipeId) throws Exception {
     	System.out.println("Recipe Endpoint id: " + recipeId);
+    	this.permissions.canRead();
+    	
 		Recipe recipe = this.recipeService.getRecipe(recipeId);
 		return ResponseEntity.ok(recipe);
     }
@@ -36,24 +38,27 @@ public class RecipesController extends BaseApiController {
     @GetMapping("/recipes")
     public ResponseEntity<List<Recipe>> Recipes() throws SQLException {
 		System.out.println("Recipes Endpoint");
+		this.permissions.canRead();
+		
 		List<Recipe> recipes = this.recipeService.getRecipes();
-    	
     	return ResponseEntity.ok(recipes);
     }
     
     @PostMapping("/createRecipe")
     public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) throws SQLException {
 		System.out.println("Create Recipe Endpoint");
+		this.permissions.canWrite();
+		
 		this.recipeService.createRecipe(recipe);
-    	
     	return ResponseEntity.ok(recipe);
     }
     
     @PostMapping("/updateRecipe")
     public ResponseEntity<Recipe> updateRecipe(@RequestBody Recipe recipe) throws SQLException {
 		System.out.println("Update Recipe Endpoint");
+		this.permissions.canWrite();
+		
 		this.recipeService.updateRecipe(recipe);
-    	
     	return ResponseEntity.ok(recipe);
     }
 }

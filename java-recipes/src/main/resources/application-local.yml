@@ -1,2 +1,4 @@
 app:
   use-aws-secrets: false
+  can-read: true
+  can-write: true
