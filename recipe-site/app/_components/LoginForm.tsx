@@ -2,8 +2,9 @@
 
 import RequestManager from "@/app/_helpers/RequestManager";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { ErrorMessage } from "./ui/ErrorMessage";
 
 interface LoginFormInputs {
     username: string;
@@ -11,12 +12,20 @@ interface LoginFormInputs {
 }
 
 export const LoginForm: React.FC = () => {
+    const [errorMessage, setErrorMessage] = useState<string | undefined>();
+
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
 
     const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
         console.log("Login Data:", data);
-        const authResponse = await RequestManager.post("/authenticateUser", data);
-        console.log("Auth Response:", authResponse);
+        try {
+            const authResponse = await RequestManager.authenticateUser(data.username, data.password);
+            console.log("Auth Response:", authResponse);
+        } catch (error: any) {
+            setErrorMessage(error.message);
+        }
+
+
         // Handle login logic here
     };
 
@@ -55,6 +64,7 @@ export const LoginForm: React.FC = () => {
             >
                 Login
             </Button>
+            <ErrorMessage errorMessage={errorMessage} />
         </Box>
     );
 };

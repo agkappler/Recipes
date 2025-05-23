@@ -16,4 +16,8 @@ public class AppConfigProperties {
     private boolean useAwsSecrets;
     private boolean canRead;
     private boolean canWrite;
+    private String dbSecretName;
+    private String jwtSecretName;
+    private String awsSecretRegion;
+    private String localJwtKey;
 }

@@ -2,3 +2,4 @@ app:
   use-aws-secrets: false
   can-read: true
   can-write: true
+  local-jwt-key: "qGa3c8MIvwzsrZw+F8HVQK878TDfQKohlBkRxj6GXwa85AlqecSyrg+CyWepJHTy"

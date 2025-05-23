@@ -6,10 +6,8 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
 public class SecretManager {
-	public static String getSecret() {
-
-	    String secretName = "DB/fargopolis-1";
-	    Region region = Region.of("us-east-2");
+	public static String getSecret(String secretName, String regionName) {
+	    Region region = Region.of(regionName);
 
 	    // Create a Secrets Manager client
 	    SecretsManagerClient client = SecretsManagerClient.builder()

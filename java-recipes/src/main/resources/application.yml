@@ -1,4 +1,8 @@
 
+app:
+  jwt-secret-name: "JWT/secret"
+  aws-secret-region: "us-east-2"
+
 spring:
   jpa:
     properties:

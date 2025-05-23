@@ -26,7 +26,7 @@ public class FargopolisDataSourceConfig {
 		
 		// Set the data source url.
 		if (this.appConfig.isUseAwsSecrets()) {
-			String secret = SecretManager.getSecret();
+			String secret = SecretManager.getSecret(this.appConfig.getDbSecretName(), this.appConfig.getAwsSecretRegion());
 			JSONObject secretObj = new JSONObject(secret);
 			dataSource.setUrl("jdbc:postgresql://" + secretObj.getString("host")
 					+ "/" + secretObj.getString("dbname")
