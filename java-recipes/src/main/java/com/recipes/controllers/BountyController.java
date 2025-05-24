@@ -25,7 +25,7 @@ public class BountyController extends BaseApiController {
     
     @GetMapping("/bounties")
     public ResponseEntity<List<Bounty>> GetBounties() throws Exception {
-    	System.out.println("Bounties endpoint");
+    	logger.info("Bounties endpoint");
     	this.permissions.canRead();
     	
 		List<Bounty> bounties = bountyService.getBounties();
@@ -34,7 +34,7 @@ public class BountyController extends BaseApiController {
     
     @PostMapping("/createBounty")
     public ResponseEntity<Bounty> addIngredientToRecipe(@RequestBody Bounty bounty) throws SQLException {
-		System.out.println("Create Bounty Endpoint");
+    	logger.info("Create Bounty Endpoint");
 		this.permissions.canWrite();
 		
 		bountyService.createBounty(bounty);

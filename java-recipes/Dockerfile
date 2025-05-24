@@ -11,4 +11,6 @@ COPY build/libs/java-recipes-0.0.1-SNAPSHOT.jar java-recipes.jar
 EXPOSE 8080
 
 # Run the JAR
-ENTRYPOINT ["java", "-jar", "java-recipes.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "java-recipes.jar"]
+
+

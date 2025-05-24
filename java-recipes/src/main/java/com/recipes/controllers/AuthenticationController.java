@@ -1,10 +1,11 @@
 package com.recipes.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.recipes.dto.AuthRequest;
@@ -16,6 +17,8 @@ import com.utils.exceptions.ObjectNotFoundException;
 
 @RestController
 public class AuthenticationController {
+	protected static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+	
 	private UserService userService;
 	private JwtGenerator jwtGenerator;
 
@@ -30,17 +33,17 @@ public class AuthenticationController {
     	String email = authRequest.getEmail();
     	String password = authRequest.getPassword();
     	
-    	System.out.println("Authentication endpoint, email: " + email + " " + password);
+    	logger.info("Authentication endpoint, email: " + email + " " + password);
     	if (email == null || password == null) {
     		throw new ObjectNotFoundException("Invalid User Request");
     	}
 		User user = userService.authenticateUser(email, password);
 		
-		System.out.println("Authenticated");
+		logger.info("Authenticated user.");
 		AuthResponse response = new AuthResponse();
 		response.setUser(user);
 		response.setToken(this.jwtGenerator.generateToken(email));
-		System.out.println("Returning");
+		logger.info("Generated token for user.");
 		
 		return ResponseEntity.ok(response);
     }

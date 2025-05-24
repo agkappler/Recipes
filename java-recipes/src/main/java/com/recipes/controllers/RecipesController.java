@@ -13,22 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.recipes.models.Recipe;
 import com.recipes.services.RecipeService;
-//import com.repositories.RecipeRepository;
 
 @RestController
 public class RecipesController extends BaseApiController {
-//    private RecipeRepository recipeRepository;
     private RecipeService recipeService;
 
     @Autowired
     public RecipesController(RecipeService recipeService){
-//        this.recipeRepository = recipeRepository;
         this.recipeService = recipeService;
     }
 
     @GetMapping("/recipe/{recipeId}")
     public ResponseEntity<Recipe> Recipe(@PathVariable("recipeId") Integer recipeId) throws Exception {
-    	System.out.println("Recipe Endpoint id: " + recipeId);
+    	logger.info("Recipe Endpoint id: " + recipeId);
     	this.permissions.canRead();
     	
 		Recipe recipe = this.recipeService.getRecipe(recipeId);
@@ -37,7 +34,7 @@ public class RecipesController extends BaseApiController {
     
     @GetMapping("/recipes")
     public ResponseEntity<List<Recipe>> Recipes() throws SQLException {
-		System.out.println("Recipes Endpoint");
+    	logger.info("Recipes Endpoint");
 		this.permissions.canRead();
 		
 		List<Recipe> recipes = this.recipeService.getRecipes();
@@ -46,7 +43,7 @@ public class RecipesController extends BaseApiController {
     
     @PostMapping("/createRecipe")
     public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe recipe) throws SQLException {
-		System.out.println("Create Recipe Endpoint");
+    	logger.info("Create Recipe Endpoint");
 		this.permissions.canWrite();
 		
 		this.recipeService.createRecipe(recipe);
@@ -55,7 +52,7 @@ public class RecipesController extends BaseApiController {
     
     @PostMapping("/updateRecipe")
     public ResponseEntity<Recipe> updateRecipe(@RequestBody Recipe recipe) throws SQLException {
-		System.out.println("Update Recipe Endpoint");
+    	logger.info("Update Recipe Endpoint");
 		this.permissions.canWrite();
 		
 		this.recipeService.updateRecipe(recipe);
