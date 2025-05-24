@@ -1,23 +1,28 @@
 import RequestManager from "@/app/_helpers/RequestManager";
 import Bounty from "@/app/_models/Bounty";
-import { Box, Button, DialogContent, Grid, Modal, Paper, TextField, Typography } from "@mui/material";
+import BountyCategory from "@/app/_models/BountyCategory";
+import { DialogContent, Grid, Modal } from "@mui/material";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { ErrorMessage } from "../ui/ErrorMessage";
+import { BasicForm } from "../inputs/BasicForm";
+import { DropdownInput } from "../inputs/DropdownInput";
+import { TextInput } from "../inputs/TextInput";
 
 interface BountyFormProps {
     isOpen: boolean;
     onClose: () => void;
     bounty?: Bounty;
-    categoryId?: number;
     updateBounties: () => void;
+    bountyCategories: BountyCategory[]
 }
 
-export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty, categoryId, updateBounties }) => {
+export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty, bountyCategories, updateBounties }) => {
     const isEdit = bounty !== undefined;
-    const { control, handleSubmit, formState: { errors } } = useForm<Bounty>({ defaultValues: bounty ?? {} });
     const [errorMessage, setErrorMessage] = useState<string>();
     const [isLoading, setIsLoading] = useState(false);
+    const closeForm = () => {
+        setErrorMessage(undefined);
+        onClose();
+    }
 
     const onSubmit = async (data: Bounty) => {
         try {
@@ -26,7 +31,6 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
                 // await RequestManager.post("/updateIngredient", data);
             } else {
                 data.status = "IN_PROGRESS";
-                data.categoryId = 1;
                 await RequestManager.post(`/createBounty`, data);
             }
         } catch (error: ErrorEvent | any) {
@@ -37,43 +41,47 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
         }
 
         updateBounties();
-        onClose();
+        closeForm();
     }
 
-    return <Modal open={isOpen} onClose={onClose}>
+    return <Modal open={isOpen} onClose={closeForm}>
         <DialogContent>
-            <Paper elevation={3} className="m-2 p-2">
-                <Typography variant="h4" className="mb-4" textAlign="center">{isEdit ? "Update Bounty" : "Post Bounty"}</Typography>
-                <ErrorMessage errorMessage={errorMessage} />
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <Grid container spacing={2} className="mb-2">
-                        <Grid size={12}>
-                            <TextField
-                                fullWidth
-                                label="Title"
-                                {...control.register("title", { required: "Title is required" })}
-                                error={!!errors.title}
-                                helperText={errors.title ? errors.title.message : ""}
-                            />
-                        </Grid>
-                        <Grid size={12}>
-                            <TextField
-                                fullWidth
-                                label="Description"
-                                {...control.register("description")}
-                                error={!!errors.description}
-                                helperText={errors.description ? errors.description.message : ""}
-                                multiline
-                                rows={4}
-                            />
-                        </Grid>
+            <BasicForm
+                title={isEdit ? "Update Bounty" : "Post Bounty"}
+                onSubmit={onSubmit}
+                isSubmitting={isLoading}
+                errorMessage={errorMessage}
+                closeForm={closeForm}
+            >
+                <Grid container spacing={2} className="mb-2">
+                    <Grid size={6}>
+                        <TextInput
+                            label="Title"
+                            fieldName="title"
+                            requiredMessage="Title is required"
+                        />
                     </Grid>
-                    <Box className="flex justify-between py-2">
-                        <Button type="button" variant="outlined" color="secondary" onClick={onClose}>Close</Button>
-                        <Button type="submit" variant="contained" color="primary" loading={isLoading}>Submit</Button>
-                    </Box>
-                </form>
-            </Paper>
+                    <Grid size={6}>
+                        <DropdownInput
+                            label="Category"
+                            fieldName="categoryId"
+                            options={bountyCategories.map(category => ({
+                                value: category.categoryId,
+                                label: category.name
+                            }))}
+                            requiredMessage="Category is required"
+                        />
+                    </Grid>
+                    <Grid size={12}>
+                        <TextInput
+                            label="Description"
+                            fieldName="description"
+                            requiredMessage="Description is required"
+                            multilineRows={4}
+                        />
+                    </Grid>
+                </Grid>
+            </BasicForm>
         </DialogContent>
     </Modal>
 }
