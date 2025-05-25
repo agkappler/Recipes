@@ -42,6 +42,15 @@ public class BountyController extends BaseApiController {
     	return ResponseEntity.ok(bounty);
     }
     
+    @PostMapping("/updateBounty")
+    public ResponseEntity<Bounty> updateBounty(@RequestBody Bounty bounty) throws SQLException {
+    	logger.info("Update Bounty Endpoint");
+		this.permissions.canWrite();
+		
+		bountyService.updateBounty(bounty);
+    	return ResponseEntity.ok(bounty);
+    }
+    
     @GetMapping("/bountyCategories")
     public ResponseEntity<List<BountyCategory>> getBountyCategories() throws Exception {
     	logger.info("Bounty category endpoint");

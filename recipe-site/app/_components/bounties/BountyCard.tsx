@@ -20,7 +20,7 @@ export const BountyCard: React.FC<BountyCardProps> = ({ bounty }) => {
         }
     }
 
-    return <Paper className="mb-2 mx-2 p-2 flex flex-col" elevation={3}>
+    return <Paper className="p-2 flex flex-col" elevation={3}>
         <Typography variant="h6" textAlign="center">{bounty.title}</Typography>
         <StatusChip label={getStatus(bounty.status)} />
         <Typography variant="body1" textAlign="center">{bounty.description}</Typography>

@@ -1,7 +1,7 @@
 'use client';
 
 import { Add } from "@mui/icons-material";
-import { Box, Button, Chip, Grid, Typography } from "@mui/material";
+import { Box, Chip, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 import { BountyCard } from "../_components/bounties/BountyCard";
@@ -18,7 +18,14 @@ export default function BountiesPage() {
     const [isOpen, setIsOpen] = useState(false);
     const onClose = () => {
         setIsOpen(false);
+        setSelectedBounty(undefined);
     }
+    const [selectedBounty, setSelectedBounty] = useState<Bounty>();
+    const onBountyClick = (bounty: Bounty) => {
+        setSelectedBounty(() => bounty);
+        setIsOpen(true);
+    }
+
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
     const onCategoryClose = () => {
         setIsCategoryOpen(false);
@@ -31,23 +38,34 @@ export default function BountiesPage() {
     }
 
     return <>
-        <PageHeader
-            title="Bounties"
-            rightContainer={<Button startIcon={<Add />} onClick={() => setIsOpen(true)}>Post Bounty</Button>}
-        />
+        <PageHeader title="Bounty Board" />
         <Box display="flex" justifyContent="center" gap={2} marginBottom={2}>
-            <Typography variant="subtitle1">Bounty Categories:</Typography>
-            <Chip label="Add Category" icon={<Add />} onClick={() => setIsCategoryOpen(true)} />
-            <LoadingWrapper isLoading={isLoadingBountyCategories}>
+            <LoadingWrapper isLoading={isLoadingBountyCategories} size={20}>
+                <Chip label="Add Category" icon={<Add />} onClick={() => setIsCategoryOpen(true)} />
                 {bountyCategories?.map((category) => (
                     <Chip key={category.categoryId} label={category.name} />
                 ))}
             </LoadingWrapper>
         </Box>
-        <Grid container spacing={1} className="mx-2">
+        <Grid container spacing={1} className="mx-2" alignItems="stretch">
             <LoadingWrapper isLoading={isLoadingBounties}>
+                <Grid size={3}>
+                    <Box
+                        border="dashed"
+                        borderColor="primary.main"
+                        borderRadius="4px"
+                        className="p-2 flex h-full shadow-md hover:shadow-lg"
+                        justifyContent="center"
+                        alignItems="center"
+                        role="button"
+                        onClick={() => setIsOpen(true)}
+                    >
+                        <Add color="primary" />
+                        <Typography variant="subtitle1" color="primary">Post Bounty</Typography>
+                    </Box>
+                </Grid>
                 {bounties?.map(bounty => (
-                    <Grid size={6} key={bounty.bountyId}>
+                    <Grid size={3} key={bounty.bountyId} onClick={() => onBountyClick(bounty)} role="button">
                         <BountyCard key={bounty.bountyId} bounty={bounty} />
                     </Grid>
                 ))}
@@ -58,6 +76,7 @@ export default function BountiesPage() {
             onClose={onClose}
             updateBounties={mutate}
             bountyCategories={bountyCategories ?? []}
+            bounty={selectedBounty}
         />
         <BountyCategoryForm
             isOpen={isCategoryOpen}

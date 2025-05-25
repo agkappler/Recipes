@@ -19,6 +19,7 @@ public class BountyService extends BaseService {
 	private static String GET_BOUNTIES_SQL = "SELECT * FROM bounties ORDER BY bounty_id";
 	private static String GET_BOUNTY_SQL = "SELECT * FROM bounties WHERE bounty_id = ?";
 	private static String INSERT_BOUNTY_SQL = "INSERT INTO bounties (title, description, status, category_id, expiration_date) VALUES (?,?,?,?,?) RETURNING bounty_id";
+	private static String UPDATE_BOUNTY_SQL = "UPDATE bounties SET title=?, description=?, status=?, category_id=?, expiration_date=? WHERE bounty_id = ?";
 	
 	public BountyService(DataSource dataSource, Data data) {
 		super(dataSource, data);
@@ -60,6 +61,22 @@ public class BountyService extends BaseService {
 		);
 		
 		bounty.setBountyId(bountyId);
+		return bounty;
+	}
+	
+	public Bounty updateBounty(Bounty bounty) throws SQLException {
+		this.data.Execute(
+			UPDATE_BOUNTY_SQL,
+			(PreparedStatement ps) -> {
+				ps.setString(1, bounty.getTitle());
+				ps.setString(2, bounty.getDescription());
+				ps.setInt(3, bounty.getStatus().getValue());
+				ps.setInt(4, bounty.getCategoryId());
+				// TODO: Expiration date.
+				ps.setDate(5, null);
+				ps.setInt(6, bounty.getBountyId());
+			}
+		);
 		return bounty;
 	}
 	

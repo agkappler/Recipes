@@ -1,3 +1,4 @@
+import { BOUNTY_STATUS_OPTIONS, BountyStatus } from "@/app/_constants/Status";
 import RequestManager from "@/app/_helpers/RequestManager";
 import Bounty from "@/app/_models/Bounty";
 import BountyCategory from "@/app/_models/BountyCategory";
@@ -12,7 +13,7 @@ interface BountyFormProps {
     onClose: () => void;
     bounty?: Bounty;
     updateBounties: () => void;
-    bountyCategories: BountyCategory[]
+    bountyCategories: BountyCategory[];
 }
 
 export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty, bountyCategories, updateBounties }) => {
@@ -28,9 +29,9 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
         try {
             setIsLoading(true);
             if (isEdit) {
-                // await RequestManager.post("/updateIngredient", data);
+                await RequestManager.post("/updateBounty", data);
             } else {
-                data.status = "IN_PROGRESS";
+                data.status = BountyStatus.InProgress;
                 await RequestManager.post(`/createBounty`, data);
             }
         } catch (error: ErrorEvent | any) {
@@ -52,6 +53,7 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
                 isSubmitting={isLoading}
                 errorMessage={errorMessage}
                 closeForm={closeForm}
+                defaultValues={bounty}
             >
                 <Grid container spacing={2} className="mb-2">
                     <Grid size={6}>
@@ -72,6 +74,13 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
                             requiredMessage="Category is required"
                         />
                     </Grid>
+                    {isEdit && <Grid size={6}>
+                        <DropdownInput
+                            label="Status"
+                            fieldName="status"
+                            options={BOUNTY_STATUS_OPTIONS}
+                        />
+                    </Grid>}
                     <Grid size={12}>
                         <TextInput
                             label="Description"
