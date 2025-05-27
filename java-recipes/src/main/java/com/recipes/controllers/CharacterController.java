@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,15 @@ public class CharacterController extends BaseApiController {
     	
 		List<DndCharacter> characters = characterService.getCharacters();
 		return ResponseEntity.ok(characters);
+    }
+    
+    @GetMapping("/character/{characterId}")
+    public ResponseEntity<DndCharacter> getCharacter(@PathVariable("characterId") Integer characterId) throws Exception {
+    	logger.info("Character endpoint for " + characterId);
+    	this.permissions.canRead();
+    	
+		DndCharacter character = characterService.getCharacter(characterId);
+		return ResponseEntity.ok(character);
     }
     
     @PostMapping("/createCharacter")

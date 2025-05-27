@@ -13,6 +13,7 @@ import { PageHeader } from "../_components/ui/PageHeader";
 import RequestManager from "../_helpers/RequestManager";
 import Bounty from "../_models/Bounty";
 import BountyCategory from "../_models/BountyCategory";
+import { AddModelCard } from "../_components/ui/AddModelCard";
 
 export default function BountiesPage() {
     const [isOpen, setIsOpen] = useState(false);
@@ -50,19 +51,7 @@ export default function BountiesPage() {
         <Grid container spacing={1} className="mx-2" alignItems="stretch">
             <LoadingWrapper isLoading={isLoadingBounties}>
                 <Grid size={3}>
-                    <Box
-                        border="dashed"
-                        borderColor="primary.main"
-                        borderRadius="4px"
-                        className="p-2 flex h-full shadow-md hover:shadow-lg"
-                        justifyContent="center"
-                        alignItems="center"
-                        role="button"
-                        onClick={() => setIsOpen(true)}
-                    >
-                        <Add color="primary" />
-                        <Typography variant="subtitle1" color="primary">Post Bounty</Typography>
-                    </Box>
+                    <AddModelCard onClick={() => setIsOpen(true)} title="Post Bounty" />
                 </Grid>
                 {bounties?.map(bounty => (
                     <Grid size={3} key={bounty.bountyId} onClick={() => onBountyClick(bounty)} role="button">

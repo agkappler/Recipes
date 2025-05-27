@@ -1,5 +1,5 @@
 import RequestManager from "@/app/_helpers/RequestManager";
-import { DndItem, getSubclasses, getSubraces } from "@/app/api/dnd5eapi";
+import { DndItem, getClasses, getRaces, getSubclasses, getSubraces } from "@/app/api/dnd5eapi";
 import { DialogContent, Grid, Modal } from "@mui/material";
 import React, { useState } from "react";
 import useSWR from "swr";
@@ -15,17 +15,13 @@ interface CharacterFormProps {
     onClose: () => void;
     character?: Character;
     updateCharacters: () => void;
-    classes: DndItem[];
-    races: DndItem[];
 }
 
 export const CharacterForm: React.FC<CharacterFormProps> = ({
     isOpen,
     onClose,
     character,
-    updateCharacters,
-    classes,
-    races
+    updateCharacters
 }) => {
     const isEdit = character !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
@@ -35,8 +31,20 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
         onClose();
     }
 
-    const raceOptions = races.map(race => ({ value: race.index, label: race.name })),
-        classOptions = classes.map(classOption => ({ value: classOption.index, label: classOption.name }));
+    const { data: classes, isLoading: isLoadingClasses } = useSWR<{ results: DndItem[] }>("/classes", () => getClasses());
+    const { data: races, isLoading: isLoadingRaces } = useSWR<{ results: DndItem[] }>("/races", () => getRaces());
+
+    // W/homebrew stuff.
+    // const { data: classes } = useSWR<{ results: any[] }>("/classes5e", () => getOpen5eClasses());
+    // const { data: races } = useSWR<{ results: any[] }>("/races5e", () => getOpen5eRaces());
+    // const racesOpen5e = races?.map(r => ({ value: r.slug, label: r.name })) ?? [],
+    //     classesOpen5e = classes?.map(c => ({ value: c.slug, label: c.name })) ?? [];
+    // const subracesOpen5e = races.find(r => r.slug === "dwarf")?.subraces?.map((s: any) => ({ value: s.slug, label: s.name })) ?? [],
+    //     subclassesOpen5e = classes.find(r => r.slug === "monk")?.archetypes?.map((a: any) => ({ value: a.slug, label: a.name })) ?? [];
+
+
+    const raceOptions = (races?.results ?? []).map(race => ({ value: race.index, label: race.name })),
+        classOptions = (classes?.results ?? []).map(classOption => ({ value: classOption.index, label: classOption.name }));
     const { data: monkData } = useSWR("/monk", () => getSubclasses("monk"));
     const subclassOptions = (monkData?.results ?? []).map(o => ({ value: o.index, label: o.name }));
     const { data: dwarfData } = useSWR("/dwarf", () => getSubraces("dwarf"));
@@ -88,7 +96,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                         />
                     </Grid>
                     <Grid size={6}>
-                        <ComboBoxInput
+                        <DropdownInput
                             label="Race"
                             fieldName="race"
                             options={raceOptions}
