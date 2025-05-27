@@ -55,3 +55,13 @@ CREATE TABLE IF NOT EXISTS users (
 	email text  NOT NULL,
 	password text NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS dnd_characters (
+	character_id SERIAL PRIMARY KEY,
+	name text  NOT NULL,
+	race text NOT NULL,
+	subrace text NOT NULL,
+	class text NOT NULL,
+	subclass text,
+	level integer NOT NULL
+);

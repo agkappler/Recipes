@@ -5,7 +5,7 @@ import { PropsWithChildren } from "react";
 
 interface BasicFormProps<T> extends PropsWithChildren {
     title: string;
-    errorMessage?: string;
+    errorMessage: string | undefined;
     onSubmit: (data: T) => Promise<void>;
     isSubmitting: boolean;
     defaultValues?: T;

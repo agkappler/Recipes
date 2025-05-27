@@ -1,10 +1,8 @@
+import { BaseInputProps } from "@/app/_helpers/BaseInputProps";
 import { TextField } from "@mui/material"
 import { useFormContext } from "react-hook-form";
 
-interface TextInputProps {
-    label: string;
-    fieldName: string;
-    requiredMessage?: string;
+interface TextInputProps extends BaseInputProps {
     multilineRows?: number;
 }
 
