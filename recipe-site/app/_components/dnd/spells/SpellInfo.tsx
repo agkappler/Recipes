@@ -1,10 +1,10 @@
-import { BaseDndResponse, DndItem, getSpellsForClass, LevelInfo, Spell } from "@/app/api/dnd5eapi";
-import { ErrorMessage } from "../../ui/ErrorMessage";
-import { Box, Chip, TableContainer, Typography, Paper, Table, TableHead, TableRow, TableCell, TableBody, Grid } from "@mui/material";
-import { SpellSlotTable } from "./SpellSlotTable";
+import { BaseDndResponse, getSpellsForClass, LevelInfo, Spell } from "@/app/api/dnd5eapi";
+import { Box, Chip, Grid, Typography } from "@mui/material";
 import useSWR from "swr";
+import { ErrorMessage } from "../../ui/ErrorMessage";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { SpellCard } from "./SpellCard";
+import { SpellSlotTable } from "./SpellSlotTable";
 
 interface SpellInfoProps {
     levelInfos: LevelInfo[] | undefined;
@@ -13,14 +13,14 @@ interface SpellInfoProps {
 }
 
 export const SpellInfo: React.FC<SpellInfoProps> = ({ levelInfos, currentLevel, className }) => {
-    if (levelInfos === undefined) return <ErrorMessage errorMessage="Missing level data." />;
+    const { data: spellData, isLoading } = useSWR<BaseDndResponse>(`/spells/${className}`, () => getSpellsForClass(className));
 
+    if (levelInfos === undefined) return <ErrorMessage errorMessage="Missing level data." />;
     const spellcasting = levelInfos.find(l => l.level === currentLevel)?.spellcasting;
     if (spellcasting === undefined) return <Typography variant="body1">No spells yet!</Typography>;
     const maxSpellLevel = 3;
     const spellLevels = Array.from({ length: 10 }, (_, i) => i);
 
-    const { data: spellData, isLoading } = useSWR<BaseDndResponse>(`/spells/${className}`, () => getSpellsForClass(className));
     const spellsByLevel = (spellData?.results as Spell[])?.reduce((acc, spell) => {
         const key = spell.level;
         if (!acc[key]) {
@@ -41,8 +41,8 @@ export const SpellInfo: React.FC<SpellInfoProps> = ({ levelInfos, currentLevel, 
             {spellLevels.map(spellLevel => (<Box key={spellLevel}>
                 <Typography variant="h6" marginTop={2}>{spellLevel === 0 ? 'Cantrips' : `Level ${spellLevel} Spells`}</Typography>
                 <Grid container spacing={2}>
-                    {(spellsByLevel?.[spellLevel] ?? []).map(spell => (
-                        <Grid key={spell.index} size={3}>
+                    {(spellsByLevel?.[spellLevel] ?? []).map((spell, index) => (
+                        <Grid key={index} size={3}>
                             <SpellCard spell={spell} />
                         </Grid>
                     ))}

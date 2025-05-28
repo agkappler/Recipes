@@ -1,10 +1,8 @@
-import { getRelativeUrlInfo, Spell } from "@/app/api/dnd5eapi"
-import { IconButton, Paper, Typography } from "@mui/material"
-import useSWR from "swr"
-import { LoadingWrapper } from "../../ui/LoadingWrapper"
+import { Spell } from "@/app/api/dnd5eapi"
 import { InfoOutline } from "@mui/icons-material"
-import { SpellDetailsModal } from "./SpellDetailsModal"
+import { Paper, Typography } from "@mui/material"
 import { useState } from "react"
+import { SpellDetailsModal } from "./SpellDetailsModal"
 
 interface SpellCardProps {
     spell: Spell
