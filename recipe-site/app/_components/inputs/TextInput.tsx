@@ -13,7 +13,7 @@ export const TextInput: React.FC<TextInputProps> = ({ label, fieldName, required
         label={label}
         {...register(fieldName, { required: requiredMessage })}
         error={!!errors[fieldName]}
-        helperText={errors[fieldName] ? errors[fieldName].message as string : ""}
+        helperText={errors?.[fieldName] ? errors[fieldName]?.message as string : ""}
         multiline={multilineRows !== undefined}
         rows={multilineRows}
     />
