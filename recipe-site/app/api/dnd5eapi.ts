@@ -33,6 +33,7 @@ export interface LevelInfo {
     features: DndItem[];
     spellcasting: Spellcasting;
     class: DndItem;
+    class_specific?: any;
 }
 
 export async function getRelativeUrlInfo(url: string) {

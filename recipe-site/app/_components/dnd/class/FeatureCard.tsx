@@ -24,6 +24,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => {
             {featureInfo?.desc.map((desc: string, index: number) => (
                 <Typography variant="body1" textAlign="center" key={index}>{desc}</Typography>
             ))}
+            {/* TODO: Add feature specific and probably also font of magic table */}
         </LoadingWrapper>
     </Paper>
 }
