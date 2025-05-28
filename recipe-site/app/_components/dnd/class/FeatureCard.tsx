@@ -1,10 +1,11 @@
-import { DndItem, getRelativeUrlInfo } from "@/app/api/dnd5eapi";
+import { DndItem, getRelativeUrlInfo, LevelInfo } from "@/app/api/dnd5eapi";
 import { Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
+import { CreatingSpellSlotsTable } from "./class-specific/CreatingSpellSlotsTable";
 
 interface FeatureCardProps {
-    feature: DndItem;
+    feature: DndItem & { levelInfo: LevelInfo };
 }
 
 export const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => {
@@ -24,7 +25,10 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => {
             {featureInfo?.desc.map((desc: string, index: number) => (
                 <Typography variant="body1" textAlign="center" key={index}>{desc}</Typography>
             ))}
-            {/* TODO: Add feature specific and probably also font of magic table */}
+            {featureInfo?.index === 'flexible-casting-creating-spell-slots' &&
+                <CreatingSpellSlotsTable creatingSpellSlots={feature.levelInfo.class_specific.creating_spell_slots} />
+            }
+            {/* TODO: Add feature specific info. */}
         </LoadingWrapper>
     </Paper>
 }

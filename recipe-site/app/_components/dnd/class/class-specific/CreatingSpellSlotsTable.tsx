@@ -6,25 +6,22 @@ interface CreatingSpellSlotsTableProps {
 }
 
 export const CreatingSpellSlotsTable: React.FC<CreatingSpellSlotsTableProps> = ({ creatingSpellSlots }) => {
-    return <><Typography variant="body1">Creating Spell Slots</Typography>
+    return <><Typography variant="body1" textAlign="center">Creating Spell Slots</Typography>
         <TableContainer component={Paper}>
             <Table>
-                <TableHead>
+                <TableBody>
                     <TableRow>
                         <TableCell>Spell Slot Level</TableCell>
-                        <TableCell align="right">Sorcery Points</TableCell>
+                        {creatingSpellSlots.map((slot: any) => (
+                            <TableCell align="center" key={slot.spell_slot_level}>{slot.spell_slot_level}</TableCell>
+                        ))}
                     </TableRow>
-                </TableHead>
-                <TableBody>
-                    {creatingSpellSlots.map((row: any) => (
-                        <TableRow
-                            key={row.spell_slot_level}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                            <TableCell align="right">{row.spell_slot_level}</TableCell>
-                            <TableCell align="right">{row.sorcery_point_cost}</TableCell>
-                        </TableRow>
-                    ))}
+                    <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                        <TableCell>Sorcery Points</TableCell>
+                        {creatingSpellSlots.map((slot: any) => (
+                            <TableCell align="center" key={slot.sorcery_point_cost}>{slot.sorcery_point_cost}</TableCell>
+                        ))}
+                    </TableRow>
                 </TableBody>
             </Table>
         </TableContainer>

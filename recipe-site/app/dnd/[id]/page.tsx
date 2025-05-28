@@ -3,6 +3,7 @@
 import { CharacterForm } from "@/app/_components/dnd/CharacterForm";
 import { CharacterInfo } from "@/app/_components/dnd/CharacterInfo";
 import { ErrorMessage } from "@/app/_components/ui/ErrorMessage";
+import { ImageBox } from "@/app/_components/ui/ImageBox";
 import { LinkButton } from "@/app/_components/ui/LinkButton";
 import { LoadingWrapper } from "@/app/_components/ui/LoadingWrapper";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
@@ -27,6 +28,7 @@ export default function CharacterPage({ params }: SlugProps) {
                 rightContainer={<IconButton size="medium" aria-label="edit" onClick={() => setIsOpen(!isOpen)}><Edit /></IconButton>}
             />
             {character && <>
+                {character.avatarId && <ImageBox fileId={character.avatarId} altText="Character avatar" />}
                 <Typography variant="h6" textAlign="center" fontWeight="light" color="textSecondary">
                     {`${capitalize(character.race)}, Level ${character.level} ${capitalize(character.className)}`}
                 </Typography>

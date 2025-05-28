@@ -24,6 +24,7 @@ public class CharacterService extends BaseService {
 	private static String GET_CHARACTER_SQL = "SELECT * FROM dnd_characters WHERE character_id = ?";
 	private static String INSERT_CHARACTER_SQL = "INSERT INTO dnd_characters (name, race, subrace, class, subclass, level) VALUES (?,?,?,?,?,?) RETURNING character_id";
 	private static String UPDATE_CHARACTER_SQL = "UPDATE dnd_characters SET name=?, race=?, subrace=?, class=?, subclass=?, level=? WHERE character_id = ?";
+	private static String UPDATE_AVATAR_SQL = "UPDATE dnd_characters SET avatar_id=? WHERE character_id = ?";
 	
 	public List<DndCharacter> getCharacters() throws SQLException {
 		return this.data.Query(
@@ -80,6 +81,16 @@ public class CharacterService extends BaseService {
 		return character;
 	}
 	
+	public void updateAvatar(Integer characterId, Integer fileId) throws SQLException {
+		this.data.Execute(
+			UPDATE_AVATAR_SQL,
+			(PreparedStatement ps) -> {
+				ps.setInt(1, fileId);
+				ps.setInt(2, characterId);
+			}
+		);
+	}
+	
 	private DndCharacter mapCharacter(ResultSet rs) throws SQLException {
 		DndCharacter c = new DndCharacter();
 		c.setCharacterId(rs.getInt("character_id"));
@@ -89,6 +100,7 @@ public class CharacterService extends BaseService {
 		c.setClassName(rs.getString("class"));
 		c.setSubclassName(rs.getString("subclass"));
 		c.setLevel(rs.getInt("level"));
+		c.setAvatarId(rs.getObject("avatar_id") == null ? null : rs.getInt("avatar_id"));
 		return c;
 	}
 

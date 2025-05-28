@@ -11,11 +11,11 @@ interface ClassFeaturesProps {
 
 export const ClassFeatures: React.FC<ClassFeaturesProps> = ({ levelInfos, currentLevel }) => {
     if (levelInfos === undefined || levelInfos.length === 0) return <ErrorMessage errorMessage="Missing level data." />;
-    const activeLevelFeatures = levelInfos.filter(l => l.level <= currentLevel).flatMap((l: any) => l.features),
+    const activeLevelInfos = levelInfos.filter(l => l.level <= currentLevel),
+        activeLevelFeatures = activeLevelInfos.flatMap((l: any) => l.features.map((f: any) => ({ ...f, levelInfo: l }))),
         nextLevelFeatures = levelInfos.find(l => l.level === (currentLevel + 1))?.features;
     const currentLevelInfo = levelInfos.find(l => l.level === currentLevel);
 
-    console.log('current level info', currentLevelInfo);
     return <>
         <Typography variant="h5" textAlign="center">{levelInfos[0].class.name}</Typography>
         {currentLevelInfo?.class_specific &&

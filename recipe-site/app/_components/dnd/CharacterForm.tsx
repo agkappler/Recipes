@@ -9,6 +9,9 @@ import { ComboBoxInput } from "../inputs/ComboBoxInput";
 import { DropdownInput } from "../inputs/DropdownInput";
 import { NumberInput } from "../inputs/NumberInput";
 import { TextInput } from "../inputs/TextInput";
+import { FileUploadButton } from "../inputs/FileUploadButton";
+import { FileRole } from "@/app/_constants/FileRole";
+import FileMetadata from "@/app/_models/FileMetadata";
 
 interface CharacterFormProps {
     isOpen: boolean;
@@ -50,7 +53,6 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
     const { data: dwarfData } = useSWR("/dwarf", () => getSubraces("dwarf"));
     const subraceOptions = (dwarfData?.results ?? []).map(o => ({ value: o.index, label: o.name }));
 
-
     const onSubmit = async (data: Character) => {
         try {
             setIsLoading(true);
@@ -68,6 +70,11 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
 
         updateCharacters();
         closeForm();
+    }
+
+    const onUpload = async (fileMetadata: FileMetadata) => {
+        await RequestManager.post("/updateAvatar", { characterId: character?.characterId, fileId: fileMetadata.fileId });
+        updateCharacters();
     }
 
     return (<Modal open={isOpen} onClose={closeForm}>
@@ -127,6 +134,9 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                         />
                     </Grid>
                 </Grid>
+                {isEdit &&
+                    <FileUploadButton label="Upload Avatar" fileRole={FileRole.CharacterAvatar} onUpload={onUpload} />
+                }
             </BasicForm>
         </DialogContent>
     </Modal>)

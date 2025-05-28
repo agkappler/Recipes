@@ -106,8 +106,5 @@ export const ClassSpecificInfo: React.FC<ClassSpecificInfoProps> = ({ levelInfo 
         {classInfo.map((item, index) => (
             <Chip key={index} label={`${item.label}: ${item.value}`} />
         ))}
-        {classIndex === DndClass.Sorcerer && info.creating_spell_slots.length && <>
-            <CreatingSpellSlotsTable creatingSpellSlots={info.creating_spell_slots} />
-        </>}
     </Box>
 }

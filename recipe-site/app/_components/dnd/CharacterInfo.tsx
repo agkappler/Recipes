@@ -8,8 +8,8 @@ import { useState } from "react";
 import useSWR from "swr";
 import { LoadingWrapper } from "../ui/LoadingWrapper";
 import { ClassFeatures } from "./class/ClassFeatures";
-import { SpellInfo } from "./spells/SpellInfo";
 import { RacialTraits } from "./race/RacialTraits";
+import { SpellInfo } from "./spells/SpellInfo";
 
 interface CharacterInfoProps {
     character: Character;

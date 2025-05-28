@@ -20,4 +20,5 @@ public class AppConfigProperties {
     private String jwtSecretName;
     private String awsSecretRegion;
     private String localJwtKey;
+    private String s3BucketName;
 }

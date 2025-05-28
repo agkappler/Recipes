@@ -1,0 +1,20 @@
+import RequestManager from "@/app/_helpers/RequestManager";
+import Image from "next/image";
+import useSWR from "swr";
+import { LoadingWrapper } from "./LoadingWrapper";
+import FileMetadata from "@/app/_models/FileMetadata";
+import { Box } from "@mui/material";
+
+interface ImageBoxProps {
+    fileId: number;
+    altText: string;
+}
+
+export const ImageBox: React.FC<ImageBoxProps> = ({ fileId, altText }) => {
+    const { data: fileMetadata, isLoading } = useSWR<FileMetadata>(`/fileUrl/${fileId}`, () => RequestManager.get(`/fileUrl/${fileId}`));
+    return <LoadingWrapper isLoading={isLoading} size={20}>
+        <Box margin="auto" borderRadius={100} overflow="hidden" width={100}>
+            {fileMetadata?.url && <Image src={fileMetadata.url} alt={altText} width={150} height={150} />}
+        </Box>
+    </LoadingWrapper>
+}

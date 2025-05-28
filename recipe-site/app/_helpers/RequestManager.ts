@@ -14,13 +14,22 @@ export default class RequestManager {
         return await this.handleResponse(response);
     }
 
-    static async post(url: string, data: any): Promise<any> {
+    static async post(url: string, data: any, customHeaders?: HeadersInit): Promise<any> {
         const response = await fetch(this.apiUrl + url, {
             method: "POST",
-            headers: {
+            headers: customHeaders ?? {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
+        });
+
+        return await this.handleResponse(response);
+    }
+
+    static async uploadFile(fileData: any) {
+        const response = await fetch(this.apiUrl + "/uploadFile", {
+            method: "POST",
+            body: fileData,
         });
 
         return await this.handleResponse(response);

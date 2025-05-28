@@ -5,6 +5,7 @@ export default class Character {
     className: string;
     subclassName: string;
     level: number;
+    avatarId?: number;
 
     constructor(characterId: number, name: string, race: string, className: string, subclassName: string, level: number) {
         this.characterId = characterId;

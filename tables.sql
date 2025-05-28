@@ -56,6 +56,15 @@ CREATE TABLE IF NOT EXISTS users (
 	password text NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS files (
+  file_id SERIAL PRIMARY KEY,
+  uu_id TEXT NOT NULL,
+  filename TEXT NOT NULL,
+  content_type TEXT,
+  size_bytes BIGINT,
+  file_role INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS dnd_characters (
 	character_id SERIAL PRIMARY KEY,
 	name text  NOT NULL,
@@ -63,5 +72,7 @@ CREATE TABLE IF NOT EXISTS dnd_characters (
 	subrace text NOT NULL,
 	class text NOT NULL,
 	subclass text,
-	level integer NOT NULL
+	level integer NOT NULL,
+	avatar_id integer,
+	FOREIGN KEY (avatar_id) REFERENCES files(file_id)
 );
