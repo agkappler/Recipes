@@ -6,7 +6,7 @@ interface ProjectTodosProps {
 }
 
 export const ProjectTodos: React.FC<ProjectTodosProps> = ({ todos }) => {
-    return <Paper elevation={3} className="m-2 p-2">
+    return <Paper elevation={3} className="p-2 h-full">
         <Typography variant="subtitle1">Todo:</Typography>
         <List>
             {todos.map((item, index) => (

@@ -17,15 +17,17 @@ export const PROJECTS = [
         icon: <Settings className="mr-1" />,
         url: "/",
         todo: [
-            "About page, w/linked in photo and link.",
-            "Deployments/hosting",
+            "Streamline Deployments",
             "Tech aspects for each project",
             "i18n",
             "Swap to pnpm",
             "JUnit and Jest tests",
-            "Logging",
             "BaseEnum class?"
-        ]
+        ],
+        motivation: undefined,
+        goals: undefined,
+        vision: undefined,
+        technology: undefined
     },
     {
         name: "Recipes",
@@ -37,7 +39,11 @@ export const PROJECTS = [
         todo: [
             "Transaction handling for new ingredient",
             "Total calories and portions",
-        ]
+        ],
+        motivation: undefined,
+        goals: undefined,
+        vision: undefined,
+        technology: undefined
     },
     {
         name: "Daily Bounties",
@@ -46,7 +52,18 @@ export const PROJECTS = [
         status: ProjectStatus.InProgress,
         icon: <Checklist className="mr-1" />,
         url: "/bounties",
-        todo: ["Task table", "Task Object", "Task List View"]
+        todo: ["Task table", "Task Object", "Task List View"],
+        motivation: `I'm an avid lister and I'm constantly writing out ToDo lists in my notebooks and on my whiteboards.
+        Over time I found myself running into a few issues with my existing system pretty consistently.  My whiteboards had pretty limited space and I would need to keep erasing old lists and sometimes there's nothing as satisfying as seeing a long list of checked off items. 
+        In my notebooks I would often end up with lists that were pretty scattered around and the thought of re-writing and re-organizing everything by hand is usually pretty daunting (Maybe I'll give Bullet Journaling a try someday...). Recurring and long term tasks were another
+        issue that either required monopolizing space on the whiteboard to provide a constant reminder (even if I sometimes didn't want it) or writing the same thing over and over again everyday (I'm looking at you 'Gym').
+        I finally decided I needed a new system that would address these issues and figured I might as well build one myself.`,
+        goals: [
+            "Create bounties to track tasks.",
+            "Generate ToDo list based on a Bounty playlist."
+        ],
+        vision: `The inspiration for this new system actually came from video games and the pretty typical Bounty/Contract/Objective system that can be found across many games. I drew the most inspiration from games that I've probably sunk too much time into, namely Destiny 2 and The Finals.`,
+        technology: ""
     },
     {
         name: "Character Catalog",
@@ -55,6 +72,10 @@ export const PROJECTS = [
         status: ProjectStatus.InProgress,
         icon: <Description className="mr-1" />,
         url: "/dnd",
-        todo: ["Explore api", "Figure out desired features", "Add AI chatbot"]
+        todo: ["Add AI chat window"],
+        motivation: undefined,
+        goals: undefined,
+        vision: undefined,
+        technology: undefined
     },
 ];
