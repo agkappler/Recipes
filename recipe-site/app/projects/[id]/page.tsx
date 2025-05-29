@@ -8,16 +8,16 @@ import { Box, Typography } from "@mui/material";
 
 export default function ProjectPage({ params }: SlugProps) {
     const project = PROJECTS[Number(params.id)];
-    return (
+    return (<>
+        <PageHeader
+            leftContainer={<LinkButton label="All Projects" url="/" isForward={false} />}
+            rightContainer={project.url ? <LinkButton label="View Project" url={project.url} /> : undefined}
+        >
+            <ProjectHeader project={project} />
+        </PageHeader>
         <Box>
-            <PageHeader
-                leftContainer={<LinkButton label="All Projects" url="/" isForward={false} />}
-                rightContainer={project.url ? <LinkButton label="View Project" url={project.url} /> : undefined}
-            >
-                <ProjectHeader project={project} />
-            </PageHeader>
             <Typography variant="body1" textAlign="center">{project.description}</Typography>
             <ProjectTodos todos={project.todo} />
         </Box>
-    );
+    </>);
 }

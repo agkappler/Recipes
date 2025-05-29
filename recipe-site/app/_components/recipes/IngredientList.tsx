@@ -1,33 +1,23 @@
 'use client'
 
-import RequestManager from "@/app/_helpers/RequestManager";
 import Ingredient from "@/app/_models/Ingredient";
 import { Add, Edit } from "@mui/icons-material";
 import { Box, Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import React, { useState } from "react";
-import useSWR from "swr";
-import { ErrorMessage } from "../ui/ErrorMessage";
-import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { IngredientForm } from "./IngredientForm";
 
 interface IngredientListProps {
     recipeId: number;
+    ingredients: Ingredient[];
+    updateIngredients: () => void;
 }
 
-export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
+export const IngredientList: React.FC<IngredientListProps> = ({ recipeId, ingredients, updateIngredients }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | undefined>(undefined);
     const onClose = () => {
         setIsOpen(false);
         setSelectedIngredient(undefined);
-    }
-
-    const { data: ingredients, error, isLoading, mutate } = useSWR<Ingredient[]>(`/ingredientsForRecipe/${recipeId}`, () => RequestManager.get(`/ingredientsForRecipe/${recipeId}`));
-    if (isLoading) {
-        return <LoadingSpinner message="Loading ingredients..." />;
-    }
-    if (error || ingredients === undefined) {
-        return <ErrorMessage errorMessage={error.message} />;
     }
 
     return <>
@@ -36,9 +26,6 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
                 <Typography variant="h6">Ingredients</Typography>
                 <Button variant='text' onClick={() => setIsOpen(!isOpen)} startIcon={<Add />}>Add Ingredient</Button>
             </Box>
-            <Typography variant="body1" className="mb-2">
-                Total Calories: {ingredients.reduce((total, ingredient) => total + (ingredient.calories || 0), 0)}
-            </Typography>
             <TableContainer component={Paper}>
                 <Table aria-label="ingredient table">
                     <TableHead>
@@ -78,7 +65,7 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
             isOpen={isOpen}
             onClose={onClose}
             ingredient={selectedIngredient}
-            updateIngredients={mutate}
+            updateIngredients={updateIngredients}
         />}
     </>
 }

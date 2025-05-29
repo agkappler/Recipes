@@ -5,11 +5,12 @@ interface PageHeaderProps extends PropsWithChildren {
     title?: string;
     leftContainer?: ReactNode;
     rightContainer?: ReactNode;
+    headerColor?: string;
 }
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ children, title, leftContainer, rightContainer }) => {
+export const PageHeader: React.FC<PageHeaderProps> = ({ children, title, leftContainer, rightContainer, headerColor }) => {
     return <Grid container spacing={1}>
-        <Box className="mt-2 w-full flex mb-3">
+        <Box className="p-2 w-full flex mb-1" sx={{ backgroundColor: headerColor }}>
             <Grid size={3}>
                 {leftContainer !== undefined && leftContainer}
             </Grid>

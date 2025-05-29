@@ -21,9 +21,8 @@ export default function Dnd() {
     const { data: characters, isLoading, mutate } = useSWR<Character[]>("/characters", () => RequestManager.get("/characters"));
 
     return (<>
-        <Box className="mx-2">
-            <PageHeader title="Dungeons and Dragons" />
-            <Typography variant="h6" mt={2}>Characters:</Typography>
+        <PageHeader title="Character Catalog" />
+        <Box className="px-2">
             <LoadingWrapper isLoading={isLoading}>
                 <Grid container spacing={1}>
                     <Grid size={3}>

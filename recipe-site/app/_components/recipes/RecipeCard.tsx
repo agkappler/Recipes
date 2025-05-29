@@ -1,7 +1,7 @@
 'use client'
 
 import Recipe from "@/app/_models/Recipe";
-import { Paper, Typography } from "@mui/material";
+import { Box, Chip, Paper, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 interface RecipeCardProps {
@@ -10,10 +10,12 @@ interface RecipeCardProps {
 
 export const RecipeCard: React.FC<RecipeCardProps> = ({ recipeData }) => {
     const router = useRouter();
-    return <Paper elevation={3} className="p-2" role="button" onClick={() => router.push(`/recipes/${recipeData.recipeId}`)}>
+    return <Paper elevation={3} className="p-2 h-full text-center" role="button" onClick={() => router.push(`/recipes/${recipeData.recipeId}`)}>
         <Typography variant="h6">{recipeData.name}</Typography>
-        <Typography variant="body1">Prep Time: {recipeData.prepTimeMinutes}</Typography>
-        <Typography variant="body1">Cook Time: {recipeData.cookTimeMinutes}</Typography>
+        <Box display="flex" justifyContent="center" gap={2}>
+            <Chip label={`Prep Time: ${recipeData.prepTimeMinutes} min`} />
+            <Chip label={`Cook Time: ${recipeData.cookTimeMinutes} min`} />
+        </Box>
         <Typography variant="body1">Instructions: {recipeData.instructions}</Typography>
     </Paper>
 }

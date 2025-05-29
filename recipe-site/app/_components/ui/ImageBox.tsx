@@ -14,7 +14,7 @@ export const ImageBox: React.FC<ImageBoxProps> = ({ fileId, altText }) => {
     const { data: fileMetadata, isLoading } = useSWR<FileMetadata>(`/fileUrl/${fileId}`, () => RequestManager.get(`/fileUrl/${fileId}`));
     return <LoadingWrapper isLoading={isLoading} size={20}>
         <Box margin="auto" borderRadius={100} overflow="hidden" width={100}>
-            {fileMetadata?.url && <Image src={fileMetadata.url} alt={altText} width={150} height={150} />}
+            {fileMetadata?.url && <Image src={fileMetadata.url} alt={altText} width={200} height={200} />}
         </Box>
     </LoadingWrapper>
 }
