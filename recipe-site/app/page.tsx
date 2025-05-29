@@ -21,7 +21,7 @@ export default function Home({
                 <Typography variant="h4">Welcome!</Typography>
             </Box>
             <Typography variant="body1" marginTop={1} maxWidth="600px" marginX="auto">
-                This platform was built as a personal project to explore different technologies, manage my own recipes, gamify recurring tasks as bounties, and organize Dungeons & Dragons characters. It's also a way to showcase my work and experiment with new ideas. Feel free to explore and see what I've been working on!
+                This platform was built as a personal project to explore different technologies, manage my own recipes, gamify recurring tasks as bounties, and organize Dungeons & Dragons characters. It&apos;s also a way to showcase my work and experiment with new ideas. Feel free to explore and see what I&apos;ve been working on!
             </Typography>
             <Typography variant="body1" marginTop={1} marginX="auto">
                 You can find out more about me <Link href="/about" color="inherit">here</Link>.

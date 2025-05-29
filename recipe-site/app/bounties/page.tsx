@@ -1,19 +1,21 @@
 'use client';
 
 import { Add } from "@mui/icons-material";
-import { Box, Chip, Grid, Typography } from "@mui/material";
+import { Box, Chip, Grid } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 import { BountyCard } from "../_components/bounties/BountyCard";
 import { BountyCategoryForm } from "../_components/bounties/BountyCategoryForm";
 import { BountyForm } from "../_components/bounties/BountyForm";
+import { AddModelCard } from "../_components/ui/AddModelCard";
+import { LinkButton } from "../_components/ui/buttons/LinkButton";
 import { ErrorMessage } from "../_components/ui/ErrorMessage";
 import { LoadingWrapper } from "../_components/ui/LoadingWrapper";
 import { PageHeader } from "../_components/ui/PageHeader";
+import { Project } from "../_constants/Projects";
 import RequestManager from "../_helpers/RequestManager";
 import Bounty from "../_models/Bounty";
 import BountyCategory from "../_models/BountyCategory";
-import { AddModelCard } from "../_components/ui/AddModelCard";
 
 export default function BountiesPage() {
     const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +41,7 @@ export default function BountiesPage() {
     }
 
     return <>
-        <PageHeader title="Bounty Board" />
+        <PageHeader title="Bounty Board" rightContainer={<LinkButton url={`/projects/${Project.Bounties}`} label="Project Details" />} />
         <Box display="flex" justifyContent="center" gap={2} marginBottom={2}>
             <LoadingWrapper isLoading={isLoadingBountyCategories} size={20}>
                 <Chip label="Add Category" icon={<Add />} onClick={() => setIsCategoryOpen(true)} />

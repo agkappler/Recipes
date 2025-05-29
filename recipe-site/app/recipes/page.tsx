@@ -6,9 +6,11 @@ import useSWR from 'swr';
 import { RecipeCard } from '../_components/recipes/RecipeCard';
 import { RecipeForm } from '../_components/recipes/RecipeForm';
 import { AddModelCard } from '../_components/ui/AddModelCard';
+import { LinkButton } from '../_components/ui/buttons/LinkButton';
 import { ErrorMessage } from '../_components/ui/ErrorMessage';
 import { LoadingSpinner } from '../_components/ui/LoadingSpinner';
 import { PageHeader } from '../_components/ui/PageHeader';
+import { Project } from '../_constants/Projects';
 import RequestManager from '../_helpers/RequestManager';
 import Recipe from '../_models/Recipe';
 
@@ -28,7 +30,7 @@ export default function Recipes() {
 
     // Possible header color: headerColor="#FFDF8E"
     return (<>
-        <PageHeader title="All Recipes" />
+        <PageHeader title="All Recipes" rightContainer={<LinkButton url={`/projects/${Project.Recipes}`} label="Project Details" />} />
         <Box className="px-2">
             <Grid container spacing={1}>
                 <Grid size={4}>

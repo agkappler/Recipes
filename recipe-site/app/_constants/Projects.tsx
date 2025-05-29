@@ -1,6 +1,13 @@
 import { Checklist, Description, ListAlt, Settings } from "@mui/icons-material";
 import { ProjectStatus } from "./Status";
 
+export enum Project {
+    SiteInfrastructure = 0,
+    Recipes = 1,
+    Bounties = 2,
+    DnD = 3
+}
+
 export const PROJECTS = [
     {
         name: "Site Infrastructure",

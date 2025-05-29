@@ -5,9 +5,9 @@ import { LinkedInButton } from "../ui/buttons/LinkedInButton"
 export const Footer: React.FC = () => {
     return (
         <footer className="bg-gray-100 mt-10 flex justify-center">
-            <Box padding={1.5} textAlign="center">
+            <Box padding={1.25} textAlign="center">
                 <Typography variant="body2">
-                    Built by Alex 'Fargo' Kappler  {" "}|
+                    {"Built by Alex 'Fargo' Kappler"}|
                     <LinkedInButton />
                     |
                     <GitHubButton />

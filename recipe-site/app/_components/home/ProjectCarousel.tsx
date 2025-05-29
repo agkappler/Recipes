@@ -62,7 +62,7 @@ export const ProjectCarousel: React.FC = () => {
                                     left: isCurrent ? "35%" : isLeft ? "20%" : "50%",
                                     textAlign: "center",
                                     padding: 2,
-                                    zIndex: (isCurrent || isRight || isLeft) ? 2 : 1,
+                                    zIndex: isCurrent ? 3 : (isRight || isLeft) ? 2 : 1,
 
                                     display: "flex",
                                     flexDirection: "column",
