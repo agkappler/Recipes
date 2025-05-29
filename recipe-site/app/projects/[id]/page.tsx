@@ -1,6 +1,6 @@
 import { ProjectHeader } from "@/app/_components/home/ProjectHeader";
 import { ProjectTodos } from "@/app/_components/home/ProjectTodos";
-import { LinkButton } from "@/app/_components/ui/LinkButton";
+import { LinkButton } from "@/app/_components/ui/buttons/LinkButton";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
 import { PROJECTS } from "@/app/_constants/Projects";
 import SlugProps from "@/app/_helpers/SlugProps";

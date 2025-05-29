@@ -2,7 +2,7 @@
 import { IngredientList } from "@/app/_components/recipes/IngredientList";
 import { RecipeForm } from "@/app/_components/recipes/RecipeForm";
 import { ErrorMessage } from "@/app/_components/ui/ErrorMessage";
-import { LinkButton } from "@/app/_components/ui/LinkButton";
+import { LinkButton } from "@/app/_components/ui/buttons/LinkButton";
 import { LoadingSpinner } from "@/app/_components/ui/LoadingSpinner";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
 import RequestManager from "@/app/_helpers/RequestManager";

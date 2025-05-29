@@ -4,7 +4,7 @@ import { CharacterForm } from "@/app/_components/dnd/CharacterForm";
 import { CharacterInfo } from "@/app/_components/dnd/CharacterInfo";
 import { ErrorMessage } from "@/app/_components/ui/ErrorMessage";
 import { ImageBox } from "@/app/_components/ui/ImageBox";
-import { LinkButton } from "@/app/_components/ui/LinkButton";
+import { LinkButton } from "@/app/_components/ui/buttons/LinkButton";
 import { LoadingWrapper } from "@/app/_components/ui/LoadingWrapper";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
 import RequestManager from "@/app/_helpers/RequestManager";
