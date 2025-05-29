@@ -3,6 +3,7 @@ import { Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { CreatingSpellSlotsTable } from "./class-specific/CreatingSpellSlotsTable";
+import { DescriptionList } from "../DescriptionList";
 
 interface FeatureCardProps {
     feature: DndItem & { levelInfo: LevelInfo };
@@ -22,9 +23,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => {
             </Grid>
         </Grid>
         <LoadingWrapper isLoading={isLoading} size={10}>
-            {featureInfo?.desc.map((desc: string, index: number) => (
-                <Typography variant="body1" textAlign="center" key={index}>{desc}</Typography>
-            ))}
+            <DescriptionList descriptions={featureInfo?.desc} />
             {featureInfo?.index === 'flexible-casting-creating-spell-slots' &&
                 <CreatingSpellSlotsTable creatingSpellSlots={feature.levelInfo.class_specific.creating_spell_slots} />
             }

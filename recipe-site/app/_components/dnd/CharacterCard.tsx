@@ -2,6 +2,8 @@ import Character from "@/app/_models/Character";
 import { Paper, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { ImageBox } from "../ui/ImageBox";
+import { getNameForClass } from "@/app/_constants/DndClass";
+import { getNameForRace } from "@/app/_constants/DndRace";
 
 interface CharacterCardProps {
     character: Character;
@@ -14,7 +16,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
             <ImageBox fileId={character.avatarId} altText="Character avatar" />
         </>}
         <Typography variant="h6" textAlign="center">{character.name}</Typography>
-        <Typography variant="body1" textAlign="center">{character.race}</Typography>
-        <Typography variant="body1" textAlign="center">{character.className}</Typography>
+        <Typography variant="body1" textAlign="center">{getNameForRace(character.race)}</Typography>
+        <Typography variant="body1" textAlign="center">{getNameForClass(character.className)}</Typography>
     </Paper>
 }

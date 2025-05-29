@@ -73,7 +73,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
     }
 
     const onUpload = async (fileMetadata: FileMetadata) => {
-        await RequestManager.post("/updateAvatar", { characterId: character?.characterId, fileId: fileMetadata.fileId });
+        await RequestManager.post(`/updateAvatar?characterId=${character?.characterId}&fileId=${fileMetadata.fileId}`, {});
         updateCharacters();
     }
 
@@ -123,7 +123,6 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                             label="Subrace"
                             fieldName="subrace"
                             options={subraceOptions}
-                            requiredMessage="Subrace is required"
                         />
                     </Grid>
                     <Grid size={6}>

@@ -1,3 +1,5 @@
+import { capitalize } from "@mui/material";
+
 export enum DndClass {
     Barbarian = 'barbarian',
     Bard = 'bard',
@@ -11,4 +13,8 @@ export enum DndClass {
     Sorcerer = 'sorcerer',
     Warlock = 'warlock',
     Wizard = 'wizard'
+}
+
+export function getNameForClass(dndClass: DndClass) {
+    return capitalize(dndClass);
 }
