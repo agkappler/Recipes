@@ -4,7 +4,7 @@ import { ProjectStatus } from "./Status";
 export const PROJECTS = [
     {
         name: "Site Infrastructure",
-        description: "This is for handy things to add to the site that will benefit all projects.",
+        description: "All things infrastructure! Covers the nitty gritty of deployments, hosting, and quality of life across all levels of the stack.",
         imageUrl: "https://via.placeholder.com/150",
         status: ProjectStatus.InProgress,
         icon: <Settings className="mr-1" />,
@@ -22,7 +22,7 @@ export const PROJECTS = [
     },
     {
         name: "Recipes",
-        description: "This is an app to hold recipes with custom portions.",
+        description: "Recipe management for custom calorie and quantity tracking across all ingredients.",
         imageUrl: "https://via.placeholder.com/150",
         status: ProjectStatus.InProgress,
         icon: <ListAlt className="mr-1" />,
@@ -34,7 +34,7 @@ export const PROJECTS = [
     },
     {
         name: "Daily Bounties",
-        description: "This converts repeatable tasks into bounties, similar to a video game.",
+        description: "Gamifying my recurring tasks and making it easy to generate ToDo lists for any occasion.",
         imageUrl: "https://via.placeholder.com/150",
         status: ProjectStatus.InProgress,
         icon: <Checklist className="mr-1" />,
@@ -42,10 +42,10 @@ export const PROJECTS = [
         todo: ["Task table", "Task Object", "Task List View"]
     },
     {
-        name: "DND Character Sheet",
-        description: "This is a simple character sheet for D&D to track abilities.",
+        name: "Character Catalog",
+        description: "Basically a digital player's handbook tailored to a single character's needs.",
         imageUrl: "https://via.placeholder.com/150",
-        status: ProjectStatus.Concept,
+        status: ProjectStatus.InProgress,
         icon: <Description className="mr-1" />,
         url: "/dnd",
         todo: ["Explore api", "Figure out desired features", "Add AI chatbot"]

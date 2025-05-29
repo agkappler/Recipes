@@ -18,5 +18,5 @@ export const StatusChip: React.FC<StatusChipProps> = ({ label }) => {
         }
     }
 
-    return <Chip label={label} color={getColor(label)} variant="outlined" />
+    return <Chip label={label} color={getColor(label)} variant="outlined" className="w-fit" />
 }

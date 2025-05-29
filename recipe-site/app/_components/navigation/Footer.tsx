@@ -1,11 +1,16 @@
 import { Box, Typography } from "@mui/material"
+import { GitHubButton } from "../ui/buttons/GitHubButton"
+import { LinkedInButton } from "../ui/buttons/LinkedInButton"
 
 export const Footer: React.FC = () => {
     return (
-        <footer className="bg-gray-100 mt-10">
-            <Box className="container" color="primary" width="100">
-                <Typography variant="body1" color="textSecondary" textAlign="center">
-                    {"This site is maintained by Alex 'Fargo' Kappler."}
+        <footer className="bg-gray-100 mt-10 flex justify-center">
+            <Box padding={1.5} textAlign="center">
+                <Typography variant="body2">
+                    Built by Alex 'Fargo' Kappler  {" "}|
+                    <LinkedInButton />
+                    |
+                    <GitHubButton />
                 </Typography>
             </Box>
         </footer>
