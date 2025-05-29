@@ -10,7 +10,6 @@ interface RacialTraitsProps {
 
 export const RacialTraits: React.FC<RacialTraitsProps> = ({ race }) => {
     const { data: racialTraits, isLoading } = useSWR(race, () => getRace(race));
-    if (racialTraits && racialTraits.trait_specific) console.log('racial traits', racialTraits);
     return <LoadingWrapper isLoading={isLoading}>
         <Typography variant="h5" textAlign="center">{racialTraits?.name}</Typography>
         {racialTraits?.traits.map((t: any, index: number) => (
