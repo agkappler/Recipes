@@ -1,5 +1,5 @@
-# Recipes
-Site for building and storing recipes with calories/servings and shopping lists.
+# Recipes aka Fargopolis
+This platform was built as a personal project to explore different technologies, manage my own recipes, gamify recurring tasks as bounties, and organize Dungeons & Dragons characters. It's also a way to showcase my work and experiment with new ideas. Feel free to explore and see what I've been working on!
 
 ## Startup
 #### Backend
