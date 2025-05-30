@@ -8,6 +8,8 @@ export enum Project {
     DnD = 3
 }
 
+export const FARGOPOLIS_BLURB = "This platform was built as a personal project to explore different technologies, manage my own recipes, gamify recurring tasks as bounties, and organize Dungeons & Dragons characters. It's also a way to showcase my work and experiment with new ideas. Feel free to explore and see what I've been working on!"
+
 export const PROJECTS = [
     {
         name: "Site Infrastructure",

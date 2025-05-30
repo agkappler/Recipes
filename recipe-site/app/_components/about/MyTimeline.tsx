@@ -1,84 +1,105 @@
+import { FARGOPOLIS_BLURB } from '@/app/_constants/Projects';
 import Timeline from '@mui/lab/Timeline';
 import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineItem from '@mui/lab/TimelineItem';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import { Typography } from '@mui/material';
 import Image from 'next/image';
+import { TimelineContentText } from './TimelineContentText';
 
 export const MyTimeline: React.FC = () => {
+    const imageStyle = { transform: "translateY(-35%)", height: "100px" };
     return (
-        <Timeline position="alternate" sx={{ marginTop: 3 }}>
+        <Timeline
+            position="alternate"
+            sx={{
+                // flexDirection: "column-reverse",
+                marginTop: 3,
+            }}>
             <TimelineItem sx={{ "::before": { display: "none" } }}>
                 <TimelineOppositeContent display="flex" flexDirection="row-reverse" gap={2} color="text.secondary">
                     <Typography variant="body1">2015</Typography>
-                    <Image src="/colgate_c.png" alt="Colgate C" width={100} height={100} style={{ transform: "translateY(-35%)" }} />
+                    <Image src="/colgate_c.png" alt="Colgate C" width={100} height={100} style={imageStyle} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
-                <TimelineContent>
-                    Enroll at Colgate University as an intended Math or Molecular Biology major.
-                </TimelineContent>
+                <TimelineContentText
+                    title="Enroll at Colgate University"
+                    content="I went into college thinking I would end up with either a Math or Molecular Biology degree, but I found out sophomore year that I really wasn't that interested in either of them."
+                />
             </TimelineItem>
             <TimelineItem>
                 <TimelineOppositeContent display="flex" gap={2} color="text.secondary">
                     <Typography variant="body1">2018</Typography>
-                    <Image src="/sciencelogic_logo.png" alt="Alarm.com Logo" width={200} height={100} style={{ transform: "translateY(-35%)" }} />
+                    <Image src="/sciencelogic_logo.png" alt="ScienceLogic Logo" width={200} height={100} style={imageStyle} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
-                <TimelineContent>Participate in a winter internship at ScienceLogic before studying abroad.</TimelineContent>
+                <TimelineContentText
+                    title="Winter internship at ScienceLogic"
+                    content="Squezed in an internship before going abroad for the spring semester of my junior year. My project was building a very simple Splunk-like log search tool using Python with the Django framework and some simple JavaScript with JQuery on the frontend."
+                />
             </TimelineItem>
             <TimelineItem>
                 <TimelineOppositeContent display="flex" flexDirection="row-reverse" gap={2} color="text.secondary">
                     <Typography variant="body1">2019</Typography>
-                    <Image src="/colgate_crest.png" alt="Colgate Crest" width={100} height={100} style={{ transform: "translateY(-35%)" }} />
+                    <Image src="/colgate_crest.png" alt="Colgate Crest" width={100} height={100} style={imageStyle} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
-                <TimelineContent>
-                    Graduate from Colgate University with a degree in Computer Science.
-                </TimelineContent>
+                <TimelineContentText
+                    title="Graduate from Colgate University"
+                    content="I ended up graduating Magna Cum Laude with a Bachelors Degree in Computer Science at the top of the department with a GPA of 3.9. I also received a minor in Geology and came pretty close to another in German, and I absolutely loved the liberal arts experience."
+                />
             </TimelineItem>
             <TimelineItem>
                 <TimelineOppositeContent display="flex" gap={2} color="text.secondary">
                     <Typography variant="body1">2019</Typography>
-                    <Image src="/alarm_logo.png" alt="Alarm.com Logo" width={100} height={50} style={{ transform: "translateY(-35%)" }} />
+                    <Image src="/alarm_logo.png" alt="Alarm.com Logo" width={125} height={100} style={imageStyle} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
-                <TimelineContent marginBottom={3}>Start work at Alarm.com as a Software Engineer.</TimelineContent>
+                <TimelineContentText
+                    title="Start work at Alarm.com"
+                    content="I started my career as a Software Engineer at Alarm.com, where I worked for 5 years delivering scalable full-stack web features in C#, SQL Server, and Ember.js. I led high-stakes projects, conducted design reviews, and helped migrate legacy code to a modern tech stack—all while mentoring junior engineers and driving collaborative development across teams."
+                />
             </TimelineItem>
-            <TimelineItem>
+            <TimelineItem sx={{ height: "225px" }}>
                 <TimelineOppositeContent display="flex" flexDirection="row-reverse" gap={2} color="text.secondary">
                     <Typography variant="body1">2024</Typography>
-                    <Image src="/wealthteamwork_logo.jpeg" alt="WealtTeamWork Logo" width={100} height={100} style={{ transform: "translateY(-35%)" }} />
+                    <Image src="/wealthteamwork_logo.jpeg" alt="WealtTeamWork Logo" width={100} height={100} style={imageStyle} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
-                <TimelineContent>Join WealthTeamWork as a Senior Software Engineer.</TimelineContent>
+                <TimelineContentText
+                    title="Join WealthTeamWork"
+                    content="I joined WealthTeamWork to work on an exciting new application in the financial management space. I contributed across the full stack, building web and mobile features using React, React Native, Java, and PostgreSQL. I led efforts to standardize code into shared components, reduce regression testing time through automation, and improve the development lifecycle with scripting and environment enhancements. I also actively influenced technical and product direction by shaping specs and designs."
+                />
             </TimelineItem>
-            <TimelineItem>
+            <TimelineItem sx={{ height: "150px" }}>
                 <TimelineOppositeContent display="flex" gap={2} color="text.secondary">
                     <Typography variant="body1">2025</Typography>
-                    <Image src="/logo.png" alt="Fargopolis Logo" width={200} height={100} style={{ transform: "translateY(-35%)" }} />
+                    <Image src="/logo.png" alt="Fargopolis Logo" width={200} height={100} style={imageStyle} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineDot />
                 </TimelineSeparator>
-                <TimelineContent>Deploy fargopolis.com as a public website to showcase my hobby projects.</TimelineContent>
+                <TimelineContentText
+                    title="Launch Fargopolis.com"
+                    content={FARGOPOLIS_BLURB}
+                />
             </TimelineItem>
         </Timeline>
     );

@@ -1,8 +1,8 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Divider, Grid, Paper, Typography } from "@mui/material";
 import Image from "next/image";
+import { MyTimeline } from "../_components/about/MyTimeline";
 import { GitHubButton } from "../_components/ui/buttons/GitHubButton";
 import { LinkedInButton } from "../_components/ui/buttons/LinkedInButton";
-import { MyTimeline } from "../_components/about/MyTimeline";
 
 export default function About() {
     return <Box className="flex flex-col justify-center align-items-center container mx-auto px-4 py-2">
@@ -14,9 +14,38 @@ export default function About() {
             <LinkedInButton />
             <GitHubButton />
         </Box>
-        <Typography variant="body1">
-            I began programming in Python as part of Comp Sci 101 at Colgate University and quickly discovered a passion for the problem solving involved in software development. I then continued my coursework with Java and even got into some ARMv8. During my junior year I participated in a winter internship at ScienceLogic where I worked with the Django framework and Javascript and the jQuery library. I went on to graduate with a degree in Computer Science and started a position as a Software Engineer at Alarm.com where I worked as a full stack engineer with Microsoft SQL Server, C#, and the Ember.js framework. I eventually moved on from Alarm.com as a Senior Software Engineer 5 years later to join WealthTeamWork and contribute to an exciting new application using PostgreSQL, Java with Springboot, React, and React Native.
+        <Divider className="pb-4" textAlign="center">Intro</Divider>
+        <Typography variant="body1" marginBottom={2} textAlign="center">
+            {"I’m a full-stack software engineer with a strong foundation in Computer Science from Colgate University and over five years of industry experience. I’ve contributed to enterprise and startup teams alike, building scalable web and mobile applications using technologies like Java, React, React Native, and PostgreSQL. My journey began with Python and Java in college and has since evolved into a passion for building clean, maintainable systems that solve real-world problems."}
         </Typography>
+        {/* <Accordion slots={{ root: Box }}>
+            <AccordionSummary slots={{ root: Box }}> */}
+        <Divider className="pb-4" textAlign="center">Timeline</Divider>
+        {/* </AccordionSummary>
+            <AccordionDetails> */}
         <MyTimeline />
+        {/* </AccordionDetails>
+        </Accordion> */}
+        <Divider className="pb-4 w-full" sx={{ width: "100%" }} textAlign="center">Interests</Divider>
+        <Grid container spacing={2}>
+            <Grid size={4}>
+                <Paper elevation={3} className="p-2 text-center">
+                    <Typography variant="h6">Reading</Typography>
+                    <Typography variant="body1">{"I've always been a big reader and I recently finished working my way through everything in the Cosmere from Brandon Sanderson with my highlight being everything from The Stormlight Archive."}</Typography>
+                </Paper>
+            </Grid>
+            <Grid size={4}>
+                <Paper elevation={3} className="p-2 text-center">
+                    <Typography variant="h6">Sports</Typography>
+                    <Typography variant="body1">{"I enjoy being active and playing Soccer and Ultimate Frisbee when the weather permits and Nordic and Alpine skiing in the winter."}</Typography>
+                </Paper>
+            </Grid>
+            <Grid size={4}>
+                <Paper elevation={3} className="p-2 text-center">
+                    <Typography variant="h6">Misc.</Typography>
+                    <Typography variant="body1">{"F1 (Ferrari, even though they sometimes hurt me emotionally), Video Games (Destiny 2 and The Finals), Dan Carlin's Hardcore History podcast."}</Typography>
+                </Paper>
+            </Grid>
+        </Grid>
     </Box>
 }
