@@ -29,7 +29,6 @@ public class SecretManager {
 	    }
 
 	    String secret = getSecretValueResponse.secretString();
-	    System.out.println(secret);
 	    return secret;
 	    // Your code goes here.
 	}

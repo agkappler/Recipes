@@ -11,7 +11,11 @@ interface ImageBoxProps {
 }
 
 export const ImageBox: React.FC<ImageBoxProps> = ({ fileId, altText }) => {
-    const { data: fileMetadata, isLoading } = useSWR<FileMetadata>(`/fileUrl/${fileId}`, () => RequestManager.get(`/fileUrl/${fileId}`));
+    const errorRetry = (error: any, key: any, config: any, revalidate: any, { retryCount }: { retryCount: number }) => {
+        if (retryCount >= 2) return;
+        setTimeout(() => revalidate({ retryCount }), 5000);
+    }
+    const { data: fileMetadata, isLoading, error } = useSWR<FileMetadata>(`/fileUrl/${fileId}`, () => RequestManager.get(`/fileUrl/${fileId}`), { onErrorRetry: errorRetry });
     return <LoadingWrapper isLoading={isLoading} size={20}>
         <Box margin="auto" borderRadius={100} overflow="hidden" width={100}>
             {fileMetadata?.url && <Image src={fileMetadata.url} alt={altText} width={200} height={200} />}
