@@ -1,9 +1,10 @@
-import Character from "@/app/_models/Character";
-import { Paper, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
-import { ImageBox } from "../ui/ImageBox";
 import { getNameForClass } from "@/app/_constants/DndClass";
 import { getNameForRace } from "@/app/_constants/DndRace";
+import Character from "@/app/_models/Character";
+import { Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { ImageBox } from "../ui/ImageBox";
+import { ModelCard } from "../ui/ModelCard";
 
 interface CharacterCardProps {
     character: Character;
@@ -11,13 +12,12 @@ interface CharacterCardProps {
 
 export const CharacterCard: React.FC<CharacterCardProps> = ({ character }) => {
     const router = useRouter();
-    return <Paper className="p-2 flex flex-col h-full" elevation={3} role="button" onClick={() => router.push(`/dnd/${character.characterId}`)}>
+    return <ModelCard title={character.name} onClick={() => router.push(`/dnd/${character.characterId}`)}>
         {character.avatarId && <>
             <ImageBox fileId={character.avatarId} altText="Character avatar" />
         </>}
-        <Typography variant="h6" textAlign="center">{character.name}</Typography>
-        <Typography variant="body1" textAlign="center" color="textSecondary">
+        <Typography variant="body1" color="textSecondary">
             {getNameForRace(character.race)} | {getNameForClass(character.className)}
         </Typography>
-    </Paper>
+    </ModelCard>
 }

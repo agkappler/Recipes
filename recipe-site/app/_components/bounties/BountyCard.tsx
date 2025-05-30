@@ -1,13 +1,15 @@
 import { ProjectStatus } from "@/app/_constants/Status";
 import Bounty from "@/app/_models/Bounty";
-import { Paper, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
+import { ModelCard } from "../ui/ModelCard";
 import { StatusChip } from "../ui/StatusChip";
 
 interface BountyCardProps {
     bounty: Bounty;
+    onClick: () => void;
 }
 
-export const BountyCard: React.FC<BountyCardProps> = ({ bounty }) => {
+export const BountyCard: React.FC<BountyCardProps> = ({ bounty, onClick }) => {
     const getStatus = (status: string) => {
         switch (status) {
             case "COMPLETE":
@@ -20,9 +22,8 @@ export const BountyCard: React.FC<BountyCardProps> = ({ bounty }) => {
         }
     }
 
-    return <Paper className="p-2 flex flex-col items-center h-full" elevation={3}>
-        <Typography variant="h6" textAlign="center">{bounty.title}</Typography>
+    return <ModelCard title={bounty.title} onClick={onClick}>
         <StatusChip label={getStatus(bounty.status)} />
-        <Typography variant="body1" textAlign="center">{bounty.description}</Typography>
-    </Paper>
+        <Typography variant="body1">{bounty.description}</Typography>
+    </ModelCard>
 }

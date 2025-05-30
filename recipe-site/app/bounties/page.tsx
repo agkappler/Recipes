@@ -50,14 +50,14 @@ export default function BountiesPage() {
                 ))}
             </LoadingWrapper>
         </Box>
-        <Grid container spacing={1} className="mx-2" alignItems="stretch">
+        <Grid container spacing={1} className="mx-2">
             <LoadingWrapper isLoading={isLoadingBounties}>
                 <Grid size={3}>
                     <AddModelCard onClick={() => setIsOpen(true)} title="Post Bounty" />
                 </Grid>
                 {bounties?.map(bounty => (
-                    <Grid size={3} key={bounty.bountyId} onClick={() => onBountyClick(bounty)} role="button">
-                        <BountyCard key={bounty.bountyId} bounty={bounty} />
+                    <Grid size={3} key={bounty.bountyId}>
+                        <BountyCard bounty={bounty} onClick={() => onBountyClick(bounty)} />
                     </Grid>
                 ))}
             </LoadingWrapper>

@@ -7,7 +7,7 @@ export const Footer: React.FC = () => {
         <footer className="bg-gray-100 mt-10 flex justify-center">
             <Box padding={1.25} textAlign="center">
                 <Typography variant="body2">
-                    {"Built by Alex 'Fargo' Kappler"}|
+                    {"Built by Alex 'Fargo' Kappler  |"}
                     <LinkedInButton />
                     |
                     <GitHubButton />
