@@ -27,11 +27,11 @@ export default function Dnd() {
         <Box className="px-2">
             <LoadingWrapper isLoading={isLoading}>
                 <Grid container spacing={1}>
-                    <Grid size={3}>
+                    <Grid size={{ sm: 3, xs: 12 }}>
                         <AddModelCard onClick={() => setIsOpen(true)} title="Create Character" />
                     </Grid>
                     {characters?.map((c) => (
-                        <Grid key={c.characterId} size={3}>
+                        <Grid key={c.characterId} size={{ sm: 3, xs: 12 }}>
                             <CharacterCard character={c} />
                         </Grid>
                     ))}

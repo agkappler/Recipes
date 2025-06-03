@@ -13,7 +13,7 @@ export const FARGOPOLIS_BLURB = "This platform was built as a personal project t
 export const PROJECTS = [
     {
         name: "Site Infrastructure",
-        description: "All things infrastructure! Covers the nitty gritty of deployments, hosting, and quality of life across all levels of the stack.",
+        description: "All things infrastructure! Covers the nitty gritty of deployments, hosting, and QoL across all levels of the stack.",
         imageUrl: "https://via.placeholder.com/150",
         status: ProjectStatus.InProgress,
         icon: <Settings className="mr-1" />,

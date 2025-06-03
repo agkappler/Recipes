@@ -56,14 +56,14 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeD
                             requiredMessage="Name is required"
                         />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <NumberInput
                             label="Prep Time (minutes)"
                             fieldName="prepTimeMinutes"
                             requiredMessage="Prep Time is required"
                         />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                         <NumberInput
                             label="Cook Time (minutes)"
                             fieldName="cookTimeMinutes"

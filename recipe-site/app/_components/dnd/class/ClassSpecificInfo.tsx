@@ -2,7 +2,6 @@ import { DndClass } from "@/app/_constants/DndClass";
 import { LevelInfo } from "@/app/api/dnd5eapi";
 import { InfoOutlineSharp } from "@mui/icons-material";
 import { Box, Chip } from "@mui/material";
-import { CreatingSpellSlotsTable } from "./class-specific/CreatingSpellSlotsTable";
 
 interface ClassSpecificInfoProps {
     levelInfo: LevelInfo;
@@ -102,7 +101,7 @@ export const ClassSpecificInfo: React.FC<ClassSpecificInfoProps> = ({ levelInfo 
             classInfo = [];
     }
 
-    return <Box display="flex" justifyContent="center" gap={2} width="100">
+    return <Box display="flex" justifyContent="center" flexWrap="wrap" gap={2} width="100">
         {classInfo.map((item, index) => (
             <Chip key={index} label={`${item.label}: ${item.value}`} />
         ))}

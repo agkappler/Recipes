@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.recipes.dto.ImageUrl;
 import com.recipes.models.DndCharacter;
 import com.recipes.services.CharacterService;
 import com.recipes.services.FileService;
@@ -61,7 +62,7 @@ public class CharacterController extends BaseApiController {
     }
     
     @PostMapping("/updateAvatar")
-    public ResponseEntity<String> updateAvatar(
+    public ResponseEntity<ImageUrl> updateAvatar(
     		@RequestParam("characterId") Integer characterId,
     		@RequestParam("fileId") Integer fileId
 	) throws Exception {
@@ -71,6 +72,6 @@ public class CharacterController extends BaseApiController {
 		characterService.updateAvatar(characterId, fileId);
 		String avatarUrl = fileService.getUrlForFileById(fileId);
 		
-    	return ResponseEntity.ok(avatarUrl);
+    	return ResponseEntity.ok(new ImageUrl(avatarUrl));
     }
 }

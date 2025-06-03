@@ -33,14 +33,14 @@ export default function Recipes() {
         <PageHeader title="All Recipes" rightContainer={<LinkButton url={`/projects/${Project.Recipes}`} label="Project Details" />} />
         <Box className="px-2">
             <Grid container spacing={1}>
-                <Grid size={4}>
+                <Grid size={{ sm: 4, xs: 12 }}>
                     <AddModelCard
                         onClick={() => setIsOpen(true)}
                         title={'Add Recipe'}
                     />
                 </Grid>
                 {recipes.map(r => (
-                    <Grid size={4} key={r.recipeId}>
+                    <Grid size={{ sm: 4, xs: 12 }} key={r.recipeId}>
                         <RecipeCard recipeData={r} />
                     </Grid>
                 ))}

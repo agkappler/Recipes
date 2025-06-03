@@ -10,20 +10,16 @@ import Image from 'next/image';
 import { TimelineContentText } from './TimelineContentText';
 
 export const MyTimeline: React.FC = () => {
-    const imageStyle = { transform: "translateY(-35%)", height: "100px" };
+    const imageStyle = { height: "100px" };
     return (
-        <Timeline
-            position="alternate"
-            sx={{
-                // flexDirection: "column-reverse",
-                marginTop: 3,
-            }}>
+        <Timeline position="alternate">
             <TimelineItem sx={{ "::before": { display: "none" } }}>
-                <TimelineOppositeContent display="flex" flexDirection="row-reverse" gap={2} color="text.secondary">
+                <TimelineOppositeContent display="flex" flexDirection="row-reverse" alignItems="center" gap={2} color="text.secondary">
                     <Typography variant="body1">2015</Typography>
                     <Image src="/colgate_c.png" alt="Colgate C" width={100} height={100} style={imageStyle} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
+                    <TimelineConnector />
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
@@ -33,11 +29,12 @@ export const MyTimeline: React.FC = () => {
                 />
             </TimelineItem>
             <TimelineItem>
-                <TimelineOppositeContent display="flex" gap={2} color="text.secondary">
+                <TimelineOppositeContent display="flex" alignItems="center" gap={2} color="text.secondary">
                     <Typography variant="body1">2018</Typography>
                     <Image src="/sciencelogic_logo.png" alt="ScienceLogic Logo" width={200} height={100} style={imageStyle} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
+                    <TimelineConnector />
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
@@ -47,11 +44,12 @@ export const MyTimeline: React.FC = () => {
                 />
             </TimelineItem>
             <TimelineItem>
-                <TimelineOppositeContent display="flex" flexDirection="row-reverse" gap={2} color="text.secondary">
+                <TimelineOppositeContent display="flex" flexDirection="row-reverse" alignItems="center" gap={2} color="text.secondary">
                     <Typography variant="body1">2019</Typography>
                     <Image src="/colgate_crest.png" alt="Colgate Crest" width={100} height={100} style={imageStyle} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
+                    <TimelineConnector />
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
@@ -61,11 +59,12 @@ export const MyTimeline: React.FC = () => {
                 />
             </TimelineItem>
             <TimelineItem>
-                <TimelineOppositeContent display="flex" gap={2} color="text.secondary">
+                <TimelineOppositeContent display="flex" alignItems="center" gap={2} color="text.secondary">
                     <Typography variant="body1">2019</Typography>
-                    <Image src="/alarm_logo.png" alt="Alarm.com Logo" width={125} height={100} style={imageStyle} />
+                    <Image src="/alarm_logo.png" alt="Alarm.com Logo" width={100} height={100} style={{ ...imageStyle, width: "120px" }} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
+                    <TimelineConnector />
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
@@ -74,12 +73,13 @@ export const MyTimeline: React.FC = () => {
                     content="I started my career as a Software Engineer at Alarm.com, where I worked for 5 years delivering scalable full-stack web features in C#, SQL Server, and Ember.js. I led high-stakes projects, conducted design reviews, and helped migrate legacy code to a modern tech stack—all while mentoring junior engineers and driving collaborative development across teams."
                 />
             </TimelineItem>
-            <TimelineItem sx={{ height: "225px" }}>
-                <TimelineOppositeContent display="flex" flexDirection="row-reverse" gap={2} color="text.secondary">
+            <TimelineItem>
+                <TimelineOppositeContent display="flex" flexDirection="row-reverse" alignItems="center" gap={2} color="text.secondary">
                     <Typography variant="body1">2024</Typography>
-                    <Image src="/wealthteamwork_logo.jpeg" alt="WealtTeamWork Logo" width={100} height={100} style={imageStyle} />
+                    <Image src="/wealthteamwork_logo.jpeg" alt="WealtTeamWork Logo" width={110} height={100} style={{ ...imageStyle, }} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
+                    <TimelineConnector />
                     <TimelineDot />
                     <TimelineConnector />
                 </TimelineSeparator>
@@ -88,13 +88,15 @@ export const MyTimeline: React.FC = () => {
                     content="I joined WealthTeamWork to work on an exciting new application in the financial management space. I contributed across the full stack, building web and mobile features using React, React Native, Java, and PostgreSQL. I led efforts to standardize code into shared components, reduce regression testing time through automation, and improve the development lifecycle with scripting and environment enhancements. I also actively influenced technical and product direction by shaping specs and designs."
                 />
             </TimelineItem>
-            <TimelineItem sx={{ height: "150px" }}>
-                <TimelineOppositeContent display="flex" gap={2} color="text.secondary">
+            <TimelineItem>
+                <TimelineOppositeContent display="flex" alignItems="center" gap={2} color="text.secondary">
                     <Typography variant="body1">2025</Typography>
-                    <Image src="/logo.png" alt="Fargopolis Logo" width={200} height={100} style={imageStyle} />
+                    <Image src="/logo.png" alt="Fargopolis Logo" width={100} height={100} style={{ ...imageStyle, width: "120px" }} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
+                    <TimelineConnector />
                     <TimelineDot />
+                    <TimelineConnector />
                 </TimelineSeparator>
                 <TimelineContentText
                     title="Launch Fargopolis.com"

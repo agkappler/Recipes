@@ -7,9 +7,9 @@ interface TimelineContentTextProps {
 }
 
 export const TimelineContentText: React.FC<TimelineContentTextProps> = ({ title, content }) => {
-    return <TimelineContent style={{ transform: "translateY(-35%)" }}>
+    return <TimelineContent>
         <Typography variant="subtitle1" textAlign="center">{title}</Typography>
-        <Typography variant="body2" textAlign="center" marginBottom={2}>
+        <Typography variant="body2" textAlign="center">
             {content}
         </Typography>
     </TimelineContent>

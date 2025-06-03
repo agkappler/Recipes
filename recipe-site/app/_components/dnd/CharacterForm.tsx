@@ -9,7 +9,7 @@ import { ComboBoxInput } from "../inputs/ComboBoxInput";
 import { DropdownInput } from "../inputs/DropdownInput";
 import { NumberInput } from "../inputs/NumberInput";
 import { TextInput } from "../inputs/TextInput";
-import { FileUploadButton } from "../inputs/FileUploadButton";
+import { FileUpload } from "../inputs/FileUpload";
 import { FileRole } from "@/app/_constants/FileRole";
 import FileMetadata from "@/app/_models/FileMetadata";
 
@@ -44,7 +44,6 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
     //     classesOpen5e = classes?.map(c => ({ value: c.slug, label: c.name })) ?? [];
     // const subracesOpen5e = races.find(r => r.slug === "dwarf")?.subraces?.map((s: any) => ({ value: s.slug, label: s.name })) ?? [],
     //     subclassesOpen5e = classes.find(r => r.slug === "monk")?.archetypes?.map((a: any) => ({ value: a.slug, label: a.name })) ?? [];
-
 
     const raceOptions = (races?.results ?? []).map(race => ({ value: race.index, label: race.name })),
         classOptions = (classes?.results ?? []).map(classOption => ({ value: classOption.index, label: classOption.name }));
@@ -84,25 +83,28 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                 onSubmit={onSubmit}
                 isSubmitting={isLoading}
                 defaultValues={character}
-                closeForm={onClose}
+                closeForm={closeForm}
                 errorMessage={errorMessage}
             >
                 <Grid container spacing={2} className="mb-2">
-                    <Grid size={6}>
+                    {isEdit && <Grid size={12}>
+                        <FileUpload label="Upload Avatar" fileRole={FileRole.CharacterAvatar} onUpload={onUpload} />
+                    </Grid>}
+                    <Grid size={{ sm: 6, xs: 12 }}>
                         <TextInput
                             label="Name"
                             fieldName="name"
                             requiredMessage="Name is required"
                         />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={{ sm: 6, xs: 12 }}>
                         <NumberInput
                             label="Level"
                             fieldName="level"
                             requiredMessage="Level is required"
                         />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={{ sm: 6, xs: 12 }}>
                         <DropdownInput
                             label="Race"
                             fieldName="race"
@@ -110,7 +112,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                             requiredMessage="Race is required"
                         />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={{ sm: 6, xs: 12 }}>
                         <DropdownInput
                             label="Class"
                             fieldName="className"
@@ -118,14 +120,14 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                             requiredMessage="Class is required"
                         />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={{ sm: 6, xs: 12 }}>
                         <DropdownInput
                             label="Subrace"
                             fieldName="subrace"
                             options={subraceOptions}
                         />
                     </Grid>
-                    <Grid size={6}>
+                    <Grid size={{ sm: 6, xs: 12 }}>
                         <DropdownInput
                             label="Subclass"
                             fieldName="subclassName"
@@ -133,9 +135,6 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
                         />
                     </Grid>
                 </Grid>
-                {isEdit &&
-                    <FileUploadButton label="Upload Avatar" fileRole={FileRole.CharacterAvatar} onUpload={onUpload} />
-                }
             </BasicForm>
         </DialogContent>
     </Modal>)

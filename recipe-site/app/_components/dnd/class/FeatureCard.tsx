@@ -1,12 +1,13 @@
-import { DndItem, getRelativeUrlInfo, LevelInfo } from "@/app/api/dnd5eapi";
+import { getRelativeUrlInfo } from "@/app/api/dnd5eapi";
 import { Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
-import { CreatingSpellSlotsTable } from "./class-specific/CreatingSpellSlotsTable";
 import { DescriptionList } from "../DescriptionList";
+import { CreatingSpellSlotsTable } from "./class-specific/CreatingSpellSlotsTable";
+import { FeatureAndLevel } from "./ClassFeatures";
 
 interface FeatureCardProps {
-    feature: DndItem & { levelInfo: LevelInfo };
+    feature: FeatureAndLevel;
 }
 
 export const FeatureCard: React.FC<FeatureCardProps> = ({ feature }) => {

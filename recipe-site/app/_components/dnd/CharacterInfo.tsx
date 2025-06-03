@@ -1,9 +1,10 @@
+import { MOBILE_BREAK } from "@/app/_constants/Media";
 import Character from "@/app/_models/Character";
 import { getLevelInfoForClass, LevelInfo } from "@/app/api/dnd5eapi";
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Box, Tab } from "@mui/material";
+import { Box, MenuItem, Select, Tab, useMediaQuery } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 import { LoadingWrapper } from "../ui/LoadingWrapper";
@@ -18,21 +19,37 @@ interface CharacterInfoProps {
 export const CharacterInfo: React.FC<CharacterInfoProps> = ({ character }) => {
     const { data: levelInfos, isLoading: isLoadingClassInfo } = useSWR<LevelInfo[]>(`/class/${character.className}/levels`, () => getLevelInfoForClass(character.className));
     const [value, setValue] = useState('1');
-    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+    const handleChange = (_: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };
+
+    const isMobile = useMediaQuery(`(max-width:${MOBILE_BREAK})`);
+    const characterTabs = [
+        { label: "Class Features", value: "1" },
+        { label: "Racial Traits", value: "2" },
+        { label: "Spells", value: "3" },
+        { label: "Weapons", value: "4" },
+        { label: "Items", value: "5" },
+        { label: "Proficiencies", value: "6" },
+    ];
 
     return <LoadingWrapper isLoading={isLoadingClassInfo}>
         <TabContext value={value}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'center' }}>
-                <TabList onChange={handleChange} aria-label="Character info tabs">
-                    <Tab label="Class Features" value="1" />
-                    <Tab label="Racial Traits" value="2" />
-                    <Tab label="Spells" value="3" />
-                    <Tab label="Weapons" value="4" />
-                    <Tab label="Items" value="5" />
-                    <Tab label="Proficiencies" value="6" />
-                </TabList>
+                {isMobile
+                    ? <Select
+                        value={value}
+                        onChange={(e) => setValue(e.target.value)}
+                    >
+                        {characterTabs.map((tab) => (
+                            <MenuItem key={tab.value} value={tab.value}>{tab.label}</MenuItem>
+                        ))}
+                    </Select>
+                    : <TabList onChange={handleChange} aria-label="Character info tabs">
+                        {characterTabs.map((tab) => (
+                            <Tab key={tab.value} label={tab.label} value={tab.value} />
+                        ))}
+                    </TabList>}
             </Box>
             <TabPanel value="1">
                 <ClassFeatures levelInfos={levelInfos} currentLevel={character.level} />

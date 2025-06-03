@@ -28,19 +28,19 @@ export default function About() {
         </Accordion> */}
         <Divider className="pb-4 w-full" sx={{ width: "100%" }} textAlign="center">Interests</Divider>
         <Grid container spacing={2}>
-            <Grid size={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
                 <Paper elevation={3} className="p-2 text-center">
                     <Typography variant="h6">Reading</Typography>
                     <Typography variant="body1">{"I've always been a big reader and I recently finished working my way through everything in the Cosmere from Brandon Sanderson with my highlight being everything from The Stormlight Archive."}</Typography>
                 </Paper>
             </Grid>
-            <Grid size={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
                 <Paper elevation={3} className="p-2 text-center">
                     <Typography variant="h6">Sports</Typography>
                     <Typography variant="body1">{"I enjoy being active and playing Soccer and Ultimate Frisbee when the weather permits and Nordic and Alpine skiing in the winter."}</Typography>
                 </Paper>
             </Grid>
-            <Grid size={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
                 <Paper elevation={3} className="p-2 text-center">
                     <Typography variant="h6">Misc.</Typography>
                     <Typography variant="body1">{"F1 (Ferrari, even though they sometimes hurt me emotionally), Video Games (Destiny 2 and The Finals), Dan Carlin's Hardcore History podcast."}</Typography>
