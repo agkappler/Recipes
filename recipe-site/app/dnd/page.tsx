@@ -1,10 +1,12 @@
 'use client';
 
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 import { CharacterCard } from "../_components/dnd/CharacterCard";
 import { CharacterForm } from "../_components/dnd/CharacterForm";
+import { ClassList } from "../_components/dnd/class/ClassList";
+import { RaceList } from "../_components/dnd/race/RaceList";
 import { AddModelCard } from "../_components/ui/AddModelCard";
 import { LinkButton } from "../_components/ui/buttons/LinkButton";
 import { LoadingWrapper } from "../_components/ui/LoadingWrapper";
@@ -23,8 +25,9 @@ export default function Dnd() {
     const { data: characters, isLoading, mutate } = useSWR<Character[]>("/characters", () => RequestManager.get("/characters"));
 
     return (<>
-        <PageHeader title="Character Catalog" rightContainer={<LinkButton url={`/projects/${Project.DnD}`} label="Project Details" />} />
+        <PageHeader title="Dungeons & Dragons" rightContainer={<LinkButton url={`/projects/${Project.DnD}`} label="Project Details" />} />
         <Box className="px-2">
+            <Typography variant="h5" textAlign="center">Character Catalog</Typography>
             <LoadingWrapper isLoading={isLoading}>
                 <Grid container spacing={1}>
                     <Grid size={{ sm: 3, xs: 12 }}>
@@ -37,6 +40,12 @@ export default function Dnd() {
                     ))}
                 </Grid>
             </LoadingWrapper>
+        </Box>
+        <Box className="px-2 mt-2">
+            <RaceList />
+        </Box>
+        <Box className="px-2 mt-2">
+            <ClassList />
         </Box>
         <CharacterForm
             isOpen={isOpen}

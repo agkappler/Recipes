@@ -52,7 +52,7 @@ export const CharacterInfo: React.FC<CharacterInfoProps> = ({ character }) => {
                     </TabList>}
             </Box>
             <TabPanel value="1">
-                <ClassFeatures levelInfos={levelInfos} currentLevel={character.level} />
+                <ClassFeatures currentLevel={character.level} className={character.className} />
             </TabPanel>
             <TabPanel value="2">
                 <RacialTraits race={character.race} />

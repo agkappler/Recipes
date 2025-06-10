@@ -12,8 +12,7 @@ interface RacialTraitCardProps {
 
 export const RacialTraitCard: React.FC<RacialTraitCardProps> = ({ trait }) => {
     const { data: traitInfo, isLoading } = useSWR(trait.index, () => getRelativeUrlInfo(trait.url));
-    if (traitInfo) console.log('trait info', traitInfo);
-    return <Paper elevation={3} className="p-2">
+    return <Paper elevation={3} className="p-2 m-2">
         <Typography variant="subtitle1" fontWeight="bold" textAlign="center">{trait.name}</Typography>
         <LoadingWrapper isLoading={isLoading} size={20}>
             {traitInfo && <>
@@ -23,7 +22,7 @@ export const RacialTraitCard: React.FC<RacialTraitCardProps> = ({ trait }) => {
                 {traitInfo.trait_specific && (
                     traitInfo.index === 'draconic-ancestry'
                         ? <DraconicAncestryTable subOptions={traitInfo.trait_specific.subtrait_options} />
-                        : <OptionsList subOptions={traitInfo.trait_specific.subtrait_options} />
+                        : <OptionsList subOptions={traitInfo.trait_specific.subtrait_options ?? traitInfo.trait_specific.spell_options} />
                 )}
             </>}
         </LoadingWrapper>

@@ -64,6 +64,10 @@ export async function getSubclasses(className: string): Promise<BaseDndResponse>
     return fetch(BASE_URL + "/classes/" + className + "/subclasses").then((response) => response.json());
 }
 
+export async function getLevelInfoForSubclass(className: string) {
+    return fetch(BASE_URL + "/subclasses/" + className + "/levels").then((response) => response.json());
+}
+
 /// RACES
 export async function getRaces(): Promise<BaseDndResponse> {
     return fetch(BASE_URL + "/races").then((response) => response.json());
@@ -75,4 +79,8 @@ export async function getRace(race: string): Promise<any> {
 
 export async function getSubraces(race: string): Promise<BaseDndResponse> {
     return fetch(BASE_URL + "/races/" + race + "/subraces").then((response) => response.json());
+}
+
+export async function getSubraceTraits(subrace: string): Promise<any> {
+    return fetch(BASE_URL + "/subraces/" + subrace + "/traits").then((response) => response.json());
 }
