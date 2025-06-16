@@ -6,7 +6,7 @@ interface TextInputProps extends BaseInputProps {
     multilineRows?: number;
 }
 
-export const TextInput: React.FC<TextInputProps> = ({ label, fieldName, requiredMessage, multilineRows }) => {
+export const TextInput: React.FC<TextInputProps> = ({ label, fieldName, requiredMessage, multilineRows, onChange }) => {
     const { register, formState: { errors } } = useFormContext();
     return <TextField
         fullWidth
@@ -16,5 +16,6 @@ export const TextInput: React.FC<TextInputProps> = ({ label, fieldName, required
         helperText={errors?.[fieldName] ? errors[fieldName]?.message as string : ""}
         multiline={multilineRows !== undefined}
         rows={multilineRows}
+        onChange={onChange}
     />
 }

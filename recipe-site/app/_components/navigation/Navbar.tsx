@@ -20,6 +20,7 @@ export const Navbar: React.FC = () => {
         { label: "DnD", path: "/dnd" },
         { label: "About", path: "/about" },
         { label: "Login", path: "/login" },
+        { label: "Split Check", path: "/split-check" }
     ];
 
     // Determine the active tab based on the current pathname
@@ -29,6 +30,7 @@ export const Navbar: React.FC = () => {
         if (pathname.startsWith('/dnd')) return 2;
         if (pathname.startsWith('/about')) return 3;
         if (pathname.startsWith('/login')) return 4;
+        if (pathname.startsWith('/split-check')) return 5;
         return false; // No tab selected for other routes
     };
 
