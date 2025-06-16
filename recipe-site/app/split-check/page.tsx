@@ -8,9 +8,10 @@ import { NumberInput } from "../_components/inputs/NumberInput";
 import { SwitchInput } from "../_components/inputs/SwitchInput";
 import { TextInput } from "../_components/inputs/TextInput";
 import { PageHeader } from "../_components/ui/PageHeader";
+import { DropdownInput } from "../_components/inputs/DropdownInput";
 
 interface Person { name: string; total: number; }
-interface SharedItem { name: string; value: number; }
+interface SharedItem { name: string; value: number; splitBy: string[]; }
 interface CheckData {
     people: Person[];
     tipPercentage: number;
@@ -19,50 +20,75 @@ interface CheckData {
     includeTaxInTip: boolean;
 }
 
+interface TotalInfo {
+    name?: string;
+    total: number;
+    preTaxTotal: number;
+    tax: number;
+    subTotal: number;
+    tip: number;
+}
+
 function formatCurrency(value: number): string {
     return `$${value.toFixed(2)}`;
 }
 
+const EVERYBODY = "everybody";
+
 export default function SplitCheckPage() {
     const defaultPeople = [{ name: "", total: 0 }];
     const methods = useForm<CheckData>({ defaultValues: { tipPercentage: 20, taxAmount: 0, sharedItems: [], people: defaultPeople, includeTaxInTip: true } });
-    const [people, setPeople] = useState<Person[]>(defaultPeople);
+    const people = methods.watch("people");
+    const sharedItems = methods.watch("sharedItems");
     const handlePersonChange = (index: number, field: "name" | "total", value: string | number) => {
-        setPeople((prev) =>
-            prev.map((f, i) => (i === index ? { ...f, [field]: value } : f))
-        );
+        methods.setValue("people", people.map((f, i) => (i === index ? { ...f, [field]: value } : f)));
     };
-    const addPerson = () => setPeople((prev) => [...prev, { name: "", total: 0 }]);
-    const removePerson = (index: number) => setPeople((prev) => prev.filter((_, i) => i !== index));
+    const addPerson = () => methods.setValue("people", [...people, { name: "", total: 0 }]);
+    const removePerson = (index: number) => methods.setValue("people", people.filter((_, i) => i !== index));
 
-    const [sharedItems, setSharedItems] = useState<any[]>([]);
-    const handleSharedItemChange = (index: number, field: "name" | "value", value: string | number) => {
-        setSharedItems((prev) =>
-            prev.map((f, i) => (i === index ? { ...f, [field]: value } : f))
-        );
+    const handleSharedItemChange = (index: number, field: "name" | "value" | "splitBy", value: string | number | string[]) => {
+        methods.setValue("sharedItems", sharedItems.map((f, i) => (i === index ? { ...f, [field]: value } : f)));
     };
-    const addSharedItem = () => setSharedItems((prev) => [...prev, { name: "", total: 0 }]);
-    const removeSharedItem = (index: number) => setSharedItems((prev) => prev.filter((_, i) => i !== index));
+    const addSharedItem = () => methods.setValue("sharedItems", [...sharedItems, { name: "", value: 0, splitBy: [EVERYBODY] }]);
+    const removeSharedItem = (index: number) => methods.setValue("sharedItems", sharedItems.filter((_, i) => i !== index));
 
-    const [totals, setTotals] = useState<Person[]>([]);
-    const [total, setTotal] = useState(0);
+    const [individualTotals, setIndividualTotals] = useState<TotalInfo[]>([]);
+    const [totalInfo, setTotalInfo] = useState(0);
+    const mapSharedItemsToPeople = (data: CheckData) => {
+        return data.sharedItems.reduce((map, sharedItem) => {
+            let people = sharedItem.splitBy;
+            if (sharedItem.splitBy.includes(EVERYBODY)) {
+                people = data.people.map((person) => person.name);
+            }
+
+            const sharedItemValue = parseFloat(sharedItem.value.toString()) / people.length;
+            people.forEach((person) => {
+                if (!map[person]) {
+                    map[person] = 0;
+                }
+                map[person] = map[person] + sharedItemValue;
+            }
+            );
+            return map;
+        }, {} as Record<string, number>);
+    }
     const onSubmit = (data: CheckData) => {
-        const sharedTotal = data.sharedItems.reduce((sum, item) => sum + parseFloat(item.value.toString()), 0);
-        const totalSum = sharedTotal + data.people.reduce((sum, person) => sum + parseFloat(person.total.toString()), 0);
-        const taxPercentage = data.taxAmount / totalSum;
+        const sharedItemTotalByPerson = mapSharedItemsToPeople(data);
+        const itemTotal = Object.keys(sharedItemTotalByPerson).reduce((sum, personName) => sum + parseFloat(sharedItemTotalByPerson[personName].toString()), 0)
+            + data.people.reduce((sum, person) => sum + parseFloat(person.total.toString()), 0);
+        const taxPercentage = data.taxAmount / itemTotal;
         const tipPercentage = data.tipPercentage / 100;
-        const percentageMultiplier = (1 + tipPercentage + taxPercentage);
-        const sharedSplit = sharedTotal / data.people.length;
 
         const calculatedTotals = data.people.map((person: any) => {
-            const total = parseFloat(person.total.toString());
-            const adjustedTotal = data.includeTaxInTip
-                ? ((total + sharedSplit) * (1 + taxPercentage)) * (1 + tipPercentage)
-                : (total + sharedSplit) * percentageMultiplier;
-            return { name: person.name, total: adjustedTotal };
+            const preTaxTotal = parseFloat(person.total.toString()) + (sharedItemTotalByPerson[person.name] || 0);
+            const tax = preTaxTotal * taxPercentage;
+            const subTotal = preTaxTotal + tax;
+            const tip = (data.includeTaxInTip ? subTotal : preTaxTotal) * tipPercentage;
+            const adjustedTotal = subTotal + tip;
+            return { name: person.name, total: adjustedTotal, preTaxTotal, tax, subTotal, tip };
         });
-        setTotals(calculatedTotals);
-        setTotal(calculatedTotals.reduce((sum, person) => sum + person.total, 0));
+        setIndividualTotals(calculatedTotals);
+        setTotalInfo(calculatedTotals.reduce((sum, person) => sum + person.total, 0));
     }
     return <>
         <PageHeader title="Check Splitter" />
@@ -99,7 +125,7 @@ export default function SplitCheckPage() {
                     <Typography variant="h6" gutterBottom>Shared Items</Typography>
                     {sharedItems.map((_, idx) => (
                         <Grid container spacing={1} key={idx} alignItems="center" marginBottom={2}>
-                            <Grid size={6}>
+                            <Grid size={4}>
                                 <TextInput
                                     label="Name"
                                     fieldName={`sharedItems[${idx}].name`}
@@ -107,12 +133,25 @@ export default function SplitCheckPage() {
                                     requiredMessage="Shared item name is required"
                                 />
                             </Grid>
-                            <Grid size={5}>
+                            <Grid size={3}>
                                 <NumberInput
                                     label="Value"
                                     fieldName={`sharedItems[${idx}].value`}
                                     onChange={(e) => handleSharedItemChange(idx, "value", e.target.value)}
                                     requiredMessage="Value is required"
+                                />
+                            </Grid>
+                            <Grid size={4}>
+                                <DropdownInput
+                                    label="Split By"
+                                    fieldName={`sharedItems[${idx}].splitBy`}
+                                    options={[
+                                        { value: EVERYBODY, label: "Everybody" },
+                                        ...(people.map((p, i) => ({ value: p.name || `Person ${i + 1}`, label: p.name || `Person ${i + 1}` })))
+                                    ]}
+                                    onChange={(e) => handleSharedItemChange(idx, "splitBy", e.target.value)}
+                                    requiredMessage="Split By is required"
+                                    isMultiSelect={true}
                                 />
                             </Grid>
                             <Grid size={1}>
@@ -139,15 +178,27 @@ export default function SplitCheckPage() {
                 Calculate Totals
             </Button>
         </FormProvider>
-        {totals.length > 0 && (<Box margin={2}>
-            <Typography variant="h5">Total: {formatCurrency(total)}</Typography>
+        {individualTotals.length > 0 && (<Box margin={2}>
+            <Typography variant="h5">Total: {formatCurrency(totalInfo)}</Typography>
             <Divider />
             <Grid container spacing={1} marginTop={1}>
-                {totals.map((person) => (
+                {individualTotals.map((person) => (
                     <Grid size={3} key={person.name}>
                         <Paper elevation={3} className="p-2">
                             <Typography variant="h6">
                                 {person.name}: {formatCurrency(person.total)}
+                            </Typography>
+                            <Typography variant="body1">
+                                Pre-tax Total: {formatCurrency(person.preTaxTotal)}
+                            </Typography>
+                            <Typography variant="body1">
+                                Tax: {formatCurrency(person.tax)}
+                            </Typography>
+                            <Typography variant="body1">
+                                Sub Total: {formatCurrency(person.subTotal)}
+                            </Typography>
+                            <Typography variant="body1">
+                                Tip: {formatCurrency(person.tip)}
                             </Typography>
                         </Paper>
                     </Grid>
