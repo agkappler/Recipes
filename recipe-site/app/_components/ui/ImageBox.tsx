@@ -1,9 +1,8 @@
 import RequestManager from "@/app/_helpers/RequestManager";
-import Image from "next/image";
+import FileMetadata from "@/app/_models/FileMetadata";
+import { Avatar, Box } from "@mui/material";
 import useSWR from "swr";
 import { LoadingWrapper } from "./LoadingWrapper";
-import FileMetadata from "@/app/_models/FileMetadata";
-import { Box } from "@mui/material";
 
 interface ImageBoxProps {
     fileId: number;
@@ -16,9 +15,9 @@ export const ImageBox: React.FC<ImageBoxProps> = ({ fileId, altText }) => {
         setTimeout(() => revalidate({ retryCount }), 5000);
     }
     const { data: fileMetadata, isLoading, error } = useSWR<FileMetadata>(`/fileUrl/${fileId}`, () => RequestManager.get(`/fileUrl/${fileId}`), { onErrorRetry: errorRetry });
-    return <LoadingWrapper isLoading={isLoading} size={20}>
-        <Box margin="auto" borderRadius={100} overflow="hidden" width={100}>
-            {fileMetadata?.url && <Image src={fileMetadata.url} alt={altText} width={200} height={200} />}
+    return <LoadingWrapper isLoading={isLoading} size={100}>
+        <Box margin="auto" width={100}>
+            <Avatar src={fileMetadata?.url} alt={altText} sx={{ width: 100, height: 100 }} />
         </Box>
     </LoadingWrapper>
 }

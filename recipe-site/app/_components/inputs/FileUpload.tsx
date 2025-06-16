@@ -1,30 +1,20 @@
-import { Avatar, Box, Button, IconButton, styled } from "@mui/material";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { FileRole } from "@/app/_constants/FileRole";
 import RequestManager from "@/app/_helpers/RequestManager";
-import { ChangeEvent, ChangeEventHandler, useRef, useState } from "react";
 import FileMetadata from "@/app/_models/FileMetadata";
-
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-});
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { Avatar, Box, Button, IconButton } from "@mui/material";
+import { useRef, useState } from "react";
+import useSWR from "swr";
 
 interface FileUploadButtonProps {
     fileRole: FileRole;
     label?: string;
     onUpload?: (fileMetadata: FileMetadata) => Promise<void>;
     isAvatar?: boolean;
+    currentAvatarId?: number;
 }
 
-export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = "Upload Files", onUpload, isAvatar = true }) => {
+export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = "Upload Files", onUpload, isAvatar = true, currentAvatarId }) => {
     const size = "100px";
     const uploadFile = async (file: File) => {
         const formData = new FormData();
@@ -36,6 +26,7 @@ export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = 
         return fileMetadata.url ?? "";
     }
 
+    const { data: currentAvatarUrl, isLoading } = useSWR<FileMetadata>(`/fileUrl/${currentAvatarId}`, () => RequestManager.get(`/fileUrl/${currentAvatarId}`), { onSuccess: (data) => setImageUrl(data?.url) });
     const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,10 +46,10 @@ export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = 
             {isAvatar
                 ? <IconButton onClick={handleClick} sx={{ width: size, height: size }}>
                     <Avatar
-                        src={imageUrl}
+                        src={currentAvatarUrl?.url || imageUrl}
                         sx={{ width: size, height: size, border: "2px dashed #aaa", bgcolor: "#f5f5f5" }}
                     >
-                        {!imageUrl && <CloudUploadIcon fontSize="large" />}
+                        <CloudUploadIcon fontSize="large" />
                     </Avatar>
                 </IconButton>
                 : <Button
