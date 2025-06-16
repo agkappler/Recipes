@@ -1,14 +1,15 @@
 'use client';
 
-import { Add, Delete } from "@mui/icons-material";
-import { Box, Button, Divider, Grid, IconButton, Paper, Typography } from "@mui/material";
+import { Box, Button, Divider, Grid, Paper, Typography } from "@mui/material";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { DropdownInput } from "../_components/inputs/DropdownInput";
+import { ListInput } from "../_components/inputs/ListInput";
 import { NumberInput } from "../_components/inputs/NumberInput";
 import { SwitchInput } from "../_components/inputs/SwitchInput";
 import { TextInput } from "../_components/inputs/TextInput";
 import { PageHeader } from "../_components/ui/PageHeader";
-import { DropdownInput } from "../_components/inputs/DropdownInput";
+import { formatCurrency } from "../_helpers/Format";
 
 interface Person { name: string; total: number; }
 interface SharedItem { name: string; value: number; splitBy: string[]; }
@@ -29,28 +30,11 @@ interface TotalInfo {
     tip: number;
 }
 
-function formatCurrency(value: number): string {
-    return `$${value.toFixed(2)}`;
-}
-
-const EVERYBODY = "everybody";
-
 export default function SplitCheckPage() {
-    const defaultPeople = [{ name: "", total: 0 }];
-    const methods = useForm<CheckData>({ defaultValues: { tipPercentage: 20, taxAmount: 0, sharedItems: [], people: defaultPeople, includeTaxInTip: true } });
+    const EVERYBODY = "everybody";
+    const defaultPerson = { name: "", total: 0 };
+    const methods = useForm<CheckData>({ defaultValues: { tipPercentage: 20, taxAmount: 0, sharedItems: [], people: [defaultPerson], includeTaxInTip: true } });
     const people = methods.watch("people");
-    const sharedItems = methods.watch("sharedItems");
-    const handlePersonChange = (index: number, field: "name" | "total", value: string | number) => {
-        methods.setValue("people", people.map((f, i) => (i === index ? { ...f, [field]: value } : f)));
-    };
-    const addPerson = () => methods.setValue("people", [...people, { name: "", total: 0 }]);
-    const removePerson = (index: number) => methods.setValue("people", people.filter((_, i) => i !== index));
-
-    const handleSharedItemChange = (index: number, field: "name" | "value" | "splitBy", value: string | number | string[]) => {
-        methods.setValue("sharedItems", sharedItems.map((f, i) => (i === index ? { ...f, [field]: value } : f)));
-    };
-    const addSharedItem = () => methods.setValue("sharedItems", [...sharedItems, { name: "", value: 0, splitBy: [EVERYBODY] }]);
-    const removeSharedItem = (index: number) => methods.setValue("sharedItems", sharedItems.filter((_, i) => i !== index));
 
     const [individualTotals, setIndividualTotals] = useState<TotalInfo[]>([]);
     const [totalInfo, setTotalInfo] = useState(0);
@@ -90,76 +74,76 @@ export default function SplitCheckPage() {
         setIndividualTotals(calculatedTotals);
         setTotalInfo(calculatedTotals.reduce((sum, person) => sum + person.total, 0));
     }
+
     return <>
         <PageHeader title="Check Splitter" />
         <FormProvider {...methods}>
             <Grid container spacing={2} rowGap={2} className="m-2 p-2">
                 <Grid size={12}>
-                    <Typography variant="h6" gutterBottom>People</Typography>
-                    {people.map((_, idx) => (
-                        <Grid container spacing={1} key={idx} alignItems="center" marginBottom={2}>
-                            <Grid size={6}>
-                                <TextInput
-                                    label="Name"
-                                    fieldName={`people[${idx}].name`}
-                                    onChange={(e) => handlePersonChange(idx, "name", e.target.value)}
-                                    requiredMessage="Feature name is required"
-                                />
+                    <ListInput
+                        title="People"
+                        fieldName="people"
+                        addText="Add Person"
+                        defaultItem={defaultPerson}
+                        listItemComponent={({ idx, removeButton }) => (
+                            <Grid container spacing={1} key={idx} alignItems="center" marginBottom={2}>
+                                <Grid size={6}>
+                                    <TextInput
+                                        label="Name"
+                                        fieldName={`people[${idx}].name`}
+                                        requiredMessage="Feature name is required"
+                                    />
+                                </Grid>
+                                <Grid size={5}>
+                                    <NumberInput
+                                        label="Total"
+                                        fieldName={`people[${idx}].total`}
+                                        requiredMessage="Total is required"
+                                    />
+                                </Grid>
+                                <Grid size={1}>{removeButton}</Grid>
                             </Grid>
-                            <Grid size={5}>
-                                <NumberInput
-                                    label="Total"
-                                    fieldName={`people[${idx}].total`}
-                                    onChange={(e) => handlePersonChange(idx, "total", e.target.value)}
-                                    requiredMessage="Total is required"
-                                />
-                            </Grid>
-                            <Grid size={1}>
-                                <IconButton color="error" title="Remove" onClick={() => removePerson(idx)}><Delete /></IconButton>
-                            </Grid>
-                        </Grid>
-                    ))}
-                    <Button variant="outlined" onClick={addPerson} startIcon={<Add />}>Add Person</Button>
+                        )}
+                    />
                 </Grid>
                 <Grid size={12}>
-                    <Typography variant="h6" gutterBottom>Shared Items</Typography>
-                    {sharedItems.map((_, idx) => (
-                        <Grid container spacing={1} key={idx} alignItems="center" marginBottom={2}>
-                            <Grid size={4}>
-                                <TextInput
-                                    label="Name"
-                                    fieldName={`sharedItems[${idx}].name`}
-                                    onChange={(e) => handleSharedItemChange(idx, "name", e.target.value)}
-                                    requiredMessage="Shared item name is required"
-                                />
+                    <ListInput
+                        title="Shared Items"
+                        fieldName="sharedItems"
+                        addText="Add Shared Item"
+                        defaultItem={{ name: "", value: 0, splitBy: [EVERYBODY] }}
+                        listItemComponent={({ idx, removeButton }) => (
+                            <Grid container spacing={1} key={idx} alignItems="center" marginBottom={2}>
+                                <Grid size={4}>
+                                    <TextInput
+                                        label="Name"
+                                        fieldName={`sharedItems[${idx}].name`}
+                                        requiredMessage="Shared item name is required"
+                                    />
+                                </Grid>
+                                <Grid size={3}>
+                                    <NumberInput
+                                        label="Value"
+                                        fieldName={`sharedItems[${idx}].value`}
+                                        requiredMessage="Value is required"
+                                    />
+                                </Grid>
+                                <Grid size={4}>
+                                    <DropdownInput
+                                        label="Split By"
+                                        fieldName={`sharedItems[${idx}].splitBy`}
+                                        options={[
+                                            { value: EVERYBODY, label: "Everybody" },
+                                            ...(people.map((p, i) => ({ value: p.name || `Person ${i + 1}`, label: p.name || `Person ${i + 1}` })))
+                                        ]}
+                                        requiredMessage="Split By is required"
+                                        isMultiSelect={true}
+                                    />
+                                </Grid>
+                                <Grid size={1}>{removeButton}</Grid>
                             </Grid>
-                            <Grid size={3}>
-                                <NumberInput
-                                    label="Value"
-                                    fieldName={`sharedItems[${idx}].value`}
-                                    onChange={(e) => handleSharedItemChange(idx, "value", e.target.value)}
-                                    requiredMessage="Value is required"
-                                />
-                            </Grid>
-                            <Grid size={4}>
-                                <DropdownInput
-                                    label="Split By"
-                                    fieldName={`sharedItems[${idx}].splitBy`}
-                                    options={[
-                                        { value: EVERYBODY, label: "Everybody" },
-                                        ...(people.map((p, i) => ({ value: p.name || `Person ${i + 1}`, label: p.name || `Person ${i + 1}` })))
-                                    ]}
-                                    onChange={(e) => handleSharedItemChange(idx, "splitBy", e.target.value)}
-                                    requiredMessage="Split By is required"
-                                    isMultiSelect={true}
-                                />
-                            </Grid>
-                            <Grid size={1}>
-                                <IconButton color="error" title="Remove" onClick={() => removeSharedItem(idx)}><Delete /></IconButton>
-                            </Grid>
-                        </Grid>
-                    ))}
-                    <Button variant="outlined" onClick={addSharedItem} startIcon={<Add />}>Add Shared Item</Button>
+                        )}
+                    />
                 </Grid>
                 <Grid size={12}>
                     <Typography variant="h6" gutterBottom>Add-Ons</Typography>
