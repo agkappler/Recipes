@@ -27,4 +27,8 @@ public class PermissionsService {
 		
 		throw new SecurityException("You lack the required write permissions.");
 	}
+	
+	public boolean isAuthenticated() {
+		return this.appConfig.isCanWrite();
+	}
 }

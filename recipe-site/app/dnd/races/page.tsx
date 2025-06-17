@@ -1,10 +1,13 @@
 'use client';
 
+import { RaceForm } from "@/app/_components/dnd/race/RaceForm";
 import { RacialTraits } from "@/app/_components/dnd/race/RacialTraits";
 import { Subraces } from "@/app/_components/dnd/race/Subraces";
 import { LinkButton } from "@/app/_components/ui/buttons/LinkButton";
 import { LoadingWrapper } from "@/app/_components/ui/LoadingWrapper";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
+import RequestManager from "@/app/_helpers/RequestManager";
+import CustomDndRace from "@/app/_models/CustomDndRace";
 import { BaseDndResponse, getRaces } from "@/app/api/dnd5eapi";
 import { Add } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
@@ -13,20 +16,21 @@ import { useState } from "react";
 import useSWR from "swr";
 
 export default function DnDRacesPage() {
-    const { data: apiRaceResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/classes', () => getRaces(), { onSuccess: (data) => setSelectedRace(data.results[0].index ?? "") });
-    const customRaces: any[] = [],
-        isLoadingCustomRaces = false;
-    const races = [...(apiRaceResults?.results ?? []), ...customRaces].sort((a, b) => a.name.localeCompare(b.name));
+    const { data: apiRaceResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/races', () => getRaces(), { onSuccess: (data) => setSelectedRace(data.results[0].index ?? "") });
+    const { data: customRaces, isLoading: isLoadingCustomRaces, mutate } = useSWR<CustomDndRace[]>('/customRaces', () => RequestManager.get('/races'));
+    const races = [...(apiRaceResults?.results ?? []), ...(customRaces ?? []).map(r => new CustomDndRace(r))].sort((a, b) => a.name.localeCompare(b.name));
     const [selectedRace, setSelectedRace] = useState<string>(races[0]?.index ?? "");
     const [value, setValue] = useState("1");
     const handleChange = (_: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };
 
+    const [isOpen, setIsOpen] = useState(false);
+
     return <>
         <PageHeader
             title="DnD Races"
-            rightContainer={<Button startIcon={<Add />}>Add Race</Button>}
+            rightContainer={<Button startIcon={<Add />} onClick={() => setIsOpen(true)}>Add Race</Button>}
             leftContainer={<LinkButton url="/dnd" label={"Back to Characters"} isForward={false} />}
         />
         <LoadingWrapper isLoading={isLoadingApi || isLoadingCustomRaces}>
@@ -55,5 +59,10 @@ export default function DnDRacesPage() {
                 </TabPanel>
             </TabContext>
         </LoadingWrapper>
+        <RaceForm
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            updateDndRaces={mutate}
+        />
     </>
 }

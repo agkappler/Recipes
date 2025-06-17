@@ -76,3 +76,58 @@ CREATE TABLE IF NOT EXISTS dnd_characters (
 	avatar_id integer,
 	FOREIGN KEY (avatar_id) REFERENCES files(file_id)
 );
+
+ALTER TABLE dnd_characters ADD COLUMN IF NOT EXISTS is_custom_race BOOLEAN DEFAULT FALSE;
+ALTER TABLE dnd_characters ADD COLUMN IF NOT EXISTS is_custom_class BOOLEAN DEFAULT FALSE;
+ALTER TABLE dnd_characters ADD COLUMN IF NOT EXISTS is_custom_subclass BOOLEAN DEFAULT FALSE;
+ALTER TABLE dnd_characters ADD COLUMN IF NOT EXISTS is_custom_subrace BOOLEAN DEFAULT FALSE;
+
+CREATE TABLE IF NOT EXISTS custom_dnd_races (
+	race_id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL,
+	description TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS custom_dnd_subraces (
+	subrace_id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL,
+	race_id INTEGER NOT NULL,
+	description TEXT NOT NULL,
+	CONSTRAINT custom_dnd_subraces_race_id_fkey FOREIGN KEY (race_id)
+        REFERENCES public.custom_dnd_races (race_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS dnd_race_traits (
+	race_trait_id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL,
+	description TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS rel_dnd_race_traits (
+	race_id INTEGER,
+	race_trait_id INTEGER,
+	CONSTRAINT rel_dnd_race_traits_race_id_fkey FOREIGN KEY (race_id)
+        REFERENCES public.custom_dnd_races (race_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+	CONSTRAINT rel_dnd_race_traits_race_trait_id_fkey FOREIGN KEY (race_trait_id)
+        REFERENCES public.dnd_race_traits (race_trait_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS rel_dnd_subrace_traits (
+	subrace_id INTEGER,
+	race_trait_id INTEGER,
+	CONSTRAINT rel_dnd_subrace_traits_race_id_fkey FOREIGN KEY (subrace_id)
+        REFERENCES public.custom_dnd_subraces (subrace_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+	CONSTRAINT rel_dnd_race_traits_race_trait_id_fkey FOREIGN KEY (race_trait_id)
+        REFERENCES public.dnd_race_traits (race_trait_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
+
