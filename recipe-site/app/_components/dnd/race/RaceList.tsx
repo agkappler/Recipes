@@ -8,7 +8,7 @@ import { LoadingWrapper } from "../../ui/LoadingWrapper";
 
 interface RaceCarouselProps { }
 
-export const RaceList: React.FC<RaceCarouselProps> = ({ }) => {
+export const RaceList: React.FC<RaceCarouselProps> = () => {
     const router = useRouter();
     const { data: apiRaceResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/races', () => getRaces());
     const { data: customRaces, isLoading: isLoadingCustomRaces } = useSWR<CustomDndRace[]>('/customRaces', () => RequestManager.get('/races'));

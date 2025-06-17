@@ -52,11 +52,10 @@ export const ClassSpecificInfo: React.FC<ClassSpecificInfoProps> = ({ levelInfo 
             break;
 
         case DndClass.Monk:
-            const martialArts = info.martial_arts;
             classInfo = [
                 { label: 'Ki Points', value: info.ki_points },
                 { label: 'Unarmored Movement Bonus', value: `${info.unarmored_movement}ft` },
-                { label: 'Martial Arts', value: `${martialArts.dice_count}d${martialArts.dice_value}` }
+                { label: 'Martial Arts', value: `${info.martial_arts.dice_count}d${info.martial_arts.dice_value}` }
             ];
             break;
         case DndClass.Paladin:
@@ -72,9 +71,8 @@ export const ClassSpecificInfo: React.FC<ClassSpecificInfoProps> = ({ levelInfo 
             ];
             break;
         case DndClass.Rogue:
-            const sneakAttack = info.sneak_attack;
             classInfo = [
-                { label: 'Sneak Attack', value: `${sneakAttack.dice_count}d${sneakAttack.dice_value}` }
+                { label: 'Sneak Attack', value: `${info.sneak_attack.dice_count}d${info.sneak_attack.dice_value}` }
             ];
             break;
         case DndClass.Sorcerer:

@@ -1,11 +1,10 @@
 import RequestManager from "@/app/_helpers/RequestManager";
 import CustomDndRace from "@/app/_models/CustomDndRace";
-import { DialogContent, Grid, Modal, Typography } from "@mui/material";
+import RacialTrait from "@/app/_models/RacialTrait";
+import { DialogContent, Grid, Modal } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../../inputs/BasicForm";
 import { TextInput } from "../../inputs/TextInput";
-import RacialTrait from "@/app/_models/RacialTrait";
-import { ListInput } from "../../inputs/ListInput";
 
 interface RaceFormProps {
     isOpen: boolean;

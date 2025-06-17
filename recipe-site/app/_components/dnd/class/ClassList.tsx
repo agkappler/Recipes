@@ -1,4 +1,4 @@
-import { BaseDndResponse, getClasses } from "@/app/api/dnd5eapi";
+import { BaseDndResponse, DndItem, getClasses } from "@/app/api/dnd5eapi";
 import { Grid, Paper, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
@@ -6,10 +6,10 @@ import { LoadingWrapper } from "../../ui/LoadingWrapper";
 
 interface ClassListProps { }
 
-export const ClassList: React.FC<ClassListProps> = ({ }) => {
+export const ClassList: React.FC<ClassListProps> = () => {
     const router = useRouter();
     const { data: apiClassResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/classes', () => getClasses());
-    const customClasses: any[] = [],
+    const customClasses: DndItem[] = [],
         isLoadingCustomClasses = false;
     const classes = [...(apiClassResults?.results ?? []), ...customClasses].sort((a, b) => a.name.localeCompare(b.name));
     return <>

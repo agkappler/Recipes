@@ -7,11 +7,13 @@ import { LinkButton } from "./_components/ui/buttons/LinkButton";
 import { MOBILE_BREAK } from "./_constants/Media";
 import { FARGOPOLIS_BLURB, PROJECTS } from "./_constants/Projects";
 
-export default function Home({
-}: {
-    params: { id: string };
-    searchParams: { [key: string]: string | string[] | undefined };
-}) {
+export default function Home(
+    //     {
+    // }: {
+    //     params: { id: string };
+    //     searchParams: { [key: string]: string | string[] | undefined };
+    // }
+) {
     return <>
         <Box textAlign="center">
             <Box sx={{
