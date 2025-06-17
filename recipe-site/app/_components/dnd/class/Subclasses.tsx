@@ -1,4 +1,4 @@
-import { BaseDndResponse, getSubclasses } from "@/app/api/dnd5eapi";
+import { BaseDndResponse, DndItem, getSubclasses } from "@/app/api/dnd5eapi";
 import { Box, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
@@ -12,7 +12,7 @@ interface SubclassesProps {
 export const Subclasses: React.FC<SubclassesProps> = ({ className }) => {
     const { data: apiSubclassResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>(`/classes/${className}/subclasses`, () => getSubclasses(className), { onSuccess: (data) => setSelectedSubclass(data.results[0].index ?? "") });
     const isLoadingCustomSubclasses = false,
-        customSubclasses: any[] = [];
+        customSubclasses: DndItem[] = [];
     const subclasses = [...(apiSubclassResults?.results ?? []), ...customSubclasses].sort((a, b) => a.name.localeCompare(b.name));
 
     const [selectedSubclass, setSelectedSubclass] = useState<string>(subclasses[0]?.index ?? "");
