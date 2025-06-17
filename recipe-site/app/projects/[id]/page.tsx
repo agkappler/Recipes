@@ -10,7 +10,7 @@ export default function ProjectPage({ params }: SlugProps) {
     const project = PROJECTS[Number(params.id)];
     return (<>
         <PageHeader
-            leftContainer={<LinkButton label="All Projects" url="/" isForward={false} />}
+            leftContainer={<LinkButton label="All Projects" url="/projects" isForward={false} />}
             rightContainer={project.url ? <LinkButton label="View Project" url={project.url} /> : undefined}
         >
             <ProjectHeader project={project} variant="h4" />

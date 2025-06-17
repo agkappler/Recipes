@@ -1,8 +1,7 @@
 import { Box, Link, Typography } from "@mui/material";
 import Image from "next/image";
-import { ProjectHeader } from "./_components/home/ProjectHeader";
+import { ProjectCardContents } from "./_components/home/ProjectCardContents";
 import { Carousel } from "./_components/ui/Carousel";
-import { StatusChip } from "./_components/ui/StatusChip";
 import { LinkButton } from "./_components/ui/buttons/LinkButton";
 import { MOBILE_BREAK } from "./_constants/Media";
 import { FARGOPOLIS_BLURB, PROJECTS } from "./_constants/Projects";
@@ -44,33 +43,14 @@ export default function Home(
             }}>
                 <Typography variant="h5" textAlign="center">Explore My Projects</Typography>
             </Box>
-            {/* <ProjectCarousel /> */}
             <Carousel
-                cardContents={PROJECTS.map((project, index) => (<>
-                    <ProjectHeader project={project} />
-                    <StatusChip label={project.status} />
-                    <Typography variant="body1" textAlign="center">{project.description}</Typography>
-                    <Box display="flex" justifyContent="center" gap={2}>
-                        <LinkButton label="Details" url={`/projects/${index}`} />
-                        <LinkButton label="Project" url={project.url} />
-                        {/* <Button
-                            variant="contained"
-                            color="primary"
-                            href={`/projects/${index}`}
-                        >
-                            Project Details
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            href={project.url}
-                        >
-                            View Project
-                        </Button> */}
-                    </Box>
-                </>))}
-
+                cardContents={PROJECTS.map((project, index) => (
+                    <ProjectCardContents project={project} index={index} key={index} />
+                ))}
             />
+            <Box justifyContent="center" display="flex" marginTop={2}>
+                <LinkButton url="/projects" label="View All Projects" />
+            </Box>
         </Box>
     </>
 }
