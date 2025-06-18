@@ -25,6 +25,8 @@ public class CharacterService extends BaseService {
 	private static String INSERT_CHARACTER_SQL = "INSERT INTO dnd_characters (name, race, subrace, class, subclass, level) VALUES (?,?,?,?,?,?) RETURNING character_id";
 	private static String UPDATE_CHARACTER_SQL = "UPDATE dnd_characters SET name=?, race=?, subrace=?, class=?, subclass=?, level=? WHERE character_id = ?";
 	private static String UPDATE_AVATAR_SQL = "UPDATE dnd_characters SET avatar_id=? WHERE character_id = ?";
+	private static String ADD_RESOURCE_SQL = "INSERT INTO rel_character_resource_file (character_id, file_id) VALUES (?, ?)";
+	private static String GET_RESOURCE_FILE_IDS_SQL = "SELECT file_id FROM rel_character_resource_file WHERE character_id = ?";
 	
 	public List<DndCharacter> getCharacters() throws SQLException {
 		return this.data.Query(
@@ -88,6 +90,24 @@ public class CharacterService extends BaseService {
 				ps.setInt(1, fileId);
 				ps.setInt(2, characterId);
 			}
+		);
+	}
+	
+	public void addResource(Integer characterId, Integer fileId) throws SQLException {
+		this.data.Execute(
+			ADD_RESOURCE_SQL,
+			(PreparedStatement ps) -> {
+				ps.setInt(1, characterId);
+				ps.setInt(2, fileId);
+			}
+		);
+	}
+	
+	public List<Integer> getResourceFileIds(Integer characterId) throws SQLException {
+		return this.data.Query(
+			GET_RESOURCE_FILE_IDS_SQL,
+			(PreparedStatement ps) -> ps.setInt(1, characterId),
+			(ResultSet rs) -> rs.getInt("file_id")
 		);
 	}
 	

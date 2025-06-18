@@ -24,6 +24,7 @@ public class FileService extends BaseService {
 	private static final String INSERT_FILE_METADATA_SQL = "INSERT INTO files (uu_id, filename, content_type, size_bytes, file_role) VALUES (?,?,?,?,?) RETURNING file_id";
 	private static final String GET_ALL_FILE_METADATA_SQL = "SELECT * FROM files";
 	private static final String GET_FILE_METADATA_BY_ID_SQL = "SELECT * FROM files WHERE file_id = ?";
+	private static final String GET_LATEST_RESUME_SQL = "SELECT * FROM files WHERE file_role = " + FileRole.RESUME.getValue().toString() + " ORDER BY file_id DESC LIMIT 1";
 	
 	@Autowired
 	private S3Facade s3Facade;
@@ -95,6 +96,20 @@ public class FileService extends BaseService {
 	
 	public String getUrlForFileById(Integer fileId) throws Exception {
 		return this.getAndSetUrlForFile(this.getFileMetadataById(fileId));
+	}
+	
+	public String getLatestResumeUrl() throws Exception {
+		List<FileMetadata> results = data.Query(
+			GET_LATEST_RESUME_SQL,
+			null,
+			(ResultSet rs) -> this.mapFile(rs)
+		);
+		
+		if (results.size() == 0) {
+			return "";
+		}
+			
+		return this.getAndSetUrlForFile(results.get(0));
 	}
 	
 	private String getS3Key(String uuId, String fileName) {

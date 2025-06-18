@@ -11,6 +11,7 @@ import { LoadingWrapper } from "../ui/LoadingWrapper";
 import { ClassFeatures } from "./class/ClassFeatures";
 import { RacialTraits } from "./race/RacialTraits";
 import { SpellInfo } from "./spells/SpellInfo";
+import { CharacterResources } from "./CharacterResources";
 
 interface CharacterInfoProps {
     character: Character;
@@ -31,6 +32,7 @@ export const CharacterInfo: React.FC<CharacterInfoProps> = ({ character }) => {
         { label: "Weapons", value: "4" },
         { label: "Items", value: "5" },
         { label: "Proficiencies", value: "6" },
+        { label: "Resources", value: "7" },
     ];
 
     return <LoadingWrapper isLoading={isLoadingClassInfo}>
@@ -63,6 +65,9 @@ export const CharacterInfo: React.FC<CharacterInfoProps> = ({ character }) => {
             <TabPanel value="4">No weapons yet!</TabPanel>
             <TabPanel value="5">No items yet!</TabPanel>
             <TabPanel value="6">No proficiencies yet!</TabPanel>
+            <TabPanel value="7">
+                <CharacterResources characterId={character.characterId} />
+            </TabPanel>
         </TabContext>
     </LoadingWrapper>
 }

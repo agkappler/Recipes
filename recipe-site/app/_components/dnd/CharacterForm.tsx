@@ -88,7 +88,12 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
             >
                 <Grid container spacing={2} className="mb-2">
                     {isEdit && <Grid size={12}>
-                        <FileUpload label="Upload Avatar" fileRole={FileRole.CharacterAvatar} onUpload={onUpload} currentAvatarId={character?.avatarId} />
+                        <FileUpload
+                            label="Upload Avatar"
+                            fileRole={FileRole.CharacterAvatar}
+                            onUpload={onUpload} isAvatar={true}
+                            currentAvatarId={character?.avatarId}
+                        />
                     </Grid>}
                     <Grid size={{ sm: 6, xs: 12 }}>
                         <TextInput

@@ -1,10 +1,15 @@
-import { Box, Divider, Grid, Paper, Typography } from "@mui/material";
+import { Description } from "@mui/icons-material";
+import { Box, Divider, Grid, Link, Paper, Typography } from "@mui/material";
 import Image from "next/image";
 import { MyTimeline } from "../_components/about/MyTimeline";
+import { FileUpload } from "../_components/inputs/FileUpload";
 import { GitHubButton } from "../_components/ui/buttons/GitHubButton";
 import { LinkedInButton } from "../_components/ui/buttons/LinkedInButton";
+import { FileRole } from "../_constants/FileRole";
+import RequestManager from "../_helpers/RequestManager";
 
-export default function About() {
+export default async function About() {
+    const resumeUrl = (await RequestManager.get("/getLatestResumeUrl")).url;
     return <Box className="flex flex-col justify-center align-items-center container mx-auto px-4 py-2">
         <Box borderRadius={75} overflow="hidden" margin="auto">
             <Image src={`/Alex_Kappler_Picture.jpg`} alt={"Alex Kappler"} width="150" height="150" className="m-auto" />
@@ -12,20 +17,17 @@ export default function About() {
         <Typography variant="h4" component="h1" textAlign="center">Alex Kappler</Typography>
         <Box display="flex" justifyContent="center" gap={2}>
             <LinkedInButton />
+            <Link href={resumeUrl} target="_blank" rel="noopener noreferrer" alignContent="center">
+                <Description />Resume
+            </Link>
             <GitHubButton />
         </Box>
         <Divider className="pb-4" textAlign="center">Intro</Divider>
         <Typography variant="body1" marginBottom={2} textAlign="center">
             {"I’m a full-stack software engineer with a strong foundation in Computer Science from Colgate University and over five years of industry experience. I’ve contributed to enterprise and startup teams alike, building scalable web and mobile applications using technologies like Java, React, React Native, and PostgreSQL. My journey began with Python and Java in college and has since evolved into a passion for building clean, maintainable systems that solve real-world problems."}
         </Typography>
-        {/* <Accordion slots={{ root: Box }}>
-            <AccordionSummary slots={{ root: Box }}> */}
         <Divider className="pb-4" textAlign="center">Timeline</Divider>
-        {/* </AccordionSummary>
-            <AccordionDetails> */}
         <MyTimeline />
-        {/* </AccordionDetails>
-        </Accordion> */}
         <Divider className="pb-4 w-full" sx={{ width: "100%" }} textAlign="center">Interests</Divider>
         <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 4 }}>
@@ -47,5 +49,6 @@ export default function About() {
                 </Paper>
             </Grid>
         </Grid>
+        <FileUpload label="Upload Resume" fileRole={FileRole.Resume} />
     </Box>
 }

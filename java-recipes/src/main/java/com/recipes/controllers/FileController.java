@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.recipes.dto.ImageUrl;
 import com.recipes.enums.FileRole;
 import com.recipes.models.FileMetadata;
 import com.recipes.services.FileService;
@@ -28,10 +29,10 @@ public class FileController extends BaseApiController {
     }
 
     @GetMapping("/fileUrl")
-    public ResponseEntity<String> getFileUrl(@RequestParam FileMetadata fileMetadata) {
+    public ResponseEntity<ImageUrl> getFileUrl(@RequestParam FileMetadata fileMetadata) {
         permissions.canRead();
     	String url = fileService.getAndSetUrlForFile(fileMetadata);
-        return ResponseEntity.ok(url);
+        return ResponseEntity.ok(new ImageUrl(url));
     }
     
     @GetMapping("/fileUrl/{fileId}")
@@ -42,5 +43,12 @@ public class FileController extends BaseApiController {
     	FileMetadata fileMetadata = fileService.getFileMetadataById(fileId);
     	fileService.getAndSetUrlForFile(fileMetadata);
         return ResponseEntity.ok(fileMetadata);
+    }
+    
+    @GetMapping("/getLatestResumeUrl")
+    public ResponseEntity<ImageUrl> getLatestResumeUrl() throws Exception {
+        permissions.canRead();
+    	String url = fileService.getLatestResumeUrl();
+        return ResponseEntity.ok(new ImageUrl(url));
     }
 }

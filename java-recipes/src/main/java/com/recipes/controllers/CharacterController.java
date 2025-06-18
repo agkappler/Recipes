@@ -74,4 +74,27 @@ public class CharacterController extends BaseApiController {
 		
     	return ResponseEntity.ok(new ImageUrl(avatarUrl));
     }
+    
+    @GetMapping("/character/{characterId}/resourceIds")
+    public ResponseEntity<List<Integer>> getResourceIds(@PathVariable("characterId") Integer characterId) throws Exception {
+    	logger.info("Character resources endpoint for " + characterId);
+    	this.permissions.canRead();
+    	
+		List<Integer> resourceIds = characterService.getResourceFileIds(characterId);
+		return ResponseEntity.ok(resourceIds);
+    }
+    
+    @PostMapping("/character/addResource")
+    public ResponseEntity<ImageUrl> addResource(
+    		@RequestParam("characterId") Integer characterId,
+    		@RequestParam("fileId") Integer fileId
+	) throws Exception {
+    	logger.info("Add resource Endpoint");
+		this.permissions.canWrite();
+		
+		characterService.addResource(characterId, fileId);
+		String resourceUrl = fileService.getUrlForFileById(fileId);
+		
+    	return ResponseEntity.ok(new ImageUrl(resourceUrl));
+    }
 }

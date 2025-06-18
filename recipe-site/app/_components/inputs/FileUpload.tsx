@@ -1,3 +1,5 @@
+'use client';
+
 import { FileRole } from "@/app/_constants/FileRole";
 import RequestManager from "@/app/_helpers/RequestManager";
 import FileMetadata from "@/app/_models/FileMetadata";
@@ -14,7 +16,7 @@ interface FileUploadButtonProps {
     currentAvatarId?: number;
 }
 
-export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = "Upload Files", onUpload, isAvatar = true, currentAvatarId }) => {
+export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = "Upload Files", onUpload, isAvatar = false, currentAvatarId }) => {
     const size = "100px";
     const uploadFile = async (file: File) => {
         const formData = new FormData();
@@ -26,7 +28,7 @@ export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = 
         return fileMetadata.url ?? "";
     }
 
-    const { data: currentAvatarUrl, isLoading } = useSWR<FileMetadata>(`/fileUrl/${currentAvatarId}`, () => RequestManager.get(`/fileUrl/${currentAvatarId}`), { onSuccess: (data) => setImageUrl(data?.url) });
+    const { data: currentAvatarUrl } = useSWR<FileMetadata>(`/fileUrl/${currentAvatarId}`, currentAvatarId !== undefined ? () => RequestManager.get(`/fileUrl/${currentAvatarId}`) : () => Promise.resolve(), { onSuccess: (data) => setImageUrl(data?.url) });
     const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
     const inputRef = useRef<HTMLInputElement>(null);
 

@@ -91,7 +91,7 @@ export const MyTimeline: React.FC = () => {
             <TimelineItem>
                 <TimelineOppositeContent display="flex" alignItems="center" gap={2} color="text.secondary">
                     <Typography variant="body1">2025</Typography>
-                    <Image src="/logo.png" alt="Fargopolis Logo" width={100} height={100} style={{ ...imageStyle, width: "120px" }} />
+                    <Image src="/logo.png" alt="Fargopolis Logo" width={200} height={100} style={{ ...imageStyle }} />
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineConnector />

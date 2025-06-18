@@ -131,3 +131,15 @@ CREATE TABLE IF NOT EXISTS rel_dnd_subrace_traits (
         ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS rel_character_resource_file (
+  character_id INTEGER NOT NULL,
+  file_id INTEGER NOT NULL,
+  CONSTRAINT rel_character_resource_file_character_id_fkey FOREIGN KEY (character_id)
+        REFERENCES public.dnd_characters (character_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE,
+  CONSTRAINT rel_character_resource_file_id_fkey FOREIGN KEY (file_id)
+        REFERENCES public.files (file_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
