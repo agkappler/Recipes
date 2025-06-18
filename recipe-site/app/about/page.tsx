@@ -1,15 +1,13 @@
-import { Description } from "@mui/icons-material";
-import { Box, Divider, Grid, Link, Paper, Typography } from "@mui/material";
+import { Box, Divider, Grid, Paper, Typography } from "@mui/material";
 import Image from "next/image";
 import { MyTimeline } from "../_components/about/MyTimeline";
+import { ResumeWrapper } from "../_components/about/ResumeWrapper";
 import { FileUpload } from "../_components/inputs/FileUpload";
 import { GitHubButton } from "../_components/ui/buttons/GitHubButton";
 import { LinkedInButton } from "../_components/ui/buttons/LinkedInButton";
 import { FileRole } from "../_constants/FileRole";
-import RequestManager from "../_helpers/RequestManager";
 
 export default async function About() {
-    const resumeUrl = (await RequestManager.get("/getLatestResumeUrl")).url;
     return <Box className="flex flex-col justify-center align-items-center container mx-auto px-4 py-2">
         <Box borderRadius={75} overflow="hidden" margin="auto">
             <Image src={`/Alex_Kappler_Picture.jpg`} alt={"Alex Kappler"} width="150" height="150" className="m-auto" />
@@ -17,9 +15,7 @@ export default async function About() {
         <Typography variant="h4" component="h1" textAlign="center">Alex Kappler</Typography>
         <Box display="flex" justifyContent="center" gap={2}>
             <LinkedInButton />
-            <Link href={resumeUrl} target="_blank" rel="noopener noreferrer" alignContent="center">
-                <Description />Resume
-            </Link>
+            <ResumeWrapper />
             <GitHubButton />
         </Box>
         <Divider className="pb-4" textAlign="center">Intro</Divider>
