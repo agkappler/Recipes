@@ -24,8 +24,8 @@ export const CharacterResources: React.FC<CharacterResourcesProps> = ({ characte
             <Box display="flex" justifyContent="center">
                 {data && data?.length > 0
                     ? data.map(id => (
-                        <Box margin={2}>
-                            <FileWrapper key={id} fileId={id} />
+                        <Box margin={2} key={id}>
+                            <FileWrapper fileId={id} />
                         </Box>
                     )) : <Typography textAlign="center">No resources for character {characterId} yet!</Typography>
                 }
