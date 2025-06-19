@@ -26,7 +26,6 @@ public class IngredientsController extends BaseApiController {
     
     @GetMapping("/ingredientsForRecipe/{recipeId}")
     public ResponseEntity<List<Ingredient>> GetIngredientsForRecipe(@PathVariable("recipeId") Integer recipeId) throws Exception {
-    	logger.info("Ingredient for recipe endpoint");
     	this.permissions.canRead();
     	
 		List<Ingredient> ingredients = this.ingredientService.getIngredientsForRecipe(recipeId);
@@ -35,7 +34,6 @@ public class IngredientsController extends BaseApiController {
     
     @PostMapping("/addIngredientToRecipe/{recipeId}")
     public ResponseEntity<Ingredient> addIngredientToRecipe(@PathVariable("recipeId") Integer recipeId, @RequestBody Ingredient ingredient) throws SQLException {
-    	logger.info("Add Ingredient Endpoint");
 		this.permissions.canWrite();
 		
 		this.ingredientService.addIngredientToRecipe(ingredient, recipeId);
@@ -44,7 +42,6 @@ public class IngredientsController extends BaseApiController {
     
     @PostMapping("/updateIngredient")
     public ResponseEntity<Ingredient> updateIngredient(@RequestBody Ingredient ingredient) throws SQLException {
-    	logger.info("Update Ingredient Endpoint");
 		this.permissions.canWrite();
 		
 		this.ingredientService.updateIngredient(ingredient);

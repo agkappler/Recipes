@@ -22,7 +22,6 @@ public class DndRaceController extends BaseApiController {
 	
 	@GetMapping("/races")
     public ResponseEntity<List<DndRace>> getDndRaces() throws Exception {
-    	logger.info("DnD Races endpoint");
     	this.permissions.canRead();
     	
 		List<DndRace> races = this.permissions.isAuthenticated() ? dndRaceService.getDndRaces() : new ArrayList<>();
@@ -31,7 +30,6 @@ public class DndRaceController extends BaseApiController {
 	
 	@PostMapping("/createRace")
     public ResponseEntity<DndRace> createRace(@RequestBody DndRace race) throws SQLException {
-    	logger.info("Create DndRace Endpoint");
 		this.permissions.canWrite();
 		
 		dndRaceService.createDndRace(race);

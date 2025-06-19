@@ -26,7 +26,6 @@ public class BountyController extends BaseApiController {
     
     @GetMapping("/bounties")
     public ResponseEntity<List<Bounty>> GetBounties() throws Exception {
-    	logger.info("Bounties endpoint");
     	this.permissions.canRead();
     	
 		List<Bounty> bounties = bountyService.getBounties();
@@ -35,7 +34,6 @@ public class BountyController extends BaseApiController {
     
     @PostMapping("/createBounty")
     public ResponseEntity<Bounty> createBounty(@RequestBody Bounty bounty) throws SQLException {
-    	logger.info("Create Bounty Endpoint");
 		this.permissions.canWrite();
 		
 		bountyService.createBounty(bounty);
@@ -44,7 +42,6 @@ public class BountyController extends BaseApiController {
     
     @PostMapping("/updateBounty")
     public ResponseEntity<Bounty> updateBounty(@RequestBody Bounty bounty) throws SQLException {
-    	logger.info("Update Bounty Endpoint");
 		this.permissions.canWrite();
 		
 		bountyService.updateBounty(bounty);
@@ -53,7 +50,6 @@ public class BountyController extends BaseApiController {
     
     @GetMapping("/bountyCategories")
     public ResponseEntity<List<BountyCategory>> getBountyCategories() throws Exception {
-    	logger.info("Bounty category endpoint");
     	this.permissions.canRead();
     	
 		List<BountyCategory> bounties = bountyCategoryService.getBountyCategories();
@@ -62,7 +58,6 @@ public class BountyController extends BaseApiController {
     
     @PostMapping("/createBountyCategory")
     public ResponseEntity<BountyCategory> createBountyCategory(@RequestBody BountyCategory bountyCategory) throws SQLException {
-    	logger.info("Create Bounty category Endpoint");
 		this.permissions.canWrite();
 		
 		bountyCategoryService.createBountyCategory(bountyCategory);

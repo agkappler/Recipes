@@ -37,7 +37,6 @@ public class FileController extends BaseApiController {
     
     @GetMapping("/fileUrl/{fileId}")
     public ResponseEntity<FileMetadata> getFileUrlById(@PathVariable("fileId") Integer fileId) throws Exception {
-        logger.info("Get file url endpoint for: " + fileId);
         permissions.canRead();
         
     	FileMetadata fileMetadata = fileService.getFileMetadataById(fileId);

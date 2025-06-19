@@ -27,7 +27,6 @@ public class CharacterController extends BaseApiController {
     
     @GetMapping("/characters")
     public ResponseEntity<List<DndCharacter>> getCharacters() throws Exception {
-    	logger.info("Characters endpoint");
     	this.permissions.canRead();
     	
 		List<DndCharacter> characters = characterService.getCharacters();
@@ -36,7 +35,6 @@ public class CharacterController extends BaseApiController {
     
     @GetMapping("/character/{characterId}")
     public ResponseEntity<DndCharacter> getCharacter(@PathVariable("characterId") Integer characterId) throws Exception {
-    	logger.info("Character endpoint for " + characterId);
     	this.permissions.canRead();
     	
 		DndCharacter character = characterService.getCharacter(characterId);
@@ -45,7 +43,6 @@ public class CharacterController extends BaseApiController {
     
     @PostMapping("/createCharacter")
     public ResponseEntity<DndCharacter> createCharacter(@RequestBody DndCharacter character) throws SQLException {
-    	logger.info("Create Character Endpoint");
 		this.permissions.canWrite();
 		
 		characterService.createCharacter(character);
@@ -54,7 +51,6 @@ public class CharacterController extends BaseApiController {
     
     @PostMapping("/updateCharacter")
     public ResponseEntity<DndCharacter> updateCharacter(@RequestBody DndCharacter character) throws SQLException {
-    	logger.info("Update Character Endpoint");
 		this.permissions.canWrite();
 		
 		characterService.updateCharacter(character);
@@ -66,7 +62,6 @@ public class CharacterController extends BaseApiController {
     		@RequestParam("characterId") Integer characterId,
     		@RequestParam("fileId") Integer fileId
 	) throws Exception {
-    	logger.info("Update Avatar Endpoint");
 		this.permissions.canWrite();
 		
 		characterService.updateAvatar(characterId, fileId);
@@ -77,7 +72,6 @@ public class CharacterController extends BaseApiController {
     
     @GetMapping("/character/{characterId}/resourceIds")
     public ResponseEntity<List<Integer>> getResourceIds(@PathVariable("characterId") Integer characterId) throws Exception {
-    	logger.info("Character resources endpoint for " + characterId);
     	this.permissions.canRead();
     	
 		List<Integer> resourceIds = characterService.getResourceFileIds(characterId);
@@ -89,7 +83,6 @@ public class CharacterController extends BaseApiController {
     		@RequestParam("characterId") Integer characterId,
     		@RequestParam("fileId") Integer fileId
 	) throws Exception {
-    	logger.info("Add resource Endpoint");
 		this.permissions.canWrite();
 		
 		characterService.addResource(characterId, fileId);
