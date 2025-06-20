@@ -3,9 +3,10 @@ export default class RequestManager {
     private static baseUrl = process.env.NEXT_PUBLIC_API_URL;
     private static apiUrl = this.baseUrl + "/api";
 
-    static async get(url: string): Promise<any> {
+    static async get<T = any>(url: string): Promise<T> {
         const response = await fetch(this.apiUrl + url, {
             method: "GET",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -17,6 +18,7 @@ export default class RequestManager {
     static async post(url: string, data: any, customHeaders?: HeadersInit): Promise<any> {
         const response = await fetch(this.apiUrl + url, {
             method: "POST",
+            credentials: "include",
             headers: customHeaders ?? {
                 "Content-Type": "application/json",
             },
@@ -29,6 +31,7 @@ export default class RequestManager {
     static async uploadFile(fileData: any) {
         const response = await fetch(this.apiUrl + "/uploadFile", {
             method: "POST",
+            credentials: "include",
             body: fileData,
         });
 
@@ -38,6 +41,7 @@ export default class RequestManager {
     static async put(url: string, data: any): Promise<any> {
         const response = await fetch(this.apiUrl + url, {
             method: "PUT",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -48,12 +52,25 @@ export default class RequestManager {
     }
 
     static async authenticateUser(email: string, password: string): Promise<any> {
-        const response = await fetch(this.baseUrl + `/authenticateUser`, {
+        const response = await fetch(this.baseUrl + `/authentication/authenticateUser`, {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ email, password }),
+        });
+
+        return await this.handleResponse(response);
+    }
+
+    static async logout(): Promise<{ message: string }> {
+        const response = await fetch(this.baseUrl + `/authentication/logout`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
         });
 
         return await this.handleResponse(response);
@@ -68,7 +85,7 @@ export default class RequestManager {
                 console.error("Error parsing error response:", error);
             }
 
-            throw new Error(errorData.errorMessage || "An error occurred while fetching data.");
+            throw new Error(errorData.errorMessage);
         }
 
         const responseData = await response.json();

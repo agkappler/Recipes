@@ -3,3 +3,12 @@ app:
   can-read: true
   can-write: true
   local-jwt-key: "qGa3c8MIvwzsrZw+F8HVQK878TDfQKohlBkRxj6GXwa85AlqecSyrg+CyWepJHTy"
+  
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:localhost.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: localhost

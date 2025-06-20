@@ -4,6 +4,7 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
+        "dev-https": "node server.js",
         "build": "next build",
         "start": "next start",
         "lint": "eslint . --quiet"
@@ -19,6 +20,7 @@
         "react-dom": "^18",
         "react-hook-form": "^7.56.1",
         "react-markdown": "^10.1.0",
+        "react-toastify": "^11.0.5",
         "sass": "^1.69.5",
         "swr": "^2.3.3"
     },

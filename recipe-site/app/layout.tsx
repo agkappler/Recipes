@@ -1,9 +1,10 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { Footer } from './_components/navigation/Footer'
-import { Navbar } from './_components/navigation/Navbar'
-import { ThemeRegistry } from './_components/ThemeRegistry'
-import './globals.scss'
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { ToastContainer } from 'react-toastify';
+import { Footer } from './_components/navigation/Footer';
+import { Navbar } from './_components/navigation/Navbar';
+import { ThemeRegistry } from './_components/ThemeRegistry';
+import './globals.scss';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <main className="flex-grow">{children}</main>
                     <Footer />
                 </ThemeRegistry>
+                <ToastContainer />
             </body>
         </html>
     )
