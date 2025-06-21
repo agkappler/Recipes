@@ -1,3 +1,4 @@
+import User from "../_models/User";
 
 export default class RequestManager {
     private static baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -15,7 +16,7 @@ export default class RequestManager {
         return await this.handleResponse(response);
     }
 
-    static async post(url: string, data: any, customHeaders?: HeadersInit): Promise<any> {
+    static async post<T = unknown>(url: string, data: T, customHeaders?: HeadersInit): Promise<T> {
         const response = await fetch(this.apiUrl + url, {
             method: "POST",
             credentials: "include",
@@ -28,7 +29,7 @@ export default class RequestManager {
         return await this.handleResponse(response);
     }
 
-    static async uploadFile(fileData: any) {
+    static async uploadFile(fileData: FormData) {
         const response = await fetch(this.apiUrl + "/uploadFile", {
             method: "POST",
             credentials: "include",
@@ -38,7 +39,7 @@ export default class RequestManager {
         return await this.handleResponse(response);
     }
 
-    static async put(url: string, data: any): Promise<any> {
+    static async put<T = unknown>(url: string, data: T): Promise<T> {
         const response = await fetch(this.apiUrl + url, {
             method: "PUT",
             credentials: "include",
@@ -51,7 +52,7 @@ export default class RequestManager {
         return await this.handleResponse(response);
     }
 
-    static async authenticateUser(email: string, password: string): Promise<any> {
+    static async authenticateUser(email: string, password: string): Promise<{ user: User }> {
         const response = await fetch(this.baseUrl + `/authentication/authenticateUser`, {
             method: "POST",
             credentials: "include",
@@ -76,7 +77,7 @@ export default class RequestManager {
         return await this.handleResponse(response);
     }
 
-    private static async handleResponse(response: Response): Promise<any> {
+    private static async handleResponse<T = unknown>(response: Response): Promise<T> {
         if (!response.ok) {
             let errorData = { errorMessage: "An error occurred while fetching data." };
             try {
