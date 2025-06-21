@@ -1,17 +1,17 @@
 'use client'
 
+import { NAVBAR_BREAK } from '@/app/_constants/Media';
+import { Menu } from '@mui/icons-material';
 import { Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Tab, Tabs, useMediaQuery } from '@mui/material';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import Image from 'next/image';
-import { Menu } from '@mui/icons-material';
-import { MOBILE_BREAK } from '@/app/_constants/Media';
 
 export const Navbar: React.FC = () => {
     const router = useRouter();
     const pathname = usePathname(); // Get the current URL path
 
-    const isMobile = useMediaQuery(`(max-width:${MOBILE_BREAK})`);
+    const isMobile = useMediaQuery(`(max-width:${NAVBAR_BREAK})`);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const navItems = [
@@ -46,7 +46,7 @@ export const Navbar: React.FC = () => {
                         <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
                             <Box sx={{ width: 200 }} role="presentation" onClick={() => setDrawerOpen(false)}>
                                 <List>
-                                    {navItems.map((item, idx) => (
+                                    {navItems.map((item) => (
                                         <ListItem key={item.label} disablePadding>
                                             <ListItemButton onClick={() => router.push(item.path)}>
                                                 <ListItemText primary={item.label} />
@@ -59,7 +59,7 @@ export const Navbar: React.FC = () => {
                     </>
                 ) : (
                     <Tabs value={getTabValue()} style={{ display: 'flex', flexWrap: 'wrap' }} textColor="primary" indicatorColor="primary">
-                        {navItems.map((item, idx) => (
+                        {navItems.map((item) => (
                             <Tab key={item.label} label={item.label} onClick={() => router.push(item.path)} />
                         ))}
                     </Tabs>
