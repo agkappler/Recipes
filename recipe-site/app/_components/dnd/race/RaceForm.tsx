@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import CustomDndRace from "@/app/_models/CustomDndRace";
 import RacialTrait from "@/app/_models/RacialTrait";
@@ -33,8 +34,8 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
             } else {
                 await RequestManager.post(`/createRace`, data);
             }
-        } catch (error: ErrorEvent | any) {
-            setErrorMessage(error.message);
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error));
             return;
         } finally {
             setIsLoading(false);

@@ -4,9 +4,7 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
 
-interface ClassListProps { }
-
-export const ClassList: React.FC<ClassListProps> = () => {
+export const ClassList: React.FC = () => {
     const router = useRouter();
     const { data: apiClassResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/classes', () => getClasses());
     const customClasses: DndItem[] = [],

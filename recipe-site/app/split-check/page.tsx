@@ -63,7 +63,7 @@ export default function SplitCheckPage() {
         const taxPercentage = data.taxAmount / itemTotal;
         const tipPercentage = data.tipPercentage / 100;
 
-        const calculatedTotals = data.people.map((person: any) => {
+        const calculatedTotals = data.people.map((person: Person) => {
             const preTaxTotal = parseFloat(person.total.toString()) + (sharedItemTotalByPerson[person.name] || 0);
             const tax = preTaxTotal * taxPercentage;
             const subTotal = preTaxTotal + tax;
