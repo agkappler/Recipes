@@ -20,7 +20,7 @@ export default function Recipes() {
         setIsOpen(false);
     }
 
-    const { data: recipes, error, isLoading, mutate } = useSWR<Recipe[]>('/recipes', () => RequestManager.get('/recipes'));
+    const { data: recipes, error, isLoading, mutate } = useSWR<Recipe[]>('/recipes', () => RequestManager.get<Recipe[]>('/recipes'));
     if (isLoading) {
         return <LoadingSpinner message="Loading recipes..." />;
     }

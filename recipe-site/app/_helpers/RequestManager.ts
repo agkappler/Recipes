@@ -3,7 +3,7 @@ export default class RequestManager {
     private static baseUrl = process.env.NEXT_PUBLIC_API_URL;
     private static apiUrl = this.baseUrl + "/api";
 
-    static async get<T = any>(url: string): Promise<T> {
+    static async get<T = unknown>(url: string): Promise<T> {
         const response = await fetch(this.apiUrl + url, {
             method: "GET",
             credentials: "include",

@@ -17,7 +17,7 @@ import useSWR from "swr";
 
 export default function DnDRacesPage() {
     const { data: apiRaceResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/races', () => getRaces(), { onSuccess: (data) => setSelectedRace(data.results[0].index ?? "") });
-    const { data: customRaces, isLoading: isLoadingCustomRaces, mutate } = useSWR<CustomDndRace[]>('/customRaces', () => RequestManager.get('/races'));
+    const { data: customRaces, isLoading: isLoadingCustomRaces, mutate } = useSWR<CustomDndRace[]>('/customRaces', () => RequestManager.get<CustomDndRace[]>('/races'));
     const races = [...(apiRaceResults?.results ?? []), ...(customRaces ?? []).map(r => new CustomDndRace(r))].sort((a, b) => a.name.localeCompare(b.name));
     const [selectedRace, setSelectedRace] = useState<string>(races[0]?.index ?? "");
     const [value, setValue] = useState("1");

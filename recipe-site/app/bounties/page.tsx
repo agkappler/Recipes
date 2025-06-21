@@ -34,8 +34,8 @@ export default function BountiesPage() {
         setIsCategoryOpen(false);
     }
 
-    const { data: bounties, error: bountiesError, isLoading: isLoadingBounties, mutate } = useSWR<Bounty[]>('/bounties', () => RequestManager.get('/bounties'));
-    const { data: bountyCategories, error: bountyCategoriesError, isLoading: isLoadingBountyCategories, mutate: mutateCategories } = useSWR<BountyCategory[]>('/bountyCategories', () => RequestManager.get('/bountyCategories'));
+    const { data: bounties, error: bountiesError, isLoading: isLoadingBounties, mutate } = useSWR<Bounty[]>('/bounties', () => RequestManager.get<Bounty[]>('/bounties'));
+    const { data: bountyCategories, error: bountyCategoriesError, isLoading: isLoadingBountyCategories, mutate: mutateCategories } = useSWR<BountyCategory[]>('/bountyCategories', () => RequestManager.get<BountyCategory[]>('/bountyCategories'));
     if (bountiesError || bountyCategoriesError) {
         return <ErrorMessage errorMessage={(bountiesError ?? bountyCategoriesError)?.message} />;
     }

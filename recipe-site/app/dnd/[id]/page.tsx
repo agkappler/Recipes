@@ -2,9 +2,9 @@
 
 import { CharacterForm } from "@/app/_components/dnd/CharacterForm";
 import { CharacterInfo } from "@/app/_components/dnd/CharacterInfo";
+import { LinkButton } from "@/app/_components/ui/buttons/LinkButton";
 import { ErrorMessage } from "@/app/_components/ui/ErrorMessage";
 import { ImageBox } from "@/app/_components/ui/ImageBox";
-import { LinkButton } from "@/app/_components/ui/buttons/LinkButton";
 import { LoadingWrapper } from "@/app/_components/ui/LoadingWrapper";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
 import RequestManager from "@/app/_helpers/RequestManager";
@@ -17,7 +17,7 @@ import useSWR from "swr";
 
 export default function CharacterPage({ params }: SlugProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const { data: character, isLoading, error, mutate } = useSWR<Character>(`/character/${params.id}`, () => RequestManager.get(`/character/${params.id}`));
+    const { data: character, isLoading, error, mutate } = useSWR<Character>(`/character/${params.id}`, () => RequestManager.get<Character>(`/character/${params.id}`));
 
     if (error) return <ErrorMessage errorMessage={error.message} />
     return <>

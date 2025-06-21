@@ -12,7 +12,7 @@ interface CharacterResourcesProps {
 }
 
 export const CharacterResources: React.FC<CharacterResourcesProps> = ({ characterId }) => {
-    const { data, isLoading, mutate } = useSWR<number[]>(`/character/${characterId}/resourceIds`, () => RequestManager.get(`/character/${characterId}/resourceIds`));
+    const { data, isLoading, mutate } = useSWR<number[]>(`/character/${characterId}/resourceIds`, () => RequestManager.get<number[]>(`/character/${characterId}/resourceIds`));
     const onUpload = async (fileMetadata: FileMetadata) => {
         await RequestManager.post(`/character/addResource?characterId=${characterId}&fileId=${fileMetadata.fileId}`, {});
         mutate();

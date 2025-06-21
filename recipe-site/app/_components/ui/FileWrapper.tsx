@@ -11,11 +11,11 @@ interface FileWrapperProps {
 }
 
 export const FileWrapper: React.FC<FileWrapperProps> = ({ fileId }) => {
-    const errorRetry = (error: any, key: any, config: any, revalidate: any, { retryCount }: { retryCount: number }) => {
+    const errorRetry = (_: any, key: any, config: any, revalidate: any, { retryCount }: { retryCount: number }) => {
         if (retryCount >= 2) return;
         setTimeout(() => revalidate({ retryCount }), 5000);
     }
-    const { data: fileMetadata, isLoading } = useSWR<FileMetadata>(`/fileUrl/${fileId}`, () => RequestManager.get(`/fileUrl/${fileId}`), { onErrorRetry: errorRetry });
+    const { data: fileMetadata, isLoading } = useSWR<FileMetadata>(`/fileUrl/${fileId}`, () => RequestManager.get<FileMetadata>(`/fileUrl/${fileId}`), { onErrorRetry: errorRetry });
     const isImage = (filename: string) => ["jpg", "jpeg", "png", "gif", "webp"].includes(filename.split('.').pop()?.toLowerCase() || "");
 
     return <LoadingWrapper isLoading={isLoading} size={100}>

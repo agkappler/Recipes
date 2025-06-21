@@ -9,19 +9,19 @@ import { PageHeader } from "@/app/_components/ui/PageHeader";
 import RequestManager from "@/app/_helpers/RequestManager";
 import SlugProps from "@/app/_helpers/SlugProps";
 import Ingredient from "@/app/_models/Ingredient";
-import RecipeModel from "@/app/_models/Recipe";
+import Recipe from "@/app/_models/Recipe";
 import { Edit } from "@mui/icons-material";
 import { Box, Chip, IconButton, Typography } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 
-export default function Recipe({ params }: SlugProps) {
+export default function RecipePage({ params }: SlugProps) {
     const [isOpen, setIsOpen] = useState(false);
     const onClose = () => {
         setIsOpen(false);
     }
-    const { data: recipeData, error, isLoading, mutate } = useSWR<RecipeModel>(`/recipe/${params.id}`, () => RequestManager.get(`/recipe/${params.id}`));
-    const { data: ingredients, isLoading: loadingIngredients, mutate: updateIngredients } = useSWR<Ingredient[]>(`/ingredientsForRecipe/${params.id}`, () => RequestManager.get(`/ingredientsForRecipe/${params.id}`));
+    const { data: recipeData, error, isLoading, mutate } = useSWR<Recipe>(`/recipe/${params.id}`, () => RequestManager.get<Recipe>(`/recipe/${params.id}`));
+    const { data: ingredients, isLoading: loadingIngredients, mutate: updateIngredients } = useSWR<Ingredient[]>(`/ingredientsForRecipe/${params.id}`, () => RequestManager.get<Ingredient[]>(`/ingredientsForRecipe/${params.id}`));
     if (isLoading) {
         return <LoadingSpinner message="Loading recipe data..." />;
     }

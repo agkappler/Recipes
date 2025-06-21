@@ -22,7 +22,7 @@ export default function Dnd() {
         setIsOpen(false);
         setSelectedCharacter(undefined);
     }
-    const { data: characters, isLoading, mutate } = useSWR<Character[]>("/characters", () => RequestManager.get("/characters"));
+    const { data: characters, isLoading, mutate } = useSWR<Character[]>("/characters", () => RequestManager.get<Character[]>("/characters"));
 
     return (<>
         <PageHeader title="Dungeons & Dragons" rightContainer={<LinkButton url={`/projects/${Project.DnD}`} label="Project Details" />} />

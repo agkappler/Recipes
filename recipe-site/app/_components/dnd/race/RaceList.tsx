@@ -6,12 +6,10 @@ import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
 
-interface RaceListProps { }
-
-export const RaceList: React.FC<RaceListProps> = () => {
+export const RaceList: React.FC = () => {
     const router = useRouter();
     const { data: apiRaceResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/races', () => getRaces());
-    const { data: customRaces, isLoading: isLoadingCustomRaces } = useSWR<CustomDndRace[]>('/customRaces', () => RequestManager.get('/races'));
+    const { data: customRaces, isLoading: isLoadingCustomRaces } = useSWR<CustomDndRace[]>('/customRaces', () => RequestManager.get<CustomDndRace[]>('/races'));
     const races = [...(apiRaceResults?.results ?? []), ...(customRaces ?? [])].sort((a, b) => a.name.localeCompare(b.name));
     return <>
         <Typography variant="h5" textAlign="center">Races</Typography>
