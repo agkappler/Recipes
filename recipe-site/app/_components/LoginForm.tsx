@@ -4,9 +4,9 @@ import RequestManager from "@/app/_helpers/RequestManager";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { getErrorMessage } from "../_helpers/Errors";
 import { successToast } from "../_helpers/Toasts";
 import { ErrorMessage } from "./ui/ErrorMessage";
-import { getErrorMessage } from "../_helpers/Errors";
 
 interface LoginFormInputs {
     username: string;
@@ -19,10 +19,8 @@ export const LoginForm: React.FC = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
 
     const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
-        console.log("Login Data:", data);
         try {
-            const authResponse = await RequestManager.authenticateUser(data.username, data.password);
-            console.log("Auth Response:", authResponse);
+            await RequestManager.authenticateUser(data.username, data.password);
             setErrorMessage(undefined);
             successToast('Succesfully logged in!');
         } catch (error: unknown) {
@@ -47,7 +45,7 @@ export const LoginForm: React.FC = () => {
         <Box
             component="form"
             onSubmit={handleSubmit(onSubmit)}
-            sx={{ maxWidth: 400, mx: "auto", mt: 4, p: 3, border: "1px solid #ccc", borderRadius: 2 }}
+            sx={{ maxWidth: 400, mx: "auto", mt: 4, p: 3, border: "1px solid #ccc", borderRadius: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
         >
             <Typography variant="h5" textAlign="center" mb={3}>
                 Login
@@ -79,7 +77,7 @@ export const LoginForm: React.FC = () => {
                 Login
             </Button>
             <ErrorMessage errorMessage={errorMessage} />
-            <Button onClick={logout}>Logout</Button>
+            <Button onClick={logout} sx={{ mt: 2 }}>Logout</Button>
         </Box>
     );
 };

@@ -19,8 +19,8 @@ export const Navbar: React.FC = () => {
         { label: "Bounties", path: "/bounties" },
         { label: "DnD", path: "/dnd" },
         { label: "About", path: "/about" },
+        { label: "Split Check", path: "/split-check" },
         { label: "Login", path: "/login" },
-        { label: "Split Check", path: "/split-check" }
     ];
 
     // Determine the active tab based on the current pathname
@@ -29,13 +29,13 @@ export const Navbar: React.FC = () => {
         if (pathname.startsWith('/bounties')) return 1;
         if (pathname.startsWith('/dnd')) return 2;
         if (pathname.startsWith('/about')) return 3;
-        if (pathname.startsWith('/login')) return 4;
-        if (pathname.startsWith('/split-check')) return 5;
+        if (pathname.startsWith('/split-check')) return 4;
+        if (pathname.startsWith('/login')) return 5;
         return false; // No tab selected for other routes
     };
 
     return (
-        <nav className="bg-white shadow-md">
+        <nav className="bg-white shadow-md sticky top-0 z-10">
             <Box className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                 <Button variant='text' onClick={() => router.push('/')} startIcon={<Image src="/mtn.png" alt="Mountain" width={25} height={25} />}>Fargopolis</Button>
                 {isMobile ? (
@@ -64,15 +64,6 @@ export const Navbar: React.FC = () => {
                         ))}
                     </Tabs>
                 )}
-
-
-                {/* <Tabs value={getTabValue()} style={{ display: 'flex', flexWrap: 'wrap' }} textColor="primary" indicatorColor="primary">
-                    <Tab label="Recipes" onClick={() => router.push('/recipes')} />
-                    <Tab label="Bounties" onClick={() => router.push('/bounties')} />
-                    <Tab label="DnD" onClick={() => router.push('/dnd')} />
-                    <Tab label="About" onClick={() => router.push('/about')} />
-                    <Tab label="Login" onClick={() => router.push('/login')} />
-                </Tabs> */}
             </Box>
         </nav>
     );
