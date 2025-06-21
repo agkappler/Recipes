@@ -41,7 +41,8 @@ public class UserService extends BaseService {
     public User authenticateUser(String email, String password) throws Exception {
         User user = getUser(email);
         if (user.getPassword().equals(password)) {
-            return user;
+        	user.setPassword(null);
+        	return user;
         }
 
         throw new Exception("Unauthorized user");

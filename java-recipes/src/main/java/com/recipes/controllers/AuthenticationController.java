@@ -80,19 +80,4 @@ public class AuthenticationController {
                 .build();
     	return cookie.toString();
     }
-    
-    @GetMapping("/test-cookie")
-    public ResponseEntity<Void> testCookie(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("test", "123")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(Duration.ofMinutes(10))
-            .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        return ResponseEntity.ok().build();
-    }
-
 }

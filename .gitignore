@@ -48,3 +48,10 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Ignore SSL certs
+*.p12
+*.jks
+*.key
+*.crt
+*.pem
+
