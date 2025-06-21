@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import BountyCategory from "@/app/_models/BountyCategory";
 import { DialogContent, Modal } from "@mui/material";
@@ -24,8 +25,8 @@ export const BountyCategoryForm: React.FC<BountyCategoryFormProps> = ({ onClose,
         try {
             setIsLoading(true);
             await RequestManager.post(`/createBountyCategory`, data);
-        } catch (error: ErrorEvent | any) {
-            setErrorMessage(error.message);
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error));
             return;
         } finally {
             setIsLoading(false);

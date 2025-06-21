@@ -1,7 +1,6 @@
 import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import CustomDndRace from "@/app/_models/CustomDndRace";
-import RacialTrait from "@/app/_models/RacialTrait";
 import { DialogContent, Grid, Modal } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../../inputs/BasicForm";
@@ -24,7 +23,7 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
         onClose();
     }
 
-    const [racialTraits, setRacialTraits] = useState<RacialTrait[]>(dndRace?.traits ?? []);
+    // const [racialTraits, setRacialTraits] = useState<RacialTrait[]>(dndRace?.traits ?? []);
 
     const onSubmit = async (data: CustomDndRace) => {
         try {

@@ -1,5 +1,6 @@
 'use client'
 
+import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import Recipe from "@/app/_models/Recipe";
 import { DialogContent, Grid, Modal } from "@mui/material";
@@ -27,8 +28,8 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeD
             } else {
                 await RequestManager.post("/createRecipe", data);
             }
-        } catch (error: any) {
-            setErrorMessage(error.message);
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error));
             return;
         } finally {
             setIsLoading(false);

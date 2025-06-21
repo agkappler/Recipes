@@ -1,17 +1,17 @@
+import { FileRole } from "@/app/_constants/FileRole";
+import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
+import FileMetadata from "@/app/_models/FileMetadata";
 import { DndItem, getClasses, getRaces, getSubclasses, getSubraces } from "@/app/api/dnd5eapi";
 import { DialogContent, Grid, Modal } from "@mui/material";
 import React, { useState } from "react";
 import useSWR from "swr";
 import Character from "../../_models/Character";
 import { BasicForm } from "../inputs/BasicForm";
-import { ComboBoxInput } from "../inputs/ComboBoxInput";
 import { DropdownInput } from "../inputs/DropdownInput";
+import { FileUpload } from "../inputs/FileUpload";
 import { NumberInput } from "../inputs/NumberInput";
 import { TextInput } from "../inputs/TextInput";
-import { FileUpload } from "../inputs/FileUpload";
-import { FileRole } from "@/app/_constants/FileRole";
-import FileMetadata from "@/app/_models/FileMetadata";
 
 interface CharacterFormProps {
     isOpen: boolean;
@@ -34,8 +34,8 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
         onClose();
     }
 
-    const { data: classes, isLoading: isLoadingClasses } = useSWR<{ results: DndItem[] }>("/classes", () => getClasses());
-    const { data: races, isLoading: isLoadingRaces } = useSWR<{ results: DndItem[] }>("/races", () => getRaces());
+    const { data: classes } = useSWR<{ results: DndItem[] }>("/classes", () => getClasses());
+    const { data: races } = useSWR<{ results: DndItem[] }>("/races", () => getRaces());
 
     // W/homebrew stuff.
     // const { data: classes } = useSWR<{ results: any[] }>("/classes5e", () => getOpen5eClasses());
@@ -60,8 +60,8 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
             } else {
                 await RequestManager.post('/createCharacter', data);
             }
-        } catch (error: ErrorEvent | any) {
-            setErrorMessage(error.message);
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error));
             return;
         } finally {
             setIsLoading(false);

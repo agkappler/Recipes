@@ -1,4 +1,4 @@
-import { Box, Grid, Paper } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import { ProjectCardContents } from "../_components/home/ProjectCardContents";
 import { PageHeader } from "../_components/ui/PageHeader";
 import { PROJECTS } from "../_constants/Projects";

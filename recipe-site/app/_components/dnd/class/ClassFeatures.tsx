@@ -15,7 +15,7 @@ export interface FeatureAndLevel extends DndItem {
     levelInfo: LevelInfo;
 }
 
-export const ClassFeatures: React.FC<ClassFeaturesProps> = ({ currentLevel, className, subclassName }) => {
+export const ClassFeatures: React.FC<ClassFeaturesProps> = ({ currentLevel, className }) => {
     const { data: levelInfos, isLoading: isLoadingClassInfo } = useSWR<LevelInfo[]>(`/class/${className}/levels`, () => getLevelInfoForClass(className));
     const currentLevelInfo = levelInfos?.find(l => l.level === currentLevel);
     const activeLevelInfos = levelInfos?.filter(l => l.level <= currentLevel),

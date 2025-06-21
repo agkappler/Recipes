@@ -9,7 +9,7 @@ interface DraconicAncestryRowProps {
 
 export const DraconicAncestryRow: React.FC<DraconicAncestryRowProps> = ({ ancestryOption }) => {
     const { data: ancestryInfo, isLoading } = useSWR(ancestryOption.index, () => getRelativeUrlInfo(ancestryOption.url));
-    const getBreathWeaponInfo = (breathWeapon: any) => {
+    const getBreathWeaponInfo = (breathWeapon: { area_of_effect: { size: number, type: string }, dc: { dc_type: { name: string } } }) => {
         const { area_of_effect: aoe, dc } = breathWeapon;
         return `${aoe.size} ft. ${aoe.type} (${dc.dc_type.name} save)`;
     }

@@ -18,7 +18,7 @@ export const SpellInfo: React.FC<SpellInfoProps> = ({ levelInfos, currentLevel, 
     if (levelInfos === undefined) return <ErrorMessage errorMessage="Missing level data." />;
     const spellcasting = levelInfos.find(l => l.level === currentLevel)?.spellcasting;
     if (spellcasting === undefined) return <Typography variant="body1">No spells yet!</Typography>;
-    const maxSpellLevel = 3;
+    // const maxSpellLevel = 3;
     const spellLevels = Array.from({ length: 10 }, (_, i) => i);
 
     const spellsByLevel = (spellData?.results as Spell[])?.reduce((acc, spell) => {

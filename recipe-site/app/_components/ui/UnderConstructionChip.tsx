@@ -1,6 +1,6 @@
-import React from "react";
-import { Alert, Chip } from "@mui/material";
 import ConstructionIcon from "@mui/icons-material/Construction";
+import { Alert } from "@mui/material";
+import React from "react";
 
 export const UnderConstructionChip: React.FC = () => {
     return (<>

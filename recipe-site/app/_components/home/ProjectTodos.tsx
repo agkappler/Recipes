@@ -1,5 +1,5 @@
 import { Circle } from "@mui/icons-material";
-import { List, ListItem, ListItemIcon, ListItemText, ListSubheader, Paper, Typography } from "@mui/material";
+import { List, ListItem, ListItemIcon, ListItemText, Paper, Typography } from "@mui/material";
 
 interface ProjectTodosProps {
     todos: string[];

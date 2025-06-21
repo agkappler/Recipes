@@ -4,6 +4,7 @@ import { Box, Button, DialogContent, Grid, Modal, Paper, TextField, Typography }
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "../ui/ErrorMessage";
+import { getErrorMessage } from "@/app/_helpers/Errors";
 
 interface IngredientFormProps {
     isOpen: boolean;
@@ -27,8 +28,8 @@ export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose,
             } else {
                 await RequestManager.post(`/addIngredientToRecipe/${recipeId}`, data);
             }
-        } catch (error: ErrorEvent | any) {
-            setErrorMessage(error.message);
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error));
             return;
         } finally {
             setIsLoading(false);

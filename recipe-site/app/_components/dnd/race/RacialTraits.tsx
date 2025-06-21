@@ -1,4 +1,4 @@
-import { getRace } from "@/app/api/dnd5eapi";
+import { DndItem, getRace } from "@/app/api/dnd5eapi";
 import { Typography } from "@mui/material";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
@@ -12,7 +12,7 @@ export const RacialTraits: React.FC<RacialTraitsProps> = ({ race }) => {
     const { data: racialTraits, isLoading } = useSWR(race, () => getRace(race));
     return <LoadingWrapper isLoading={isLoading}>
         <Typography variant="h5" textAlign="center">{racialTraits?.name}</Typography>
-        {racialTraits?.traits.map((t: any, index: number) => (
+        {racialTraits?.traits.map((t: DndItem, index: number) => (
             <RacialTraitCard key={index} trait={t} />
         ))}
     </LoadingWrapper>

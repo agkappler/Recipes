@@ -2,9 +2,7 @@ import { BaseInputProps } from "@/app/_helpers/BaseInputProps";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 
-interface SwitchInputProps extends BaseInputProps { }
-
-export const SwitchInput: React.FC<SwitchInputProps> = ({ label, fieldName, requiredMessage, onChange }) => {
+export const SwitchInput: React.FC<BaseInputProps> = ({ label, fieldName, requiredMessage }) => {
     const { register, formState: { defaultValues } } = useFormContext();
     return <FormGroup>
         <FormControlLabel

@@ -1,5 +1,6 @@
 import { Checklist, Description, ListAlt, Settings } from "@mui/icons-material";
 import { ProjectStatus } from "./Status";
+import { ReactNode } from "react";
 
 export enum Project {
     SiteInfrastructure = 0,
@@ -9,6 +10,20 @@ export enum Project {
 }
 
 export const FARGOPOLIS_BLURB = "This platform was built as a personal project to explore different technologies, manage my own recipes, gamify recurring tasks as bounties, and organize Dungeons & Dragons characters. It's also a way to showcase my work and experiment with new ideas. Feel free to explore and see what I've been working on!"
+
+export interface IProject {
+    name: string;
+    description: string;
+    imageUrl: string;
+    status: ProjectStatus;
+    icon: ReactNode;
+    url: string;
+    todo: string[];
+    motivation: string | undefined;
+    goals: string[] | undefined;
+    vision: string | undefined;
+    technology: string | undefined;
+}
 
 export const PROJECTS = [
     {

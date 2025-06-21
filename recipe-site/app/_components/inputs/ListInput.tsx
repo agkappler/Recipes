@@ -14,9 +14,6 @@ interface ListInputProps<T> {
 export const ListInput = <T,>({ title, fieldName, defaultItem, listItemComponent, addText }: ListInputProps<T>) => {
     const methods = useFormContext();
     const items: T[] = methods.watch(fieldName);
-    const handleItemChange = (index: number, field: keyof (T), value: string | number) => {
-        methods.setValue(fieldName, items.map((f: any, i: number) => (i === index ? { ...f, [field]: value } : f)));
-    };
     const addItem = () => methods.setValue(fieldName, [...items, defaultItem]);
     const removeItem = (index: number) => methods.setValue(fieldName, items.filter((_, i) => i !== index));
     return <>

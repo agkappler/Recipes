@@ -1,8 +1,9 @@
-import { Box, Typography } from "@mui/material"
+import { IProject } from "@/app/_constants/Projects";
+import { Box, Typography, TypographyVariant } from "@mui/material";
 
 interface ProjectHeaderProps {
-    project: any;
-    variant?: any;
+    project: IProject;
+    variant?: TypographyVariant;
 }
 
 export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, variant = "h6" }) => {

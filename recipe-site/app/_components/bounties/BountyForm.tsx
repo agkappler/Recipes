@@ -7,6 +7,7 @@ import { useState } from "react";
 import { BasicForm } from "../inputs/BasicForm";
 import { DropdownInput } from "../inputs/DropdownInput";
 import { TextInput } from "../inputs/TextInput";
+import { getErrorMessage } from "@/app/_helpers/Errors";
 
 interface BountyFormProps {
     isOpen: boolean;
@@ -34,8 +35,8 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
                 data.status = BountyStatus.InProgress;
                 await RequestManager.post(`/createBounty`, data);
             }
-        } catch (error: ErrorEvent | any) {
-            setErrorMessage(error.message);
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error));
             return;
         } finally {
             setIsLoading(false);

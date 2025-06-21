@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { PropsWithChildren, ReactNode } from "react";
 
 interface PageHeaderProps extends PropsWithChildren {

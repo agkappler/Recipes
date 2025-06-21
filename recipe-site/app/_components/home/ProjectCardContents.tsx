@@ -1,10 +1,11 @@
+import { IProject } from "@/app/_constants/Projects";
 import { Box, Typography } from "@mui/material";
+import { LinkButton } from "../ui/buttons/LinkButton";
 import { StatusChip } from "../ui/StatusChip";
 import { ProjectHeader } from "./ProjectHeader";
-import { LinkButton } from "../ui/buttons/LinkButton";
 
 interface ProjectCardProps {
-    project: any;
+    project: IProject;
     index: number;
 }
 

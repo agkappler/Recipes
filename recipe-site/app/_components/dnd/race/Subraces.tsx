@@ -1,3 +1,4 @@
+import CustomDndRace from "@/app/_models/CustomDndRace";
 import { BaseDndResponse, getSubraces } from "@/app/api/dnd5eapi";
 import { Box, MenuItem, Select, Typography } from "@mui/material";
 import { useState } from "react";
@@ -18,7 +19,7 @@ export const Subraces: React.FC<SubracesProps> = ({ race }) => {
         }
     );
     const isLoadingCustomSubraces = false,
-        customSubraces: any[] = [];
+        customSubraces: CustomDndRace[] = [];
     const subraces = [...(apiSubraceResults?.results ?? []), ...customSubraces].sort((a, b) => a.name.localeCompare(b.name));
     const [selectedSubrace, setSelectedSubrace] = useState<string>(subraces[0]?.index ?? "");
     return <>

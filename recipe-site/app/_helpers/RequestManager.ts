@@ -1,3 +1,4 @@
+import FileMetadata from "../_models/FileMetadata";
 import User from "../_models/User";
 
 export default class RequestManager {
@@ -36,7 +37,7 @@ export default class RequestManager {
             body: fileData,
         });
 
-        return await this.handleResponse(response);
+        return await this.handleResponse<FileMetadata>(response);
     }
 
     static async put<T = unknown>(url: string, data: T): Promise<T> {

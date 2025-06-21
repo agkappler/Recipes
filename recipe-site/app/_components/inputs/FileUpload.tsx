@@ -28,7 +28,7 @@ export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = 
         return fileMetadata.url ?? "";
     }
 
-    const { data: currentAvatarUrl } = useSWR<FileMetadata>(`/fileUrl/${currentAvatarId}`, currentAvatarId !== undefined ? () => RequestManager.get<any>(`/fileUrl/${currentAvatarId}`) : () => Promise.resolve(), { onSuccess: (data) => setImageUrl(data?.url) });
+    const { data: currentAvatarUrl } = useSWR<FileMetadata | undefined>(`/fileUrl/${currentAvatarId}`, currentAvatarId !== undefined ? () => RequestManager.get<FileMetadata>(`/fileUrl/${currentAvatarId}`) : () => Promise.resolve(undefined), { onSuccess: (data) => setImageUrl(data?.url) });
     const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
     const inputRef = useRef<HTMLInputElement>(null);
 
