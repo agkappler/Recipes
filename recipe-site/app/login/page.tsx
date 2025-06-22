@@ -1,9 +1,9 @@
 import { LoginForm } from "../_components/LoginForm";
-import { UnderConstructionChip } from "../_components/ui/UnderConstructionChip";
+import { AlertMessage } from "../_components/ui/AlertMessage";
 
 export default function LoginPage() {
     return <>
-        <UnderConstructionChip />
+        <AlertMessage message="Authentication is only required for write actions, so feel free to take a look around!" />
         <LoginForm />
     </>;
 }

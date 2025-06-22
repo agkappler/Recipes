@@ -2,7 +2,7 @@ import ConstructionIcon from "@mui/icons-material/Construction";
 import { Alert } from "@mui/material";
 import React from "react";
 
-export const UnderConstructionChip: React.FC = () => {
+export const UnderConstructionAlert: React.FC = () => {
     return (<>
         <Alert
             severity="warning"
