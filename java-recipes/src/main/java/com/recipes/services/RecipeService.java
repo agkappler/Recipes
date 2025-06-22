@@ -18,9 +18,10 @@ public class RecipeService extends BaseService {
 	
 	private final static String GET_RECIPES_SQL = "SELECT * FROM recipes ORDER BY recipe_id";
 	private final static String GET_RECIPE_BY_ID_SQL = "SELECT * FROM recipes WHERE recipe_id = ?";
-	private final static String INSERT_RECIPE_SQL = "INSERT INTO recipes (name, prep_time_minutes, cook_time_minutes, instructions) VALUES (?, ?, ?, ?) RETURNING recipe_id";
-	private final static String UPDATE_RECIPE_SQL = "UPDATE recipes SET name = ?, prep_time_minutes = ?, cook_time_minutes = ?, instructions = ? WHERE recipe_id = ?";
-
+	private final static String INSERT_RECIPE_SQL = "INSERT INTO recipes (name, prep_time_minutes, cook_time_minutes, instructions, quantity, total_calories) VALUES (?, ?, ?, ?, ?, ?) RETURNING recipe_id";
+	private final static String UPDATE_RECIPE_SQL = "UPDATE recipes SET name = ?, prep_time_minutes = ?, cook_time_minutes = ?, instructions = ?, quantity = ?, total_calories = ? WHERE recipe_id = ?";
+	private final static String UPDATE_AVATAR_SQL = "UPDATE recipes SET avatar_id=? WHERE recipe_id = ?";
+	
 	public RecipeService(DataSource dataSource, Data data) {
 		super(dataSource, data);
 	}
@@ -55,6 +56,8 @@ public class RecipeService extends BaseService {
 				ps.setInt(2, recipe.getPrepTimeMinutes());
 				ps.setInt(3, recipe.getCookTimeMinutes());
 				ps.setString(4, recipe.getInstructions());
+				ps.setString(5, recipe.getQuantity());
+				ps.setInt(6, recipe.getTotalCalories());
 			}
 		);
 		
@@ -70,7 +73,19 @@ public class RecipeService extends BaseService {
 				ps.setInt(2, recipe.getPrepTimeMinutes());
 				ps.setInt(3, recipe.getCookTimeMinutes());
 				ps.setString(4, recipe.getInstructions());
-				ps.setInt(5, recipe.getRecipeId());
+				ps.setString(5, recipe.getQuantity());
+				ps.setInt(6, recipe.getTotalCalories());
+				ps.setInt(7, recipe.getRecipeId());
+			}
+		);
+	}
+	
+	public void updateAvatar(Integer recipeId, Integer fileId) throws SQLException {
+		this.data.Execute(
+			UPDATE_AVATAR_SQL,
+			(PreparedStatement ps) -> {
+				ps.setInt(1, fileId);
+				ps.setInt(2, recipeId);
 			}
 		);
 	}
@@ -85,6 +100,9 @@ public class RecipeService extends BaseService {
 		r.setPrepTimeMinutes(prepTime != null ? prepTime : -1);
 		String instructions = rs.getString("instructions");
 		r.setInstructions(instructions != null ? instructions : "No instructions yet!");
+		r.setQuantity(rs.getString("quantity"));
+		r.setAvatarId(rs.getObject("avatar_id") == null ? null : rs.getInt("avatar_id"));
+		r.setTotalCalories(rs.getObject("total_calories") == null ? null : rs.getInt("total_calories"));
 		return r;
 	}
 }

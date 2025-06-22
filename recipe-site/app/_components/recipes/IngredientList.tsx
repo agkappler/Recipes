@@ -2,7 +2,7 @@
 
 import Ingredient from "@/app/_models/Ingredient";
 import { Add, Edit } from "@mui/icons-material";
-import { Box, Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Box, Button, Chip, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { IngredientForm } from "./IngredientForm";
 
@@ -24,6 +24,7 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId, ingred
         <Box>
             <Box className="flex items-center justify-between mt-2 w-full">
                 <Typography variant="h6">Ingredients</Typography>
+                <Chip label={`Calories from Ingredients: ${ingredients?.reduce((total, ingredient) => total + (ingredient.calories || 0), 0) ?? 0}`} />
                 <Button variant='text' onClick={() => setIsOpen(!isOpen)} startIcon={<Add />}>Add Ingredient</Button>
             </Box>
             <TableContainer component={Paper}>

@@ -29,8 +29,8 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthenticationController {
 	protected static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 	
-	private UserService userService;
-	private JwtUtil jwtUtil;
+	private final UserService userService;
+	private final JwtUtil jwtUtil;
 
     @Autowired
     public AuthenticationController(UserService userService, JwtUtil jwtUtil) {
@@ -42,8 +42,8 @@ public class AuthenticationController {
     public ResponseEntity<AuthResponse> authenticateUser(@RequestBody AuthRequest authRequest, HttpServletResponse response) throws Exception {
     	String email = authRequest.getEmail();
     	String password = authRequest.getPassword();
-    	
-    	logger.info("Authentication endpoint, email: " + email + " " + password);
+
+        logger.info("Authentication endpoint, email: {} {}", email, password);
     	if (email == null || password == null) {
     		throw new ObjectNotFoundException("Invalid User Request");
     	}

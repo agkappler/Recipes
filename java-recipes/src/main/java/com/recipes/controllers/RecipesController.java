@@ -9,18 +9,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.recipes.dto.ImageUrl;
 import com.recipes.models.Recipe;
+import com.recipes.services.FileService;
 import com.recipes.services.RecipeService;
 
 @RestController
 public class RecipesController extends BaseApiController {
-    private RecipeService recipeService;
+    private final RecipeService recipeService;
+    private final FileService fileService;
 
     @Autowired
-    public RecipesController(RecipeService recipeService){
+    public RecipesController(RecipeService recipeService, FileService fileService){
         this.recipeService = recipeService;
+        this.fileService = fileService;
     }
 
     @GetMapping("/recipe/{recipeId}")
@@ -53,5 +58,18 @@ public class RecipesController extends BaseApiController {
 		
 		this.recipeService.updateRecipe(recipe);
     	return ResponseEntity.ok(recipe);
+    }
+    
+    @PostMapping("/updateRecipeAvatar")
+    public ResponseEntity<ImageUrl> updateRecipeAvatar(
+    		@RequestParam("recipeId") Integer recipeId,
+    		@RequestParam("fileId") Integer fileId
+	) throws Exception {
+		this.permissions.canWrite();
+		
+		recipeService.updateAvatar(recipeId, fileId);
+		String avatarUrl = fileService.getUrlForFileById(fileId);
+		
+    	return ResponseEntity.ok(new ImageUrl(avatarUrl));
     }
 }

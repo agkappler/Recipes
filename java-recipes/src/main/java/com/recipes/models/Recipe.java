@@ -1,42 +1,21 @@
 package com.recipes.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.GenerationType;
 
 @Getter
 @Setter
-//@Entity
+@NoArgsConstructor
 public class Recipe {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long rowid;
     private Integer recipeId;
-
     private String name;
-
-//    public String GetName() {
-//        return this.name;
-//    }
-//
-//    public void SetName(String newName){
-//        this.name = newName;
-//    }
-//
-//    public Long GetId() {
-//        return this.rowid;
-//    }
-//
-//    public void SetId(Long id){
-//        this.rowid = id;
-//    }
-    
     private String instructions;
     private Integer prepTimeMinutes;
     private Integer cookTimeMinutes;
+    private Integer totalCalories;
+    private String quantity;
+    private Integer avatarId;
 
     @Override
     public String toString() {

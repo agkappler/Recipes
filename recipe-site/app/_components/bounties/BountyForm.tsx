@@ -1,13 +1,14 @@
 import { BOUNTY_STATUS_OPTIONS, BountyStatus } from "@/app/_constants/Status";
+import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import Bounty from "@/app/_models/Bounty";
 import BountyCategory from "@/app/_models/BountyCategory";
-import { DialogContent, Grid, Modal } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../inputs/BasicForm";
 import { DropdownInput } from "../inputs/DropdownInput";
 import { TextInput } from "../inputs/TextInput";
-import { getErrorMessage } from "@/app/_helpers/Errors";
+import { SimpleDialog } from "../ui/SimpleDialog";
 
 interface BountyFormProps {
     isOpen: boolean;
@@ -46,52 +47,49 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
         closeForm();
     }
 
-    return <Modal open={isOpen} onClose={closeForm}>
-        <DialogContent>
-            <BasicForm
-                title={isEdit ? "Update Bounty" : "Post Bounty"}
-                onSubmit={onSubmit}
-                isSubmitting={isLoading}
-                errorMessage={errorMessage}
-                closeForm={closeForm}
-                defaultValues={bounty}
-            >
-                <Grid container spacing={2} className="mb-2">
-                    <Grid size={6}>
-                        <TextInput
-                            label="Title"
-                            fieldName="title"
-                            requiredMessage="Title is required"
-                        />
-                    </Grid>
-                    <Grid size={6}>
-                        <DropdownInput
-                            label="Category"
-                            fieldName="categoryId"
-                            options={bountyCategories.map(category => ({
-                                value: category.categoryId,
-                                label: category.name
-                            }))}
-                            requiredMessage="Category is required"
-                        />
-                    </Grid>
-                    {isEdit && <Grid size={6}>
-                        <DropdownInput
-                            label="Status"
-                            fieldName="status"
-                            options={BOUNTY_STATUS_OPTIONS}
-                        />
-                    </Grid>}
-                    <Grid size={12}>
-                        <TextInput
-                            label="Description"
-                            fieldName="description"
-                            requiredMessage="Description is required"
-                            multilineRows={4}
-                        />
-                    </Grid>
+    return <SimpleDialog title={isEdit ? "Update Bounty" : "Post Bounty"} isOpen={isOpen} onClose={closeForm}>
+        <BasicForm
+            onSubmit={onSubmit}
+            isSubmitting={isLoading}
+            errorMessage={errorMessage}
+            closeForm={closeForm}
+            defaultValues={bounty}
+        >
+            <Grid container spacing={2} className="mb-2">
+                <Grid size={6}>
+                    <TextInput
+                        label="Title"
+                        fieldName="title"
+                        requiredMessage="Title is required"
+                    />
                 </Grid>
-            </BasicForm>
-        </DialogContent>
-    </Modal>
+                <Grid size={6}>
+                    <DropdownInput
+                        label="Category"
+                        fieldName="categoryId"
+                        options={bountyCategories.map(category => ({
+                            value: category.categoryId,
+                            label: category.name
+                        }))}
+                        requiredMessage="Category is required"
+                    />
+                </Grid>
+                {isEdit && <Grid size={6}>
+                    <DropdownInput
+                        label="Status"
+                        fieldName="status"
+                        options={BOUNTY_STATUS_OPTIONS}
+                    />
+                </Grid>}
+                <Grid size={12}>
+                    <TextInput
+                        label="Description"
+                        fieldName="description"
+                        requiredMessage="Description is required"
+                        multilineRows={4}
+                    />
+                </Grid>
+            </Grid>
+        </BasicForm>
+    </SimpleDialog>
 }

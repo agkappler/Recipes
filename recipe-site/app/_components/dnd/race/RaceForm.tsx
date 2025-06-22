@@ -1,10 +1,11 @@
 import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import CustomDndRace from "@/app/_models/CustomDndRace";
-import { DialogContent, Grid, Modal } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../../inputs/BasicForm";
 import { TextInput } from "../../inputs/TextInput";
+import { SimpleDialog } from "../../ui/SimpleDialog";
 
 interface RaceFormProps {
     isOpen: boolean;
@@ -44,34 +45,32 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
         closeForm();
     }
 
-    return <Modal open={isOpen} onClose={closeForm}>
-        <DialogContent>
-            <BasicForm
-                title={isEdit ? "Update Race" : "Add Race"}
-                onSubmit={onSubmit}
-                isSubmitting={isLoading}
-                errorMessage={errorMessage}
-                closeForm={closeForm}
-                defaultValues={dndRace ?? defaultRace}
-            >
-                <Grid container spacing={2} className="mb-2">
-                    <Grid size={12}>
-                        <TextInput
-                            label="Name"
-                            fieldName="name"
-                            requiredMessage="Name is required"
-                        />
-                    </Grid>
-                    <Grid size={12}>
-                        <TextInput
-                            label="Description"
-                            fieldName="description"
-                            requiredMessage="Description is required"
-                            multilineRows={4}
-                        />
-                    </Grid>
-                    <Grid size={12}>
-                        {/* <ListInput
+    return <SimpleDialog title={isEdit ? "Update Race" : "Add Race"} isOpen={isOpen} onClose={closeForm}>
+        <BasicForm
+            onSubmit={onSubmit}
+            isSubmitting={isLoading}
+            errorMessage={errorMessage}
+            closeForm={closeForm}
+            defaultValues={dndRace ?? defaultRace}
+        >
+            <Grid container spacing={2} className="mb-2">
+                <Grid size={12}>
+                    <TextInput
+                        label="Name"
+                        fieldName="name"
+                        requiredMessage="Name is required"
+                    />
+                </Grid>
+                <Grid size={12}>
+                    <TextInput
+                        label="Description"
+                        fieldName="description"
+                        requiredMessage="Description is required"
+                        multilineRows={4}
+                    />
+                </Grid>
+                <Grid size={12}>
+                    {/* <ListInput
                             title={"Traits"}
                             fieldName={"traits"}
                             defaultItem={{ name: "", description: "" }}
@@ -88,9 +87,8 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
                                 </Grid>
                             )}
                         /> */}
-                    </Grid>
                 </Grid>
-            </BasicForm>
-        </DialogContent>
-    </Modal>
+            </Grid>
+        </BasicForm>
+    </SimpleDialog>
 }

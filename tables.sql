@@ -143,3 +143,12 @@ CREATE TABLE IF NOT EXISTS rel_character_resource_file (
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
+
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS avatar_id integer;
+ALTER TABLE recipes ADD CONSTRAINT recipes_avatar_id_fkey FOREIGN KEY (avatar_id)
+	REFERENCES files(file_id) MATCH SIMPLE
+	ON UPDATE NO ACTION
+	ON DELETE CASCADE;
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS total_calories integer;
+
+ALTER TABLE users ADD CONSTRAINT uq_users_email UNIQUE (email);

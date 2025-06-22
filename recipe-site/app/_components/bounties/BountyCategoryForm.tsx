@@ -1,10 +1,10 @@
 import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import BountyCategory from "@/app/_models/BountyCategory";
-import { DialogContent, Modal } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../inputs/BasicForm";
 import { TextInput } from "../inputs/TextInput";
+import { SimpleDialog } from "../ui/SimpleDialog";
 
 interface BountyCategoryFormProps {
     isOpen: boolean;
@@ -36,21 +36,18 @@ export const BountyCategoryForm: React.FC<BountyCategoryFormProps> = ({ onClose,
         closeForm();
     }
 
-    return <Modal open={isOpen} onClose={closeForm}>
-        <DialogContent>
-            <BasicForm
-                title="Add Bounty Category"
-                onSubmit={onSubmit}
-                isSubmitting={isLoading}
-                errorMessage={errorMessage}
-                closeForm={closeForm}
-            >
-                <TextInput
-                    label="Name"
-                    fieldName="name"
-                    requiredMessage="Name is required"
-                />
-            </BasicForm>
-        </DialogContent>
-    </Modal>
+    return <SimpleDialog title="Add Bounty Category" isOpen={isOpen} onClose={closeForm}>
+        <BasicForm
+            onSubmit={onSubmit}
+            isSubmitting={isLoading}
+            errorMessage={errorMessage}
+            closeForm={closeForm}
+        >
+            <TextInput
+                label="Name"
+                fieldName="name"
+                requiredMessage="Name is required"
+            />
+        </BasicForm>
+    </SimpleDialog>
 }

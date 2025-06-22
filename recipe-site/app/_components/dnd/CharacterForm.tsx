@@ -3,7 +3,7 @@ import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import FileMetadata from "@/app/_models/FileMetadata";
 import { DndItem, getClasses, getRaces, getSubclasses, getSubraces } from "@/app/api/dnd5eapi";
-import { DialogContent, Grid, Modal } from "@mui/material";
+import { Grid } from "@mui/material";
 import React, { useState } from "react";
 import useSWR from "swr";
 import Character from "../../_models/Character";
@@ -12,6 +12,7 @@ import { DropdownInput } from "../inputs/DropdownInput";
 import { FileUpload } from "../inputs/FileUpload";
 import { NumberInput } from "../inputs/NumberInput";
 import { TextInput } from "../inputs/TextInput";
+import { SimpleDialog } from "../ui/SimpleDialog";
 
 interface CharacterFormProps {
     isOpen: boolean;
@@ -76,71 +77,69 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
         updateCharacters();
     }
 
-    return (<Modal open={isOpen} onClose={closeForm}>
-        <DialogContent>
-            <BasicForm
-                title={isEdit ? "Update Character" : "Create Character"}
-                onSubmit={onSubmit}
-                isSubmitting={isLoading}
-                defaultValues={character}
-                closeForm={closeForm}
-                errorMessage={errorMessage}
-            >
-                <Grid container spacing={2} className="mb-2">
-                    {isEdit && <Grid size={12}>
-                        <FileUpload
-                            label="Upload Avatar"
-                            fileRole={FileRole.CharacterAvatar}
-                            onUpload={onUpload} isAvatar={true}
-                            currentAvatarId={character?.avatarId}
-                        />
-                    </Grid>}
-                    <Grid size={{ sm: 6, xs: 12 }}>
-                        <TextInput
-                            label="Name"
-                            fieldName="name"
-                            requiredMessage="Name is required"
-                        />
-                    </Grid>
-                    <Grid size={{ sm: 6, xs: 12 }}>
-                        <NumberInput
-                            label="Level"
-                            fieldName="level"
-                            requiredMessage="Level is required"
-                        />
-                    </Grid>
-                    <Grid size={{ sm: 6, xs: 12 }}>
-                        <DropdownInput
-                            label="Race"
-                            fieldName="race"
-                            options={raceOptions}
-                            requiredMessage="Race is required"
-                        />
-                    </Grid>
-                    <Grid size={{ sm: 6, xs: 12 }}>
-                        <DropdownInput
-                            label="Class"
-                            fieldName="className"
-                            options={classOptions}
-                            requiredMessage="Class is required"
-                        />
-                    </Grid>
-                    <Grid size={{ sm: 6, xs: 12 }}>
-                        <DropdownInput
-                            label="Subrace"
-                            fieldName="subrace"
-                            options={subraceOptions}
-                        />
-                    </Grid>
-                    <Grid size={{ sm: 6, xs: 12 }}>
-                        <DropdownInput
-                            label="Subclass"
-                            fieldName="subclassName"
-                            options={subclassOptions}
-                        />
-                    </Grid>
+    return (<SimpleDialog title={isEdit ? "Update Character" : "Create Character"} isOpen={isOpen} onClose={closeForm}>
+        <BasicForm
+            onSubmit={onSubmit}
+            isSubmitting={isLoading}
+            defaultValues={character}
+            closeForm={closeForm}
+            errorMessage={errorMessage}
+        >
+            <Grid container spacing={2} className="mb-2">
+                {isEdit && <Grid size={12}>
+                    <FileUpload
+                        label="Upload Avatar"
+                        fileRole={FileRole.CharacterAvatar}
+                        onUpload={onUpload}
+                        isAvatar={true}
+                        currentAvatarId={character?.avatarId}
+                    />
+                </Grid>}
+                <Grid size={{ sm: 6, xs: 12 }}>
+                    <TextInput
+                        label="Name"
+                        fieldName="name"
+                        requiredMessage="Name is required"
+                    />
                 </Grid>
-            </BasicForm>
-        </DialogContent>
-    </Modal>)
+                <Grid size={{ sm: 6, xs: 12 }}>
+                    <NumberInput
+                        label="Level"
+                        fieldName="level"
+                        requiredMessage="Level is required"
+                    />
+                </Grid>
+                <Grid size={{ sm: 6, xs: 12 }}>
+                    <DropdownInput
+                        label="Race"
+                        fieldName="race"
+                        options={raceOptions}
+                        requiredMessage="Race is required"
+                    />
+                </Grid>
+                <Grid size={{ sm: 6, xs: 12 }}>
+                    <DropdownInput
+                        label="Class"
+                        fieldName="className"
+                        options={classOptions}
+                        requiredMessage="Class is required"
+                    />
+                </Grid>
+                <Grid size={{ sm: 6, xs: 12 }}>
+                    <DropdownInput
+                        label="Subrace"
+                        fieldName="subrace"
+                        options={subraceOptions}
+                    />
+                </Grid>
+                <Grid size={{ sm: 6, xs: 12 }}>
+                    <DropdownInput
+                        label="Subclass"
+                        fieldName="subclassName"
+                        options={subclassOptions}
+                    />
+                </Grid>
+            </Grid>
+        </BasicForm>
+    </SimpleDialog>)
 }

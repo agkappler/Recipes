@@ -1,7 +1,7 @@
 'use client';
 
 import RequestManager from "@/app/_helpers/RequestManager";
-import { Box, Button, DialogContent, Grid, Modal, TextField, Typography } from "@mui/material";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { getErrorMessage } from "../_helpers/Errors";
@@ -10,6 +10,7 @@ import { useAppContext } from "./AppContext";
 import { BasicForm } from "./inputs/BasicForm";
 import { TextInput } from "./inputs/TextInput";
 import { ErrorMessage } from "./ui/ErrorMessage";
+import { SimpleDialog } from "./ui/SimpleDialog";
 
 interface LoginFormInputs {
     username: string;
@@ -104,31 +105,28 @@ export const LoginForm: React.FC = () => {
             </Box>}
 
         </Box>
-        <Modal open={isOpen} onClose={onClose}>
-            <DialogContent>
-                <BasicForm
-                    title="Create User"
-                    errorMessage={userErrorMessage}
-                    onSubmit={createUser}
-                    isSubmitting={isSubmitting}
-                    closeForm={onClose}
-                >
-                    <Grid container spacing={2}>
-                        <Grid size={12}>
-                            <TextInput
-                                label="Email"
-                                fieldName="email"
-                            />
-                        </Grid>
-                        <Grid size={12}>
-                            <TextInput
-                                label="Password"
-                                fieldName="password"
-                            />
-                        </Grid>
+        <SimpleDialog title="Create User" isOpen={isOpen} onClose={onClose}>
+            <BasicForm
+                errorMessage={userErrorMessage}
+                onSubmit={createUser}
+                isSubmitting={isSubmitting}
+                closeForm={onClose}
+            >
+                <Grid container spacing={2}>
+                    <Grid size={12}>
+                        <TextInput
+                            label="Email"
+                            fieldName="email"
+                        />
                     </Grid>
-                </BasicForm>
-            </DialogContent>
-        </Modal>
+                    <Grid size={12}>
+                        <TextInput
+                            label="Password"
+                            fieldName="password"
+                        />
+                    </Grid>
+                </Grid>
+            </BasicForm>
+        </SimpleDialog>
     </>);
 };

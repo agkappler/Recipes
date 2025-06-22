@@ -3,6 +3,7 @@ import { IngredientList } from "@/app/_components/recipes/IngredientList";
 import { RecipeForm } from "@/app/_components/recipes/RecipeForm";
 import { LinkButton } from "@/app/_components/ui/buttons/LinkButton";
 import { ErrorMessage } from "@/app/_components/ui/ErrorMessage";
+import { ImageBox } from "@/app/_components/ui/ImageBox";
 import { LoadingSpinner } from "@/app/_components/ui/LoadingSpinner";
 import { LoadingWrapper } from "@/app/_components/ui/LoadingWrapper";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
@@ -35,11 +36,15 @@ export default function RecipePage({ params }: SlugProps) {
             leftContainer={<LinkButton label="All Recipes" url="/recipes" isForward={false} />}
             rightContainer={<IconButton size="medium" aria-label="edit" onClick={() => setIsOpen(true)}><Edit /></IconButton>}
         />
+        {recipeData.avatarId && <>
+            <ImageBox fileId={recipeData.avatarId} altText="Recipe image" />
+        </>}
         <Box className="p-2">
             <Box display="flex" justifyContent="center" gap={2} mb={2}>
                 <Chip label={`Prep Time: ${recipeData.prepTimeMinutes} min`} />
                 <Chip label={`Cook Time: ${recipeData.cookTimeMinutes} min`} />
-                <Chip label={`Total Calories: ${ingredients?.reduce((total, ingredient) => total + (ingredient.calories || 0), 0) ?? 0}`} />
+                <Chip label={`Total Calories: ${recipeData.totalCalories ?? "TBD"}`} />
+                <Chip label={`Quantity: ${recipeData.quantity ?? "TBD"}`} />
             </Box>
             <Box border={1} padding={2} borderRadius={4}>
                 <Typography variant="h6" textAlign="center">Instructions</Typography>
