@@ -9,18 +9,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.recipes.services.UserService;
 import com.utils.auth.JwtAuthenticationFilter;
-import com.utils.auth.JwtUtil;
 
 @Configuration
-public class SecurityConfig {
-
-	@Autowired
-	private JwtUtil validator;
+public class JwtConfig {
 	
 	@Autowired
-	private UserService userService;
+	private JwtAuthenticationFilter jwtFilter;
 	
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,7 +32,7 @@ public class SecurityConfig {
 	            .requestMatchers(HttpMethod.DELETE, "/api/**").authenticated()
 	            .anyRequest().authenticated()
     		)
-            .addFilterBefore(new JwtAuthenticationFilter(validator, userService), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

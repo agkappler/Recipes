@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.AppConfigProperties;
 import com.recipes.dto.AuthRequest;
 import com.recipes.dto.AuthResponse;
 import com.recipes.dto.Message;
@@ -32,13 +31,11 @@ public class AuthenticationController {
 	
 	private UserService userService;
 	private JwtUtil jwtUtil;
-	private final AppConfigProperties appConfig;
 
     @Autowired
-    public AuthenticationController(UserService userService, JwtUtil jwtUtil, AppConfigProperties appConfig){
+    public AuthenticationController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
-        this.appConfig = appConfig;
     }
     
     @PostMapping("/authenticateUser")
@@ -51,12 +48,10 @@ public class AuthenticationController {
     		throw new ObjectNotFoundException("Invalid User Request");
     	}
 		User user = userService.authenticateUser(email, password);
-		logger.info("Authenticated user.");
 		
 		AuthResponse authResponse = new AuthResponse();
 		authResponse.setUser(user);
 		String token = this.jwtUtil.generateToken(email);
-		logger.info("Generated token for user.");
 		
 		response.addHeader(HttpHeaders.SET_COOKIE, getCookieString(token, jwtUtil.getJwtDuration()));
 		

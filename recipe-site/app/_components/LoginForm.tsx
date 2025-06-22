@@ -1,11 +1,14 @@
 'use client';
 
 import RequestManager from "@/app/_helpers/RequestManager";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, DialogContent, Grid, Modal, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { getErrorMessage } from "../_helpers/Errors";
 import { successToast } from "../_helpers/Toasts";
+import { useAppContext } from "./AppContext";
+import { BasicForm } from "./inputs/BasicForm";
+import { TextInput } from "./inputs/TextInput";
 import { ErrorMessage } from "./ui/ErrorMessage";
 
 interface LoginFormInputs {
@@ -16,18 +19,23 @@ interface LoginFormInputs {
 export const LoginForm: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
+    const { setUser, isAuthenticated } = useAppContext();
+    const [userErrorMessage, setUserErrorMessage] = useState<string | undefined>();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const onClose = () => setIsOpen(false);
+
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
 
     const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
         try {
-            await RequestManager.authenticateUser(data.username, data.password);
+            const response = await RequestManager.authenticateUser(data.username, data.password);
             setErrorMessage(undefined);
             successToast('Succesfully logged in!');
+            setUser(response.user);
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
         }
-
-        // Handle login logic here
     };
 
     const logout = async () => {
@@ -35,13 +43,26 @@ export const LoginForm: React.FC = () => {
             await RequestManager.logout();
             setErrorMessage(undefined);
             successToast('Succesfully logged out!');
-        }
-        catch (error: unknown) {
+            setUser(undefined);
+        } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
         }
     }
 
-    return (
+    const createUser = async (data: { username: string, password: string }) => {
+        setIsSubmitting(true);
+        try {
+            await RequestManager.post("/users/createUser", data);
+            setUserErrorMessage(undefined);
+            successToast('Succesfully created user!');
+        } catch (error: unknown) {
+            setUserErrorMessage(getErrorMessage(error));
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (<>
         <Box
             component="form"
             onSubmit={handleSubmit(onSubmit)}
@@ -77,7 +98,37 @@ export const LoginForm: React.FC = () => {
                 Login
             </Button>
             <ErrorMessage errorMessage={errorMessage} />
-            <Button onClick={logout} sx={{ mt: 2 }}>Logout</Button>
+            {isAuthenticated && <Box display="flex" justifyContent="space-between" marginTop={2}>
+                <Button onClick={logout}>Logout</Button>
+                <Button onClick={() => setIsOpen(true)}>Create User</Button>
+            </Box>}
+
         </Box>
-    );
+        <Modal open={isOpen} onClose={onClose}>
+            <DialogContent>
+                <BasicForm
+                    title="Create User"
+                    errorMessage={userErrorMessage}
+                    onSubmit={createUser}
+                    isSubmitting={isSubmitting}
+                    closeForm={onClose}
+                >
+                    <Grid container spacing={2}>
+                        <Grid size={12}>
+                            <TextInput
+                                label="Email"
+                                fieldName="email"
+                            />
+                        </Grid>
+                        <Grid size={12}>
+                            <TextInput
+                                label="Password"
+                                fieldName="password"
+                            />
+                        </Grid>
+                    </Grid>
+                </BasicForm>
+            </DialogContent>
+        </Modal>
+    </>);
 };

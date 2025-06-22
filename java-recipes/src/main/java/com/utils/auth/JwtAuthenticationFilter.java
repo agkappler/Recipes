@@ -8,9 +8,11 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.recipes.models.User;
@@ -24,6 +26,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 	
@@ -34,7 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final UserService userService;
 	private final JwtValidator jwtValidator;
 
-    public JwtAuthenticationFilter(JwtValidator jwtValidator, UserService userService) {
+    @Autowired
+	public JwtAuthenticationFilter(JwtValidator jwtValidator, UserService userService) {
         this.jwtValidator = jwtValidator;
         this.userService = userService;
     }
