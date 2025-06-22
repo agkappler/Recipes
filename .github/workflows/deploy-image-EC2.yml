@@ -6,7 +6,7 @@ on:
       can_write:
         description: 'Whether this deployment allows writing'
         required: false
-        default: false
+        default: true
 
 jobs:
   deploy:
