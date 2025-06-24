@@ -5,7 +5,7 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { DropdownInput } from "../_components/inputs/DropdownInput";
 import { ListInput } from "../_components/inputs/ListInput";
-import { NumberInput } from "../_components/inputs/NumberInput";
+import { NumberInput, NumberInputType } from "../_components/inputs/NumberInput";
 import { SwitchInput } from "../_components/inputs/SwitchInput";
 import { TextInput } from "../_components/inputs/TextInput";
 import { PageHeader } from "../_components/ui/PageHeader";
@@ -99,6 +99,7 @@ export default function SplitCheckPage() {
                                         label="Total"
                                         fieldName={`people[${idx}].total`}
                                         requiredMessage="Total is required"
+                                        type={NumberInputType.Currency}
                                     />
                                 </Grid>
                                 <Grid size={1}>{removeButton}</Grid>
@@ -126,6 +127,7 @@ export default function SplitCheckPage() {
                                         label="Value"
                                         fieldName={`sharedItems[${idx}].value`}
                                         requiredMessage="Value is required"
+                                        type={NumberInputType.Currency}
                                     />
                                 </Grid>
                                 <Grid size={4}>
@@ -148,13 +150,13 @@ export default function SplitCheckPage() {
                 <Grid size={12}>
                     <Typography variant="h6" gutterBottom>Add-Ons</Typography>
                 </Grid>
-                <Grid size={6}>
-                    <NumberInput label="Tax Amount" fieldName="taxAmount" />
+                <Grid size={4}>
+                    <NumberInput label="Tax Amount" fieldName="taxAmount" type={NumberInputType.Currency} />
                 </Grid>
-                <Grid size={6}>
-                    <NumberInput label="Tip Percentage" fieldName="tipPercentage" />
+                <Grid size={4}>
+                    <NumberInput label="Tip Percentage" fieldName="tipPercentage" type={NumberInputType.Percentage} />
                 </Grid>
-                <Grid size={6}>
+                <Grid size={4} className="flex items-center">
                     <SwitchInput label="Include Tax in Tip" fieldName="includeTaxInTip" />
                 </Grid>
             </Grid>
@@ -169,7 +171,7 @@ export default function SplitCheckPage() {
                 {individualTotals.map((person) => (
                     <Grid size={3} key={person.name}>
                         <Paper elevation={3} className="p-2">
-                            <Typography variant="h6">
+                            <Typography variant="h6" textAlign="center">
                                 {person.name}: {formatCurrency(person.total)}
                             </Typography>
                             <Typography variant="body1">

@@ -16,7 +16,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipeData }) => {
         {recipeData.avatarId && <>
             <ImageBox fileId={recipeData.avatarId} altText="Recipe image" />
         </>}
-        <Box display="flex" flexWrap="wrap" justifyContent="center" gap={1}>
+        <Box display="flex" flexWrap="wrap" justifyContent="center" gap={1} mt={1}>
             <Chip label={`Prep Time: ${recipeData.prepTimeMinutes} min`} />
             <Chip label={`Cook Time: ${recipeData.cookTimeMinutes} min`} />
             {recipeData.totalCalories > 0 && <Chip label={`Total Calories: ${recipeData.totalCalories}`} />}
