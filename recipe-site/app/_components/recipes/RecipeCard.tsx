@@ -20,7 +20,18 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipeData }) => {
             <Chip label={`Prep Time: ${recipeData.prepTimeMinutes} min`} />
             <Chip label={`Cook Time: ${recipeData.cookTimeMinutes} min`} />
             {recipeData.totalCalories > 0 && <Chip label={`Total Calories: ${recipeData.totalCalories}`} />}
-            {recipeData.quantity !== null && <Chip label={`Quantity Info: ${recipeData.quantity}`} />}
+            {recipeData.quantity !== null && (
+                <Chip
+                    label={`Quantity Info: ${recipeData.quantity}`}
+                    sx={{
+                        height: 'auto',
+                        '& .MuiChip-label': {
+                            display: 'block',
+                            whiteSpace: 'normal',
+                        },
+                    }}
+                />
+            )}
         </Box>
     </ModelCard>
 }
