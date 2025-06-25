@@ -7,6 +7,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Avatar, Box, Button, IconButton } from "@mui/material";
 import { useRef, useState } from "react";
 import useSWR from "swr";
+import { useAppContext } from "../AppContext";
 
 interface FileUploadButtonProps {
     fileRole: FileRole;
@@ -18,6 +19,7 @@ interface FileUploadButtonProps {
 
 export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = "Upload Files", onUpload, isAvatar = false, currentAvatarId }) => {
     const size = "100px";
+    const { isAuthenticated } = useAppContext();
     const uploadFile = async (file: File) => {
         const formData = new FormData();
         formData.append('file', file);
@@ -33,7 +35,7 @@ export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = 
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleClick = () => {
-        inputRef.current?.click();
+        if (isAuthenticated) inputRef.current?.click();
     };
 
     const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,13 +56,15 @@ export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = 
                         <CloudUploadIcon fontSize="large" />
                     </Avatar>
                 </IconButton>
-                : <Button
-                    onClick={handleClick}
-                    variant="contained"
-                    startIcon={<CloudUploadIcon />}
-                >
-                    {label}
-                </Button>
+                : !isAuthenticated
+                    ? <></>
+                    : <Button
+                        onClick={handleClick}
+                        variant="contained"
+                        startIcon={<CloudUploadIcon />}
+                    >
+                        {label}
+                    </Button>
             }
             <input
                 ref={inputRef}

@@ -16,7 +16,7 @@ export const BasicForm = <T extends FieldValues,>({ children, defaultValues, err
     const methods = useForm<T>({ defaultValues: defaultValues as DefaultValues<T> });
     const { isAuthenticated } = useAppContext();
 
-    return (<>
+    return (<Box paddingY={1}>
         <ErrorMessage errorMessage={errorMessage} />
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -27,5 +27,5 @@ export const BasicForm = <T extends FieldValues,>({ children, defaultValues, err
                 </Box>
             </form>
         </FormProvider>
-    </>);
+    </Box>);
 }
