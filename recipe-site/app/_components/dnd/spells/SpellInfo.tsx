@@ -1,4 +1,4 @@
-import { BaseDndResponse, getSpellsForClass, LevelInfo, Spell } from "@/app/api/dnd5eapi";
+import { BaseDndResponse, getSpellsForClass, LevelInfo, Spell } from "@/app/_api/dnd5eapi";
 import { Box, Chip, Grid, Typography } from "@mui/material";
 import useSWR from "swr";
 import { ErrorMessage } from "../../ui/ErrorMessage";

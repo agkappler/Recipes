@@ -1,5 +1,5 @@
 import CustomDndRace from "@/app/_models/CustomDndRace";
-import { BaseDndResponse, getSubraces } from "@/app/api/dnd5eapi";
+import { BaseDndResponse, getSubraces } from "@/app/_api/dnd5eapi";
 import { Box, MenuItem, Select, Typography } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";

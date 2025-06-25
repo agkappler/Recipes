@@ -1,4 +1,4 @@
-import { DndItem, getRelativeUrlInfo } from "@/app/api/dnd5eapi";
+import { DndItem, getRelativeUrlInfo } from "@/app/_api/dnd5eapi";
 import { Paper, Typography } from "@mui/material";
 import React from "react";
 import useSWR from "swr";

@@ -1,4 +1,4 @@
-import { DndItem, getLevelInfoForSubclass, LevelInfo } from "@/app/api/dnd5eapi";
+import { DndItem, getLevelInfoForSubclass, LevelInfo } from "@/app/_api/dnd5eapi";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { FeatureCard } from "./FeatureCard";

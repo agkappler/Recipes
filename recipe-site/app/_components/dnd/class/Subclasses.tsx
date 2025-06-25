@@ -1,4 +1,4 @@
-import { BaseDndResponse, DndItem, getSubclasses } from "@/app/api/dnd5eapi";
+import { BaseDndResponse, DndItem, getSubclasses } from "@/app/_api/dnd5eapi";
 import { Box, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";

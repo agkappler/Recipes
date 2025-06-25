@@ -1,6 +1,6 @@
 import { MOBILE_BREAK } from "@/app/_constants/Media";
 import Character from "@/app/_models/Character";
-import { getLevelInfoForClass, LevelInfo } from "@/app/api/dnd5eapi";
+import { getLevelInfoForClass, LevelInfo } from "@/app/_api/dnd5eapi";
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';

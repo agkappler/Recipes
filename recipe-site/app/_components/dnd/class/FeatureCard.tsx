@@ -1,4 +1,4 @@
-import { getRelativeUrlInfo } from "@/app/api/dnd5eapi";
+import { getRelativeUrlInfo } from "@/app/_api/dnd5eapi";
 import { Grid, Paper, Typography } from "@mui/material";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";

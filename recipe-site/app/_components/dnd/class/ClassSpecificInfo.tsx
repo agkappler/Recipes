@@ -1,5 +1,5 @@
 import { DndClass } from "@/app/_constants/DndClass";
-import { LevelInfo } from "@/app/api/dnd5eapi";
+import { LevelInfo } from "@/app/_api/dnd5eapi";
 import { InfoOutlineSharp } from "@mui/icons-material";
 import { Box, Chip } from "@mui/material";
 

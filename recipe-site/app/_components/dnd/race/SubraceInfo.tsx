@@ -1,4 +1,4 @@
-import { DndItem, getSubraceTraits } from "@/app/api/dnd5eapi";
+import { DndItem, getSubraceTraits } from "@/app/_api/dnd5eapi";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { RacialTraitCard } from "./RacialTraitCard";

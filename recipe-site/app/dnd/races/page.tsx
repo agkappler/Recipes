@@ -8,7 +8,7 @@ import { LoadingWrapper } from "@/app/_components/ui/LoadingWrapper";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
 import RequestManager from "@/app/_helpers/RequestManager";
 import CustomDndRace from "@/app/_models/CustomDndRace";
-import { BaseDndResponse, getRaces } from "@/app/api/dnd5eapi";
+import { BaseDndResponse, getRaces } from "@/app/_api/dnd5eapi";
 import { Add } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, MenuItem, Select, Tab } from "@mui/material";

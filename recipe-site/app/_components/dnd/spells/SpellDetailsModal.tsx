@@ -1,4 +1,4 @@
-import { getRelativeUrlInfo, Spell } from "@/app/api/dnd5eapi";
+import { getRelativeUrlInfo, Spell } from "@/app/_api/dnd5eapi";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { SimpleDialog } from "../../ui/SimpleDialog";

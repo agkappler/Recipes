@@ -1,4 +1,4 @@
-import { Spell } from "@/app/api/dnd5eapi"
+import { Spell } from "@/app/_api/dnd5eapi"
 import { InfoOutline } from "@mui/icons-material"
 import { Paper, Typography } from "@mui/material"
 import { useState } from "react"

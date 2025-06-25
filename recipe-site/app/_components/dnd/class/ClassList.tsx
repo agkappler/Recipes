@@ -1,4 +1,4 @@
-import { BaseDndResponse, DndItem, getClasses } from "@/app/api/dnd5eapi";
+import { BaseDndResponse, DndItem, getClasses } from "@/app/_api/dnd5eapi";
 import { Grid, Paper, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";

@@ -5,7 +5,7 @@ import { Subclasses } from "@/app/_components/dnd/class/Subclasses";
 import { LinkButton } from "@/app/_components/ui/buttons/LinkButton";
 import { LoadingWrapper } from "@/app/_components/ui/LoadingWrapper";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
-import { BaseDndResponse, getClasses } from "@/app/api/dnd5eapi";
+import { BaseDndResponse, getClasses } from "@/app/_api/dnd5eapi";
 import { Add } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, MenuItem, Select, Tab, Typography } from "@mui/material";

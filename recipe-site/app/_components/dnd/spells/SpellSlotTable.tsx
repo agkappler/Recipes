@@ -1,4 +1,4 @@
-import { Spellcasting } from "@/app/api/dnd5eapi";
+import { Spellcasting } from "@/app/_api/dnd5eapi";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 
 interface SpellSlotTableProps {

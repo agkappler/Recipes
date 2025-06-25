@@ -27,7 +27,7 @@ export const CharacterResources: React.FC<CharacterResourcesProps> = ({ characte
                         <Box margin={2} key={id}>
                             <FileWrapper fileId={id} />
                         </Box>
-                    )) : <Typography textAlign="center">No resources for character {characterId} yet!</Typography>
+                    )) : <Typography textAlign="center">No resources yet!</Typography>
                 }
             </Box>
         </LoadingWrapper>

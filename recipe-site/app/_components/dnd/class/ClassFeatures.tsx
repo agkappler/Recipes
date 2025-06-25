@@ -1,4 +1,4 @@
-import { DndItem, getLevelInfoForClass, LevelInfo } from "@/app/api/dnd5eapi";
+import { DndItem, getLevelInfoForClass, LevelInfo } from "@/app/_api/dnd5eapi";
 import { capitalize, Typography } from "@mui/material";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";

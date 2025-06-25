@@ -1,4 +1,4 @@
-import { DndItem, getRelativeUrlInfo } from "@/app/api/dnd5eapi"
+import { DndItem, getRelativeUrlInfo } from "@/app/_api/dnd5eapi"
 import useSWR from "swr";
 import { LoadingWrapper } from "../ui/LoadingWrapper";
 import { TableCell } from "@mui/material";

@@ -2,7 +2,7 @@ import { FileRole } from "@/app/_constants/FileRole";
 import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import FileMetadata from "@/app/_models/FileMetadata";
-import { DndItem, getClasses, getRaces, getSubclasses, getSubraces } from "@/app/api/dnd5eapi";
+import { DndItem, getClasses, getRaces, getSubclasses, getSubraces } from "@/app/_api/dnd5eapi";
 import { Grid } from "@mui/material";
 import React, { useState } from "react";
 import useSWR from "swr";

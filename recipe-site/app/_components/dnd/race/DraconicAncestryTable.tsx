@@ -1,4 +1,4 @@
-import { DndItem } from "@/app/api/dnd5eapi";
+import { DndItem } from "@/app/_api/dnd5eapi";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { DraconicAncestryRow } from "./DraconicAncestryRow";
 

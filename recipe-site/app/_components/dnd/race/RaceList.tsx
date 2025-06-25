@@ -1,6 +1,6 @@
 import RequestManager from "@/app/_helpers/RequestManager";
 import CustomDndRace from "@/app/_models/CustomDndRace";
-import { BaseDndResponse, getRaces } from "@/app/api/dnd5eapi";
+import { BaseDndResponse, getRaces } from "@/app/_api/dnd5eapi";
 import { Grid, Paper, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
