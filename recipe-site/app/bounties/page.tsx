@@ -39,6 +39,13 @@ export default function BountiesPage() {
     if (bountiesError || bountyCategoriesError) {
         return <ErrorMessage errorMessage={(bountiesError ?? bountyCategoriesError)?.message} />;
     }
+    const bountyCategoryMap = (bountyCategories ?? []).reduce(
+        (map, category) => {
+            map[category.categoryId] = category;
+            return map;
+        },
+        {} as Record<number, BountyCategory>
+    );
 
     return <>
         <PageHeader title="Bounty Board" rightContainer={<LinkButton url={`/projects/${Project.Bounties}`} label="Project Details" />} />
@@ -57,7 +64,7 @@ export default function BountiesPage() {
                 </Grid>
                 {bounties?.map(bounty => (
                     <Grid size={{ sm: 3, xs: 12 }} key={bounty.bountyId}>
-                        <BountyCard bounty={bounty} onClick={() => onBountyClick(bounty)} />
+                        <BountyCard bounty={bounty} onClick={() => onBountyClick(bounty)} category={bountyCategoryMap[bounty.categoryId]} />
                     </Grid>
                 ))}
             </LoadingWrapper>

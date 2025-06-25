@@ -1,22 +1,12 @@
-import { ProjectStatus } from "@/app/_constants/Status";
-import { Chip } from "@mui/material"
+import { Chip } from "@mui/material";
+
+export type ChipColor = 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
 
 interface StatusChipProps {
-    label: ProjectStatus;
+    label: string;
+    color: ChipColor;
 }
 
-export const StatusChip: React.FC<StatusChipProps> = ({ label }) => {
-    const getColor = (label: ProjectStatus) => {
-        switch (label) {
-            case ProjectStatus.Complete:
-                return "success";
-            case ProjectStatus.Concept:
-                return "warning";
-            case ProjectStatus.InProgress:
-            default:
-                return "info";
-        }
-    }
-
-    return <Chip label={label} color={getColor(label)} variant="outlined" className="w-fit" />
+export const StatusChip: React.FC<StatusChipProps> = ({ label, color }) => {
+    return <Chip label={label} color={color} variant="outlined" className="w-fit" />
 }

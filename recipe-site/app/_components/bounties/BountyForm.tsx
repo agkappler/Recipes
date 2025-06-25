@@ -33,7 +33,7 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
             if (isEdit) {
                 await RequestManager.post("/updateBounty", data);
             } else {
-                data.status = BountyStatus.InProgress;
+                data.status = BountyStatus.Active;
                 await RequestManager.post(`/createBounty`, data);
             }
         } catch (error: unknown) {

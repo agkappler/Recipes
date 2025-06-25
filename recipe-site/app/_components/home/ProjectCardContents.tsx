@@ -3,6 +3,7 @@ import { Box, Typography } from "@mui/material";
 import { LinkButton } from "../ui/buttons/LinkButton";
 import { StatusChip } from "../ui/StatusChip";
 import { ProjectHeader } from "./ProjectHeader";
+import { getColorForProjectStatus } from "@/app/_constants/Status";
 
 interface ProjectCardProps {
     project: IProject;
@@ -12,7 +13,7 @@ interface ProjectCardProps {
 export const ProjectCardContents: React.FC<ProjectCardProps> = ({ project, index }) => {
     return <>
         <ProjectHeader project={project} />
-        <StatusChip label={project.status} />
+        <StatusChip label={project.status} color={getColorForProjectStatus(project.status)} />
         <Typography variant="body1" textAlign="center">{project.description}</Typography>
         <Box display="flex" gap={2} marginTop="auto">
             <LinkButton label="Details" url={`/projects/${index}`} />
