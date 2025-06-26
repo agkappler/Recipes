@@ -18,7 +18,6 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
     const isEdit = dndRace !== undefined;
     const defaultRace = new CustomDndRace({ raceId: 0, name: "", description: "", index: "", isCustom: true, traits: [] });
     const [errorMessage, setErrorMessage] = useState<string>();
-    const [isLoading, setIsLoading] = useState(false);
     const closeForm = () => {
         setErrorMessage(undefined);
         onClose();
@@ -28,7 +27,6 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
 
     const onSubmit = async (data: CustomDndRace) => {
         try {
-            setIsLoading(true);
             if (isEdit) {
                 // await RequestManager.post("/updateBounty", data);
             } else {
@@ -37,8 +35,6 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;
-        } finally {
-            setIsLoading(false);
         }
 
         updateDndRaces();
@@ -48,7 +44,6 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
     return <SimpleDialog title={isEdit ? "Update Race" : "Add Race"} isOpen={isOpen} onClose={closeForm}>
         <BasicForm
             onSubmit={onSubmit}
-            isSubmitting={isLoading}
             errorMessage={errorMessage}
             closeForm={closeForm}
             defaultValues={dndRace ?? defaultRace}

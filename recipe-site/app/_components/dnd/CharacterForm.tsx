@@ -1,8 +1,8 @@
+import { DndItem, getClasses, getRaces, getSubclasses, getSubraces } from "@/app/_api/dnd5eapi";
 import { FileRole } from "@/app/_constants/FileRole";
 import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import FileMetadata from "@/app/_models/FileMetadata";
-import { DndItem, getClasses, getRaces, getSubclasses, getSubraces } from "@/app/_api/dnd5eapi";
 import { Grid } from "@mui/material";
 import React, { useState } from "react";
 import useSWR from "swr";
@@ -29,7 +29,6 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
 }) => {
     const isEdit = character !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
-    const [isLoading, setIsLoading] = useState(false);
     const closeForm = () => {
         setErrorMessage(undefined);
         onClose();
@@ -55,7 +54,6 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
 
     const onSubmit = async (data: Character) => {
         try {
-            setIsLoading(true);
             if (isEdit) {
                 await RequestManager.post("/updateCharacter", data);
             } else {
@@ -64,8 +62,6 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;
-        } finally {
-            setIsLoading(false);
         }
 
         updateCharacters();
@@ -80,7 +76,6 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
     return (<SimpleDialog title={isEdit ? "Update Character" : "Create Character"} isOpen={isOpen} onClose={closeForm}>
         <BasicForm
             onSubmit={onSubmit}
-            isSubmitting={isLoading}
             defaultValues={character}
             closeForm={closeForm}
             errorMessage={errorMessage}

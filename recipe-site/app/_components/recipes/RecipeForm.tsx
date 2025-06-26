@@ -23,10 +23,8 @@ interface RecipeFormProps {
 export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeData, updateRecipe }) => {
     const isEdit = recipeData !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
-    const [isLoading, setIsLoading] = useState(false);
     const onSubmit = async (data: Recipe) => {
         try {
-            setIsLoading(true);
             if (isEdit) {
                 await RequestManager.post("/updateRecipe", data);
             } else {
@@ -35,8 +33,6 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeD
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;
-        } finally {
-            setIsLoading(false);
         }
 
         updateRecipe();
@@ -51,7 +47,6 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeD
     return <SimpleDialog title={isEdit ? "Edit Recipe" : "Add Recipe"} isOpen={isOpen} onClose={onClose}>
         <BasicForm
             onSubmit={onSubmit}
-            isSubmitting={isLoading}
             defaultValues={recipeData}
             closeForm={onClose}
             errorMessage={errorMessage}

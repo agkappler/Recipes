@@ -21,7 +21,6 @@ interface BountyFormProps {
 export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty, bountyCategories, updateBounties }) => {
     const isEdit = bounty !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
-    const [isLoading, setIsLoading] = useState(false);
     const closeForm = () => {
         setErrorMessage(undefined);
         onClose();
@@ -29,7 +28,6 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
 
     const onSubmit = async (data: Bounty) => {
         try {
-            setIsLoading(true);
             if (isEdit) {
                 await RequestManager.post("/updateBounty", data);
             } else {
@@ -39,8 +37,6 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;
-        } finally {
-            setIsLoading(false);
         }
 
         updateBounties();
@@ -50,7 +46,6 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
     return <SimpleDialog title={isEdit ? "Update Bounty" : "Post Bounty"} isOpen={isOpen} onClose={closeForm}>
         <BasicForm
             onSubmit={onSubmit}
-            isSubmitting={isLoading}
             errorMessage={errorMessage}
             closeForm={closeForm}
             defaultValues={bounty}
