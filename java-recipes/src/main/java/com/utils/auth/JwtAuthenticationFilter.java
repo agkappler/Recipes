@@ -15,8 +15,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.recipes.models.User;
-import com.recipes.services.UserService;
+import com.fargopolis.models.User;
+import com.fargopolis.services.UserService;
 import com.utils.exceptions.ObjectNotFoundException;
 
 import io.jsonwebtoken.JwtException;
