@@ -13,7 +13,6 @@ interface BountyCategoryFormProps {
 }
 
 export const BountyCategoryForm: React.FC<BountyCategoryFormProps> = ({ onClose, isOpen, updateBountyCategories }) => {
-    const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>();
 
     const closeForm = () => {
@@ -23,13 +22,10 @@ export const BountyCategoryForm: React.FC<BountyCategoryFormProps> = ({ onClose,
 
     const onSubmit = async (data: BountyCategory) => {
         try {
-            setIsLoading(true);
             await RequestManager.post(`/createBountyCategory`, data);
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;
-        } finally {
-            setIsLoading(false);
         }
 
         updateBountyCategories();
@@ -39,7 +35,6 @@ export const BountyCategoryForm: React.FC<BountyCategoryFormProps> = ({ onClose,
     return <SimpleDialog title="Add Bounty Category" isOpen={isOpen} onClose={closeForm}>
         <BasicForm
             onSubmit={onSubmit}
-            isSubmitting={isLoading}
             errorMessage={errorMessage}
             closeForm={closeForm}
         >

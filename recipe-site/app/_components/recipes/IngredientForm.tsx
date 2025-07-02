@@ -19,11 +19,9 @@ interface IngredientFormProps {
 export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose, ingredient, recipeId, updateIngredients }) => {
     const isEdit = ingredient !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
-    const [isLoading, setIsLoading] = useState(false);
 
     const onSubmit = async (data: Ingredient) => {
         try {
-            setIsLoading(true);
             if (isEdit) {
                 await RequestManager.post("/updateIngredient", data);
             } else {
@@ -32,8 +30,6 @@ export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose,
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;
-        } finally {
-            setIsLoading(false);
         }
 
         updateIngredients();
@@ -44,7 +40,6 @@ export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose,
         <BasicForm
             errorMessage={errorMessage}
             onSubmit={onSubmit}
-            isSubmitting={isLoading}
             closeForm={onClose}
         >
             <Grid container spacing={2} className="mb-2">
