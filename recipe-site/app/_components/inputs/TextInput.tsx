@@ -10,7 +10,7 @@ export const TextInput: React.FC<TextInputProps> = ({ label, fieldName, required
     const { register, formState: { errors } } = useFormContext();
     return <TextField
         fullWidth
-        label={label}
+        label={requiredMessage ? `${label}*` : label}
         {...register(fieldName, { required: requiredMessage })}
         error={!!errors[fieldName]}
         helperText={errors?.[fieldName] ? errors[fieldName]?.message as string : ""}

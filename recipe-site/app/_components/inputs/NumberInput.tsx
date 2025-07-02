@@ -32,7 +32,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({ label, fieldName, requ
     return <>
         <TextField
             fullWidth
-            label={label}
+            label={requiredMessage ? `${label}*` : label}
             {...register(fieldName, {
                 required: requiredMessage,
                 pattern: {

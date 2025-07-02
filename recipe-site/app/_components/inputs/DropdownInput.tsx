@@ -18,7 +18,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({ label, fieldName, 
     const id = `${label}-select`;
     return (
         <FormControl fullWidth>
-            <InputLabel id={`${id}-label`}>{label}</InputLabel>
+            <InputLabel id={`${id}-label`}>{requiredMessage ? `${label}*` : label}</InputLabel>
             <Controller
                 name={fieldName}
                 control={control}
