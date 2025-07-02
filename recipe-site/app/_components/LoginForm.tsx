@@ -22,7 +22,6 @@ export const LoginForm: React.FC = () => {
 
     const { setUser, isAuthenticated } = useAppContext();
     const [userErrorMessage, setUserErrorMessage] = useState<string | undefined>();
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const onClose = () => setIsOpen(false);
 
@@ -51,15 +50,12 @@ export const LoginForm: React.FC = () => {
     }
 
     const createUser = async (data: { username: string, password: string }) => {
-        setIsSubmitting(true);
         try {
             await RequestManager.post("/users/createUser", data);
             setUserErrorMessage(undefined);
             successToast('Succesfully created user!');
         } catch (error: unknown) {
             setUserErrorMessage(getErrorMessage(error));
-        } finally {
-            setIsSubmitting(false);
         }
     }
 
@@ -109,7 +105,6 @@ export const LoginForm: React.FC = () => {
             <BasicForm
                 errorMessage={userErrorMessage}
                 onSubmit={createUser}
-                isSubmitting={isSubmitting}
                 closeForm={onClose}
             >
                 <Grid container spacing={2}>
