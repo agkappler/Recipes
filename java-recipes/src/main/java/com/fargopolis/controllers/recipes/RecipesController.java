@@ -1,4 +1,4 @@
-package com.fargopolis.controllers;
+package com.fargopolis.controllers.recipes;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fargopolis.controllers.BaseApiController;
 import com.fargopolis.dto.ImageUrl;
 import com.fargopolis.models.Recipe;
 import com.fargopolis.services.FileService;
-import com.fargopolis.services.RecipeService;
+import com.fargopolis.services.recipes.RecipeService;
 
 @RestController
 public class RecipesController extends BaseApiController {

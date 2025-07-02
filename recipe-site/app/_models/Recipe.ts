@@ -2,7 +2,7 @@
 export default class Recipe {
     recipeId: number;
     name: string;
-    instructions: string;
+    description: string;
     quantity: string;
     prepTimeMinutes: number;
     cookTimeMinutes: number;
@@ -12,7 +12,7 @@ export default class Recipe {
     constructor(
         recipeId: number,
         name: string,
-        instructions: string,
+        description: string,
         quantity: string,
         prepTimeMinutes: number,
         cookTimeMinutes: number,
@@ -20,7 +20,7 @@ export default class Recipe {
     ) {
         this.recipeId = recipeId;
         this.name = name;
-        this.instructions = instructions;
+        this.description = description;
         this.quantity = quantity;
         this.prepTimeMinutes = prepTimeMinutes;
         this.cookTimeMinutes = cookTimeMinutes;

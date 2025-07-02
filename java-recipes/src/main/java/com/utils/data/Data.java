@@ -40,6 +40,28 @@ public class Data {
             this.close(ps, generatedKeys);
         }
     }
+    
+    public <T> List<Integer> ExecuteBatch(String sql, List<T> items, ParamSetterGeneric<T> paramSetter) throws SQLException {
+    	List<Integer> generatedKeys = new ArrayList<>();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try (Connection conn = dataSource.getConnection()) {
+            ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            for (T item : items) {
+            	paramSetter.set(ps, item);
+            	ps.addBatch();
+            }
+            
+            ps.executeBatch();
+            rs = ps.getGeneratedKeys();
+            while (rs.next()) {
+            	generatedKeys.add(rs.getInt(1));
+            }
+            return generatedKeys;
+        } finally {
+            this.close(ps, rs);
+        }
+    }
 
     @Transactional
     public List<Integer> ExecuteTransaction(List<String> sqlStrings, List<ParamSetter> paramSetters)

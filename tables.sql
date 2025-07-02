@@ -152,3 +152,17 @@ ALTER TABLE recipes ADD CONSTRAINT recipes_avatar_id_fkey FOREIGN KEY (avatar_id
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS total_calories integer;
 
 ALTER TABLE users ADD CONSTRAINT uq_users_email UNIQUE (email);
+
+CREATE TABLE IF NOT EXISTS recipe_steps (
+	step_id SERIAL PRIMARY KEY,
+	recipe_id integer NOT NULL,
+	step_number integer NOT NULL,
+	description TEXT NOT NULL,
+	CONSTRAINT recipe_steps_recipe_id_fkey FOREIGN KEY (recipe_id)
+        REFERENCES public.recipes (recipe_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
+
+ALTER TABLE recipes DROP COLUMN IF EXISTS instructions;
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS description TEXT;

@@ -5,14 +5,15 @@ import { Add, Edit } from "@mui/icons-material";
 import { Box, Button, Chip, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { IngredientForm } from "./IngredientForm";
+import useSWR from "swr";
+import RequestManager from "@/app/_helpers/RequestManager";
+import { LoadingWrapper } from "../ui/LoadingWrapper";
 
 interface IngredientListProps {
     recipeId: number;
-    ingredients: Ingredient[];
-    updateIngredients: () => void;
 }
 
-export const IngredientList: React.FC<IngredientListProps> = ({ recipeId, ingredients, updateIngredients }) => {
+export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | undefined>(undefined);
     const onClose = () => {
@@ -20,7 +21,12 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId, ingred
         setSelectedIngredient(undefined);
     }
 
-    return <>
+    const { data: ingredients, isLoading: loadingIngredients, mutate: updateIngredients } = useSWR<Ingredient[]>(
+        `/ingredientsForRecipe/${recipeId}`,
+        () => RequestManager.get<Ingredient[]>(`/ingredientsForRecipe/${recipeId}`)
+    );
+
+    return <LoadingWrapper isLoading={loadingIngredients} message="Loading Ingredients...">
         <Box>
             <Box className="flex items-center justify-between mt-2 w-full">
                 <Typography variant="h6">Ingredients</Typography>
@@ -38,7 +44,7 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId, ingred
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {ingredients.map((ingredient, index) => (
+                        {ingredients?.map((ingredient, index) => (
                             <TableRow
                                 key={index}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -68,5 +74,5 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId, ingred
             ingredient={selectedIngredient}
             updateIngredients={updateIngredients}
         />}
-    </>
+    </LoadingWrapper>
 }

@@ -96,9 +96,8 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeD
                 </Grid>
                 <Grid size={12}>
                     <TextInput
-                        label="Instructions"
-                        fieldName="instructions"
-                        requiredMessage="Instructions are required"
+                        label="Description"
+                        fieldName="description"
                         multilineRows={4}
                     />
                 </Grid>

@@ -10,7 +10,7 @@ import lombok.Setter;
 public class Recipe {
     private Integer recipeId;
     private String name;
-    private String instructions;
+    private String description;
     private Integer prepTimeMinutes;
     private Integer cookTimeMinutes;
     private Integer totalCalories;

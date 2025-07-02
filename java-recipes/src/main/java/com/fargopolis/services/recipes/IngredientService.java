@@ -1,4 +1,4 @@
-package com.fargopolis.services;
+package com.fargopolis.services.recipes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.springframework.stereotype.Service;
 
 import com.fargopolis.models.Ingredient;
+import com.fargopolis.services.BaseService;
 import com.utils.data.Data;
 
 @Service

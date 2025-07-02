@@ -1,4 +1,4 @@
-package com.fargopolis.services;
+package com.fargopolis.services.recipes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.springframework.stereotype.Service;
 
 import com.fargopolis.models.Recipe;
+import com.fargopolis.services.BaseService;
 import com.utils.data.Data;
 import com.utils.exceptions.ObjectNotFoundException;
 
@@ -18,8 +19,8 @@ public class RecipeService extends BaseService {
 	
 	private final static String GET_RECIPES_SQL = "SELECT * FROM recipes ORDER BY recipe_id";
 	private final static String GET_RECIPE_BY_ID_SQL = "SELECT * FROM recipes WHERE recipe_id = ?";
-	private final static String INSERT_RECIPE_SQL = "INSERT INTO recipes (name, prep_time_minutes, cook_time_minutes, instructions, quantity, total_calories) VALUES (?, ?, ?, ?, ?, ?) RETURNING recipe_id";
-	private final static String UPDATE_RECIPE_SQL = "UPDATE recipes SET name = ?, prep_time_minutes = ?, cook_time_minutes = ?, instructions = ?, quantity = ?, total_calories = ? WHERE recipe_id = ?";
+	private final static String INSERT_RECIPE_SQL = "INSERT INTO recipes (name, prep_time_minutes, cook_time_minutes, description, quantity, total_calories) VALUES (?, ?, ?, ?, ?, ?) RETURNING recipe_id";
+	private final static String UPDATE_RECIPE_SQL = "UPDATE recipes SET name = ?, prep_time_minutes = ?, cook_time_minutes = ?, description = ?, quantity = ?, total_calories = ? WHERE recipe_id = ?";
 	private final static String UPDATE_AVATAR_SQL = "UPDATE recipes SET avatar_id=? WHERE recipe_id = ?";
 	
 	public RecipeService(DataSource dataSource, Data data) {
@@ -55,7 +56,7 @@ public class RecipeService extends BaseService {
 				ps.setString(1, recipe.getName());
 				ps.setInt(2, recipe.getPrepTimeMinutes());
 				ps.setInt(3, recipe.getCookTimeMinutes());
-				ps.setString(4, recipe.getInstructions());
+				ps.setString(4, recipe.getDescription());
 				ps.setString(5, recipe.getQuantity());
 				ps.setInt(6, recipe.getTotalCalories());
 			}
@@ -72,7 +73,7 @@ public class RecipeService extends BaseService {
 				ps.setString(1, recipe.getName());
 				ps.setInt(2, recipe.getPrepTimeMinutes());
 				ps.setInt(3, recipe.getCookTimeMinutes());
-				ps.setString(4, recipe.getInstructions());
+				ps.setString(4, recipe.getDescription());
 				ps.setString(5, recipe.getQuantity());
 				ps.setInt(6, recipe.getTotalCalories());
 				ps.setInt(7, recipe.getRecipeId());
@@ -98,8 +99,7 @@ public class RecipeService extends BaseService {
 		r.setCookTimeMinutes(cookTime != null ? cookTime : -1);
 		Integer prepTime = rs.getInt("prep_time_minutes");
 		r.setPrepTimeMinutes(prepTime != null ? prepTime : -1);
-		String instructions = rs.getString("instructions");
-		r.setInstructions(instructions != null ? instructions : "No instructions yet!");
+		r.setDescription(rs.getString("description"));
 		r.setQuantity(rs.getString("quantity"));
 		r.setAvatarId(rs.getObject("avatar_id") == null ? null : rs.getInt("avatar_id"));
 		r.setTotalCalories(rs.getObject("total_calories") == null ? null : rs.getInt("total_calories"));
