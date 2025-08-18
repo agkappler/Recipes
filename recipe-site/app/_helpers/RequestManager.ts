@@ -53,6 +53,18 @@ export default class RequestManager {
         return await this.handleResponse(response);
     }
 
+    static async delete<T = unknown>(url: string): Promise<T> {
+        const response = await fetch(this.apiUrl + url, {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        return await this.handleResponse(response);
+    }
+
     static async authenticateUser(email: string, password: string): Promise<{ user: User }> {
         const response = await fetch(this.baseUrl + `/authentication/authenticateUser`, {
             method: "POST",

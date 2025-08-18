@@ -166,3 +166,25 @@ CREATE TABLE IF NOT EXISTS recipe_steps (
 
 ALTER TABLE recipes DROP COLUMN IF EXISTS instructions;
 ALTER TABLE recipes ADD COLUMN IF NOT EXISTS description TEXT;
+
+CREATE TABLE IF NOT EXISTS known_spells (
+    character_id INTEGER NOT NULL,
+    spell_key VARCHAR(100) NOT NULL,
+    spell_name TEXT NOT NULL,
+    spell_level INTEGER NOT NULL,
+    PRIMARY KEY (character_id, spell_key),
+    FOREIGN KEY (character_id) REFERENCES dnd_characters(character_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS weapons (
+    weapon_id SERIAL PRIMARY KEY,
+    character_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    damage VARCHAR(50) NOT NULL,
+    description TEXT,
+    FOREIGN KEY (character_id) REFERENCES dnd_characters(character_id) ON DELETE CASCADE
+);
+
+-- Create index on character_id for efficient lookups of all weapons for a character
+CREATE INDEX IF NOT EXISTS idx_weapons_character_id ON weapons (character_id);
+

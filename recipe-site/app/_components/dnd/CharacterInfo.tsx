@@ -12,6 +12,7 @@ import { ClassFeatures } from "./class/ClassFeatures";
 import { RacialTraits } from "./race/RacialTraits";
 import { SpellInfo } from "./spells/SpellInfo";
 import { CharacterResources } from "./CharacterResources";
+import { WeaponInfo } from "./weapons/WeaponInfo";
 
 interface CharacterInfoProps {
     character: Character;
@@ -60,9 +61,11 @@ export const CharacterInfo: React.FC<CharacterInfoProps> = ({ character }) => {
                 <RacialTraits race={character.race} />
             </TabPanel>
             <TabPanel value="3">
-                <SpellInfo levelInfos={levelInfos} currentLevel={character.level} className={character.className} />
+                <SpellInfo levelInfos={levelInfos} currentLevel={character.level} className={character.className} characterId={character.characterId} />
             </TabPanel>
-            <TabPanel value="4">No weapons yet!</TabPanel>
+            <TabPanel value="4">
+                <WeaponInfo characterId={character.characterId} />
+            </TabPanel>
             <TabPanel value="5">No items yet!</TabPanel>
             <TabPanel value="6">No proficiencies yet!</TabPanel>
             <TabPanel value="7">
