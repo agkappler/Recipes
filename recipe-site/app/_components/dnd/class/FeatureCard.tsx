@@ -1,14 +1,14 @@
 import { getRelativeUrlInfo } from "@/app/_api/dnd5eapi";
-import { Grid, Paper, Typography, Button, Box } from "@mui/material";
+import { AbilitySource } from "@/app/_constants/AbilitySource";
 import { Add } from "@mui/icons-material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
+import { AbilityForm } from "../abilities/AbilityForm";
 import { DescriptionList } from "../DescriptionList";
 import { CreatingSpellSlotsTable } from "./class-specific/CreatingSpellSlotsTable";
 import { FeatureAndLevel } from "./ClassFeatures";
-import { AbilityForm } from "../abilities/AbilityForm";
-import { AbilitySource } from "@/app/_constants/AbilitySource";
 
 interface FeatureCardProps {
     feature: FeatureAndLevel;
@@ -27,14 +27,25 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({ feature, characterId, 
 
     return (
         <>
-            <Paper elevation={3} className="m-2 p-2">
+            <Box className="my-2 p-2 pt-3" borderTop={1} borderColor="divider">
                 <Grid container>
-                    <Grid size={2} />
-                    <Grid size={8}>
+                    <Grid size={3}>
+                        <Typography variant="body1" fontWeight="light" textAlign="left">Level {featureInfo?.level}</Typography>
+                    </Grid>
+                    <Grid size={6}>
                         <Typography variant="subtitle1" fontWeight="bold" textAlign="center">{feature.name}</Typography>
                     </Grid>
-                    <Grid size={2}>
-                        <Typography variant="body1" fontWeight="light" textAlign="right">Level {featureInfo?.level}</Typography>
+                    <Grid size={3} display="flex" justifyContent="flex-end">
+                        {characterId && featureInfo && (
+                            <Button
+                                variant="text"
+                                size="small"
+                                startIcon={<Add />}
+                                onClick={() => setIsAbilityFormOpen(true)}
+                            >
+                                Create Ability
+                            </Button>
+                        )}
                     </Grid>
                 </Grid>
                 <LoadingWrapper isLoading={isLoading} size={10}>
@@ -42,20 +53,8 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({ feature, characterId, 
                     {featureInfo?.index === 'flexible-casting-creating-spell-slots' &&
                         <CreatingSpellSlotsTable creatingSpellSlots={feature.levelInfo.class_specific.creating_spell_slots} />
                     }
-                    {characterId && featureInfo && (
-                        <Box display="flex" justifyContent="center" mt={2}>
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                startIcon={<Add />}
-                                onClick={() => setIsAbilityFormOpen(true)}
-                            >
-                                Create Ability
-                            </Button>
-                        </Box>
-                    )}
                 </LoadingWrapper>
-            </Paper>
+            </Box>
             {characterId && (
                 <AbilityForm
                     isOpen={isAbilityFormOpen}

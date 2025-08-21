@@ -1,5 +1,5 @@
 import { BaseDndResponse, DndItem, getSubclasses } from "@/app/_api/dnd5eapi";
-import { Box, MenuItem, Select } from "@mui/material";
+import { Box, MenuItem, Select, Typography } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
@@ -18,7 +18,8 @@ export const Subclasses: React.FC<SubclassesProps> = ({ className }) => {
     const [selectedSubclass, setSelectedSubclass] = useState<string>(subclasses[0]?.index ?? "");
     return <>
         <LoadingWrapper isLoading={isLoadingApi || isLoadingCustomSubclasses}>
-            <Box display="flex" justifyContent="center">
+            <Box display="flex" justifyContent="center" alignItems="center" gap={2}>
+                <Typography variant="h6" textAlign="center">Subclass Info:</Typography>
                 <Select
                     value={selectedSubclass}
                     onChange={(e) => setSelectedSubclass(e.target.value as string)}

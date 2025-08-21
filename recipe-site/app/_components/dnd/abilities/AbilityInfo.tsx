@@ -1,17 +1,23 @@
 import { AbilitySource } from "@/app/_constants/AbilitySource";
 import RequestManager from "@/app/_helpers/RequestManager";
 import Ability from "@/app/_models/Ability";
-import { Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
+import { useState } from "react";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
+import { AddModelCard } from "../../ui/AddModelCard";
+import { AbilityForm } from "./AbilityForm";
 import { AbilityCard } from "./AbilityCard";
 
 interface AbilityInfoProps {
     characterId: number;
-    canEdit: boolean;
+    canEdit?: boolean;
 }
 
-export const AbilityInfo: React.FC<AbilityInfoProps> = ({ characterId, canEdit }) => {
+export const AbilityInfo: React.FC<AbilityInfoProps> = ({ characterId, canEdit = true }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedAbility, setSelectedAbility] = useState<Ability>();
+
     const { data: abilities, isLoading, mutate } = useSWR<Ability[]>(
         `/characterAbilities/${characterId}`,
         () => RequestManager.get<Ability[]>(`/characterAbilities/${characterId}`)
@@ -33,12 +39,27 @@ export const AbilityInfo: React.FC<AbilityInfoProps> = ({ characterId, canEdit }
         });
     };
 
+    const onClose = () => {
+        setIsOpen(false);
+        setSelectedAbility(undefined);
+    }
+
+    const onEditAbility = (ability: Ability) => {
+        setSelectedAbility(ability);
+        setIsOpen(true);
+    }
+
     const sortedAbilities = abilities ? sortAbilitiesByType(abilities) : [];
 
     return (
-        <LoadingWrapper isLoading={isLoading}>
-            {sortedAbilities.length > 0 ? (
+        <Box>
+            <LoadingWrapper isLoading={isLoading}>
                 <Grid container spacing={2}>
+                    {canEdit && (
+                        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                            <AddModelCard onClick={() => setIsOpen(true)} title="Add Ability" />
+                        </Grid>
+                    )}
                     {sortedAbilities.map((ability) => (
                         <Grid key={ability.abilityId} size={{ xs: 12, sm: 6, md: 4 }}>
                             <AbilityCard
@@ -46,13 +67,24 @@ export const AbilityInfo: React.FC<AbilityInfoProps> = ({ characterId, canEdit }
                                 characterId={characterId}
                                 canEdit={canEdit}
                                 onAbilityUpdate={mutate}
+                                onClick={canEdit ? onEditAbility : undefined}
                             />
                         </Grid>
                     ))}
+                    {(!sortedAbilities || sortedAbilities.length === 0) && !isLoading && (
+                        <Grid size={12}>
+                            <Typography>No abilities found for this character.</Typography>
+                        </Grid>
+                    )}
                 </Grid>
-            ) : (
-                <Typography textAlign="center">No abilities found for this character.</Typography>
-            )}
-        </LoadingWrapper>
+            </LoadingWrapper>
+            <AbilityForm
+                isOpen={isOpen}
+                onClose={onClose}
+                characterId={characterId}
+                ability={selectedAbility}
+                onAbilityUpdate={mutate}
+            />
+        </Box>
     );
 };

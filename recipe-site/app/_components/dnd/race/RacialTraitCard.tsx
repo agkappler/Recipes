@@ -1,13 +1,13 @@
 import { DndItem, getRelativeUrlInfo } from "@/app/_api/dnd5eapi";
-import { Paper, Typography, Button, Box } from "@mui/material";
+import { AbilitySource } from "@/app/_constants/AbilitySource";
 import { Add } from "@mui/icons-material";
+import { Box, Button, Typography } from "@mui/material";
 import React, { useState } from "react";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
+import { AbilityForm } from "../abilities/AbilityForm";
 import { OptionsList } from "../OptionsList";
 import { DraconicAncestryTable } from "./DraconicAncestryTable";
-import { AbilityForm } from "../abilities/AbilityForm";
-import { AbilitySource } from "@/app/_constants/AbilitySource";
 
 interface RacialTraitCardProps {
     trait: DndItem;
@@ -26,7 +26,7 @@ export const RacialTraitCard: React.FC<RacialTraitCardProps> = ({ trait, charact
 
     return (
         <>
-            <Paper elevation={3} className="p-2 m-2">
+            <Box className="my-2 p-2 pt-3" borderTop={1} borderColor="divider">
                 <Typography variant="subtitle1" fontWeight="bold" textAlign="center">{trait.name}</Typography>
                 <LoadingWrapper isLoading={isLoading} size={20}>
                     {traitInfo && <>
@@ -52,7 +52,7 @@ export const RacialTraitCard: React.FC<RacialTraitCardProps> = ({ trait, charact
                         )}
                     </>}
                 </LoadingWrapper>
-            </Paper>
+            </Box>
             {characterId && (
                 <AbilityForm
                     isOpen={isAbilityFormOpen}

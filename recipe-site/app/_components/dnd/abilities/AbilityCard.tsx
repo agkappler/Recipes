@@ -1,7 +1,8 @@
+import { getColorForAbilitySource, getLabelForAbilitySource } from "@/app/_constants/AbilitySource";
 import Ability from "@/app/_models/Ability";
-import { Box, Chip, Paper, Typography } from "@mui/material";
-import { getLabelForAbilitySource } from "@/app/_constants/AbilitySource";
+import { Box, Chip } from "@mui/material";
 import { useState } from "react";
+import { ModelCard } from "../../ui/ModelCard";
 import { AbilityDetailsModal } from "./AbilityDetailsModal";
 import { AbilityForm } from "./AbilityForm";
 
@@ -10,46 +11,47 @@ interface AbilityCardProps {
     characterId?: number;
     canEdit?: boolean;
     onAbilityUpdate?: () => void;
+    onClick?: (ability: Ability) => void;
 }
 
 export const AbilityCard: React.FC<AbilityCardProps> = ({
     ability,
     characterId,
     canEdit = false,
-    onAbilityUpdate
+    onAbilityUpdate,
+    onClick
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+    const handleClick = () => {
+        if (onClick) {
+            onClick(ability);
+        } else if (canEdit) {
+            setIsEditModalOpen(true);
+        } else {
+            setIsModalOpen(true);
+        }
+    };
+
     return (
         <>
-            <Paper
-                elevation={3}
-                className="p-2 m-2"
-                role="button"
-                onClick={() => canEdit ? setIsEditModalOpen(true) : setIsModalOpen(true)}
-                sx={{ position: 'relative' }}
+            <ModelCard
+                title={ability.name}
+                onClick={handleClick}
             >
-                <Chip
-                    label={getLabelForAbilitySource(ability.source)}
-                    size="small"
-                    sx={{
-                        position: 'absolute',
-                        top: 8,
-                        left: 8,
-                        zIndex: 1
-                    }}
-                />
-                <Typography variant="h6" textAlign="center" sx={{ mt: 3 }}>
-                    {ability.name}
-                </Typography>
                 <Box display="flex" flexWrap="wrap" gap={1} mb={2} justifyContent="center">
+                    <Chip
+                        label={`${getLabelForAbilitySource(ability.source)}: ${ability.sourceDescription}`}
+                        color={getColorForAbilitySource(ability.source)}
+                        size="small"
+                    />
                     <Chip
                         label={`Usage: ${ability.usage}`}
                         size="small"
                     />
                 </Box>
-            </Paper>
+            </ModelCard>
 
             <AbilityDetailsModal
                 isOpen={isModalOpen}

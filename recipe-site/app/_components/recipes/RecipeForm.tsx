@@ -1,5 +1,3 @@
-'use client'
-
 import { FileRole } from "@/app/_constants/FileRole";
 import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";

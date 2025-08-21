@@ -1,23 +1,24 @@
 'use client';
 
+import { BaseDndResponse, getClasses } from "@/app/_api/dnd5eapi";
 import { ClassFeatures } from "@/app/_components/dnd/class/ClassFeatures";
 import { Subclasses } from "@/app/_components/dnd/class/Subclasses";
 import { LinkButton } from "@/app/_components/ui/buttons/LinkButton";
 import { LoadingWrapper } from "@/app/_components/ui/LoadingWrapper";
 import { PageHeader } from "@/app/_components/ui/PageHeader";
-import { BaseDndResponse, getClasses } from "@/app/_api/dnd5eapi";
+import { DndClass } from "@/app/_constants/DndClass";
 import { Add } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { Box, Button, MenuItem, Select, Tab, Typography } from "@mui/material";
+import { Box, Button, MenuItem, Select, Tab } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 
 export default function DnDClassesPage() {
-    const { data: apiClassResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/classes', () => getClasses(), { onSuccess: (data) => setSelectedClass(data.results[0].index ?? "") });
+    const { data: apiClassResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/classes', () => getClasses(), { onSuccess: (data) => setSelectedClass(data.results[0].index as DndClass ?? DndClass.Barbarian) });
     const customClasses: any[] = [],
         isLoadingCustomClasses = false;
     const classes = [...(apiClassResults?.results ?? []), ...customClasses].sort((a, b) => a.name.localeCompare(b.name));
-    const [selectedClass, setSelectedClass] = useState<string>(classes[0]?.index ?? "");
+    const [selectedClass, setSelectedClass] = useState<DndClass>(classes[0]?.index as DndClass ?? DndClass.Barbarian);
     const [value, setValue] = useState("1");
     const handleChange = (_: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
@@ -33,7 +34,7 @@ export default function DnDClassesPage() {
             <Box display="flex" justifyContent="center">
                 <Select
                     value={selectedClass}
-                    onChange={(e) => setSelectedClass(e.target.value as string)}
+                    onChange={(e) => setSelectedClass(e.target.value as DndClass)}
                 >
                     {classes.map((c, index) => (
                         <MenuItem key={index} value={c.index}>{c.name}</MenuItem>
@@ -51,7 +52,6 @@ export default function DnDClassesPage() {
                     {selectedClass && <ClassFeatures currentLevel={20} className={selectedClass} />}
                 </TabPanel>
                 <TabPanel value="2">
-                    <Typography variant="h6" textAlign="center">Subclass Info</Typography>
                     <Subclasses className={selectedClass} />
                 </TabPanel>
             </TabContext>

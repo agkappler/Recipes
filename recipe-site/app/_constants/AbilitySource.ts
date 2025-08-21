@@ -1,3 +1,5 @@
+import { ChipColor } from "../_components/ui/StatusChip";
+
 export enum AbilitySource {
     Class = "CLASS",
     Race = "RACE",
@@ -14,4 +16,18 @@ export const ABILITY_SOURCE_OPTIONS = [
 
 export function getLabelForAbilitySource(source: AbilitySource): string {
     return ABILITY_SOURCE_OPTIONS.find(o => o.value === source)?.label ?? "Unknown";
+}
+
+export function getColorForAbilitySource(source: AbilitySource): ChipColor {
+    switch (source) {
+        case AbilitySource.Class:
+            return "primary";
+        case AbilitySource.Race:
+            return "secondary";
+        case AbilitySource.Feat:
+            return "warning";
+        case AbilitySource.Other:
+        default:
+            return "default";
+    }
 }

@@ -40,11 +40,13 @@ export const AbilityForm: React.FC<AbilityFormProps> = ({
         onClose();
     }
 
-    const getDefaultValues = (): Partial<Ability> => {
+    const getDefaultValues = (): Ability => {
         if (ability) {
             return ability;
         }
         return {
+            abilityId: 0,
+            characterId: characterId || 0,
             name: defaultName || "",
             description: defaultDescription || "",
             source: defaultSource || AbilitySource.Other,
@@ -91,7 +93,7 @@ export const AbilityForm: React.FC<AbilityFormProps> = ({
         <SimpleDialog title={isEdit ? "Update Ability" : "Create Ability"} isOpen={isOpen} onClose={closeForm}>
             <BasicForm
                 onSubmit={onSubmit}
-                defaultValues={getDefaultValues() as any}
+                defaultValues={getDefaultValues()}
                 onDelete={isEdit ? handleDelete : undefined}
                 errorMessage={errorMessage}
             >
