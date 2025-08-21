@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.fargopolis.enums.AbilitySource;
+import com.fargopolis.enums.UsageType;
 
 @Getter
 @Setter
@@ -15,5 +16,6 @@ public class Ability {
     private String description;
     private AbilitySource source;
     private String sourceDescription;
-    private String usage;
+    private String recovery;
+    private UsageType usage;
 }

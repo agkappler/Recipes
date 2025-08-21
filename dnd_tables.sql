@@ -108,7 +108,8 @@ CREATE TABLE IF NOT EXISTS abilities (
     description TEXT,
     source INTEGER,
     source_description TEXT,
-    usage TEXT,
+    recovery TEXT,
+    usage INTEGER,
     FOREIGN KEY (character_id) REFERENCES dnd_characters(character_id) ON DELETE CASCADE
 );
 

@@ -1,4 +1,4 @@
-import { ABILITY_SOURCE_OPTIONS, AbilitySource } from "@/app/_constants/AbilitySource";
+import { ABILITY_SOURCE_OPTIONS, AbilitySource, USAGE_TYPE_OPTIONS, UsageType } from "@/app/_constants/AbilitySource";
 import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import Ability from "@/app/_models/Ability";
@@ -51,7 +51,8 @@ export const AbilityForm: React.FC<AbilityFormProps> = ({
             description: defaultDescription || "",
             source: defaultSource || AbilitySource.Other,
             sourceDescription: defaultSourceDescription || "",
-            usage: ""
+            usage: UsageType.Action,
+            recovery: ""
         };
     };
 
@@ -120,11 +121,19 @@ export const AbilityForm: React.FC<AbilityFormProps> = ({
                             requiredMessage="Source description is required"
                         />
                     </Grid>
-                    <Grid size={12}>
-                        <TextInput
+                    <Grid size={6}>
+                        <DropdownInput
                             label="Usage"
                             fieldName="usage"
+                            options={USAGE_TYPE_OPTIONS}
                             requiredMessage="Usage is required"
+                        />
+                    </Grid>
+                    <Grid size={6}>
+                        <TextInput
+                            label="Recovery"
+                            fieldName="recovery"
+                            requiredMessage="Recovery is required"
                         />
                     </Grid>
                     <Grid size={12}>

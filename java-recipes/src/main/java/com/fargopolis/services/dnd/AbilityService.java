@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.fargopolis.models.Ability;
 import com.fargopolis.enums.AbilitySource;
+import com.fargopolis.enums.UsageType;
 import com.fargopolis.services.BaseService;
 import com.utils.data.Data;
 
@@ -19,8 +20,8 @@ public class AbilityService extends BaseService {
 
     private static final String GET_ABILITIES_SQL = "SELECT * FROM abilities WHERE character_id = ? ORDER BY name";
     private static final String GET_ABILITY_BY_ID_SQL = "SELECT * FROM abilities WHERE ability_id = ?";
-    private static final String INSERT_ABILITY_SQL = "INSERT INTO abilities (character_id, name, description, source, source_description, usage) VALUES (?, ?, ?, ?, ?, ?) RETURNING ability_id";
-    private static final String UPDATE_ABILITY_SQL = "UPDATE abilities SET name = ?, description = ?, source = ?, source_description = ?, usage = ? WHERE ability_id = ?";
+    private static final String INSERT_ABILITY_SQL = "INSERT INTO abilities (character_id, name, description, source, source_description, recovery, usage) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING ability_id";
+    private static final String UPDATE_ABILITY_SQL = "UPDATE abilities SET name = ?, description = ?, source = ?, source_description = ?, recovery = ?, usage = ? WHERE ability_id = ?";
     private static final String DELETE_ABILITY_SQL = "DELETE FROM abilities WHERE ability_id = ?";
 
     public AbilityService(DataSource dataSource, Data data) {
@@ -57,7 +58,8 @@ public class AbilityService extends BaseService {
                     ps.setString(3, ability.getDescription());
                     ps.setInt(4, ability.getSource() != null ? ability.getSource().getValue() : null);
                     ps.setString(5, ability.getSourceDescription());
-                    ps.setString(6, ability.getUsage());
+                    ps.setString(6, ability.getRecovery());
+                    ps.setInt(7, ability.getUsage() != null ? ability.getUsage().getValue() : null);
                 });
         ability.setAbilityId(abilityId);
         return ability;
@@ -75,8 +77,9 @@ public class AbilityService extends BaseService {
                     ps.setString(2, ability.getDescription());
                     ps.setInt(3, ability.getSource() != null ? ability.getSource().getValue() : null);
                     ps.setString(4, ability.getSourceDescription());
-                    ps.setString(5, ability.getUsage());
-                    ps.setInt(6, ability.getAbilityId());
+                    ps.setString(5, ability.getRecovery());
+                    ps.setInt(6, ability.getUsage() != null ? ability.getUsage().getValue() : null);
+                    ps.setInt(7, ability.getAbilityId());
                 });
 
         return ability;
@@ -101,7 +104,13 @@ public class AbilityService extends BaseService {
         }
 
         ability.setSourceDescription(rs.getString("source_description"));
-        ability.setUsage(rs.getString("usage"));
+        ability.setRecovery(rs.getString("recovery"));
+
+        Integer usageValue = rs.getInt("usage");
+        if (usageValue != null) {
+            ability.setUsage(UsageType.getByValue(usageValue));
+        }
+
         return ability;
     }
 }

@@ -1,4 +1,4 @@
-import { getColorForAbilitySource, getLabelForAbilitySource } from "@/app/_constants/AbilitySource";
+import { getColorForAbilitySource, getLabelForAbilitySource, getLabelForUsageType, getColorForUsageType } from "@/app/_constants/AbilitySource";
 import Ability from "@/app/_models/Ability";
 import { Box, Chip } from "@mui/material";
 import { useState } from "react";
@@ -47,7 +47,12 @@ export const AbilityCard: React.FC<AbilityCardProps> = ({
                         size="small"
                     />
                     <Chip
-                        label={`Usage: ${ability.usage}`}
+                        label={`${getLabelForUsageType(ability.usage)}`}
+                        color={getColorForUsageType(ability.usage)}
+                        size="small"
+                    />
+                    <Chip
+                        label={`Recovery: ${ability.recovery}`}
                         size="small"
                     />
                 </Box>

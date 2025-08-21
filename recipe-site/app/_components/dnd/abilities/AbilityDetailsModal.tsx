@@ -1,6 +1,6 @@
 import Ability from "@/app/_models/Ability";
 import { Box, Chip, Typography } from "@mui/material";
-import { getLabelForAbilitySource } from "@/app/_constants/AbilitySource";
+import { getLabelForAbilitySource, getLabelForUsageType } from "@/app/_constants/AbilitySource";
 import { SimpleDialog } from "../../ui/SimpleDialog";
 
 interface AbilityDetailsModalProps {
@@ -22,7 +22,10 @@ export const AbilityDetailsModal: React.FC<AbilityDetailsModalProps> = ({
                         label={`${getLabelForAbilitySource(ability.source)}: ${ability.sourceDescription}`}
                     />
                     <Chip
-                        label={`Usage: ${ability.usage}`}
+                        label={`Usage: ${getLabelForUsageType(ability.usage)}`}
+                    />
+                    <Chip
+                        label={`Recovery: ${ability.recovery}`}
                     />
                 </Box>
                 <Typography variant="body1">

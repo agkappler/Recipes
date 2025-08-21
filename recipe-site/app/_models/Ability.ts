@@ -1,4 +1,4 @@
-import { AbilitySource } from "@/app/_constants/AbilitySource";
+import { AbilitySource, UsageType } from "@/app/_constants/AbilitySource";
 
 export default class Ability {
     abilityId: number;
@@ -7,7 +7,8 @@ export default class Ability {
     description: string;
     source: AbilitySource;
     sourceDescription: string;
-    usage: string;
+    usage: UsageType;
+    recovery: string;
 
     constructor(
         abilityId: number,
@@ -16,7 +17,8 @@ export default class Ability {
         description: string,
         source: AbilitySource,
         sourceDescription: string,
-        usage: string
+        usage: UsageType,
+        recovery: string
     ) {
         this.abilityId = abilityId;
         this.characterId = characterId;
@@ -25,5 +27,6 @@ export default class Ability {
         this.source = source;
         this.sourceDescription = sourceDescription;
         this.usage = usage;
+        this.recovery = recovery;
     }
 }
