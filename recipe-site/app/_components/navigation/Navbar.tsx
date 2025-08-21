@@ -39,7 +39,7 @@ export const Navbar: React.FC = () => {
     };
 
     const handleTabClick = (path: string) => {
-        if (path === '/login') {
+        if (!isMobile && path === '/login') {
             setIsOpen(true);
         } else {
             router.push(path);
@@ -77,8 +77,8 @@ export const Navbar: React.FC = () => {
                     </Tabs>
                 )}
             </Box>
-            <SimpleDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
-                <LoginForm />
+            <SimpleDialog isOpen={isOpen} onClose={() => setIsOpen(false)} maxWidth="xs">
+                <LoginForm onLogin={() => setIsOpen(false)} />
             </SimpleDialog>
         </nav>
     );

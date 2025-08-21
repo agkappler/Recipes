@@ -18,7 +18,11 @@ interface LoginFormInputs {
     password: string;
 }
 
-export const LoginForm: React.FC = () => {
+interface LoginFormProps {
+    onLogin?: () => void;
+}
+
+export const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
     const { setUser, isAuthenticated } = useAppContext();
@@ -34,6 +38,7 @@ export const LoginForm: React.FC = () => {
             setErrorMessage(undefined);
             successToast('Succesfully logged in!');
             setUser(response.user);
+            onLogin?.();
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
         }
