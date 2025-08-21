@@ -47,7 +47,6 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
         <BasicForm
             onSubmit={onSubmit}
             errorMessage={errorMessage}
-            closeForm={closeForm}
             defaultValues={bounty}
         >
             <Grid container spacing={2} className="mb-2">

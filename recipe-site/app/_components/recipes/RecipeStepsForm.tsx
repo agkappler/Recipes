@@ -39,7 +39,6 @@ export const RecipeStepsForm: React.FC<RecipeStepsFormProps> = ({ isOpen, onClos
         <BasicForm
             onSubmit={onSubmit}
             defaultValues={{ steps: recipeSteps ?? [] }}
-            closeForm={onClose}
             errorMessage={errorMessage}
         >
             <ListInput

@@ -48,7 +48,6 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeD
         <BasicForm
             onSubmit={onSubmit}
             defaultValues={recipeData}
-            closeForm={onClose}
             errorMessage={errorMessage}
         >
             <Grid container spacing={2} className="mb-2">

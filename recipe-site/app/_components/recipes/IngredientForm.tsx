@@ -40,7 +40,6 @@ export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose,
         <BasicForm
             errorMessage={errorMessage}
             onSubmit={onSubmit}
-            closeForm={onClose}
         >
             <Grid container spacing={2} className="mb-2">
                 <Grid size={12}>

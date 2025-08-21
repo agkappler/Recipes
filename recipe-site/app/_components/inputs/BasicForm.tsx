@@ -7,11 +7,11 @@ import { ErrorMessage } from "../ui/ErrorMessage";
 interface BasicFormProps<T> extends PropsWithChildren {
     errorMessage: string | undefined;
     onSubmit: (data: T) => Promise<void>;
+    onDelete?: () => Promise<void>;
     defaultValues?: T;
-    closeForm: () => void;
 }
 
-export const BasicForm = <T extends FieldValues,>({ children, defaultValues, errorMessage, onSubmit, closeForm }: BasicFormProps<T>) => {
+export const BasicForm = <T extends FieldValues,>({ children, defaultValues, errorMessage, onSubmit, onDelete }: BasicFormProps<T>) => {
     const methods = useForm<T>({ defaultValues: defaultValues as DefaultValues<T> });
     const { isAuthenticated } = useAppContext();
     const [isLoading, setIsLoading] = useState(false);
@@ -21,15 +21,25 @@ export const BasicForm = <T extends FieldValues,>({ children, defaultValues, err
         setIsLoading(false);
     }
 
+    const awaitDelete = async () => {
+        if (onDelete) {
+            setIsLoading(true);
+            await onDelete();
+            setIsLoading(false);
+        }
+    }
+
     return (<Box paddingY={1}>
         <ErrorMessage errorMessage={errorMessage} />
         <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(awaitSubmit)}>
                 {children}
-                <Box className="flex justify-between py-2">
-                    <Button type="button" variant="outlined" color="secondary" onClick={closeForm}>Close</Button>
-                    {isAuthenticated && <Button type="submit" variant="contained" color="primary" loading={isLoading}>Submit</Button>}
-                </Box>
+                {isAuthenticated && (
+                    <Box className="flex justify-between py-2">
+                        {onDelete !== undefined && <Button type="button" variant="outlined" color="secondary" loading={isLoading} onClick={awaitDelete}>Delete</Button>}
+                        <Button type="submit" variant="contained" color="primary" loading={isLoading}>Submit</Button>
+                    </Box>
+                )}
             </form>
         </FormProvider>
     </Box>);

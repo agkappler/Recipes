@@ -6,14 +6,20 @@ import { RacialTraitCard } from "./RacialTraitCard";
 
 interface RacialTraitsProps {
     race: string;
+    characterId?: number;
 }
 
-export const RacialTraits: React.FC<RacialTraitsProps> = ({ race }) => {
+export const RacialTraits: React.FC<RacialTraitsProps> = ({ race, characterId }) => {
     const { data: racialTraits, isLoading } = useSWR(race, () => getRace(race));
     return <LoadingWrapper isLoading={isLoading}>
         <Typography variant="h5" textAlign="center">{racialTraits?.name}</Typography>
         {racialTraits?.traits.map((t: DndItem, index: number) => (
-            <RacialTraitCard key={index} trait={t} />
+            <RacialTraitCard
+                key={index}
+                trait={t}
+                characterId={characterId}
+                raceName={racialTraits?.name}
+            />
         ))}
     </LoadingWrapper>
 }

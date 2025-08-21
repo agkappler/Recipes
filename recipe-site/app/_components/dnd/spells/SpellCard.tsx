@@ -7,7 +7,7 @@ import { SpellDetailsModal } from "./SpellDetailsModal"
 interface SpellCardProps {
     spell: Spell;
     isKnown?: boolean;
-    canLearn: boolean;
+    canEdit: boolean;
     characterId?: number;
     onSpellUpdate?: () => void;
 }
@@ -15,7 +15,7 @@ interface SpellCardProps {
 export const SpellCard: React.FC<SpellCardProps> = ({
     spell,
     isKnown = false,
-    canLearn,
+    canEdit,
     characterId,
     onSpellUpdate
 }) => {
@@ -27,7 +27,6 @@ export const SpellCard: React.FC<SpellCardProps> = ({
             className="p-2 flex justify-between"
             role="button"
             onClick={() => setIsOpen(true)}
-            style={{ backgroundColor: isKnown ? 'lightblue' : 'white' }}
         >
             <Typography variant="body1" textAlign="center">{spell.name}</Typography>
             <InfoOutline fontSize="small" />
@@ -37,7 +36,7 @@ export const SpellCard: React.FC<SpellCardProps> = ({
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
                 spell={spell}
-                canLearn={canLearn}
+                canEdit={canEdit}
                 characterId={characterId}
                 isKnown={isKnown}
                 onSpellUpdate={onSpellUpdate}

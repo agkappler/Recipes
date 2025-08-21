@@ -45,7 +45,6 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
         <BasicForm
             onSubmit={onSubmit}
             errorMessage={errorMessage}
-            closeForm={closeForm}
             defaultValues={dndRace ?? defaultRace}
         >
             <Grid container spacing={2} className="mb-2">

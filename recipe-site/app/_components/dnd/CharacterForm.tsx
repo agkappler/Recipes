@@ -77,7 +77,6 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
         <BasicForm
             onSubmit={onSubmit}
             defaultValues={character}
-            closeForm={closeForm}
             errorMessage={errorMessage}
         >
             <Grid container spacing={2} className="mb-2">

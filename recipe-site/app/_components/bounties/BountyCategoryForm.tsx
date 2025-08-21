@@ -36,7 +36,6 @@ export const BountyCategoryForm: React.FC<BountyCategoryFormProps> = ({ onClose,
         <BasicForm
             onSubmit={onSubmit}
             errorMessage={errorMessage}
-            closeForm={closeForm}
         >
             <TextInput
                 label="Name"

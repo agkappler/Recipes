@@ -1,18 +1,21 @@
+import { getLevelInfoForClass, LevelInfo } from "@/app/_api/dnd5eapi";
 import { MOBILE_BREAK } from "@/app/_constants/Media";
 import Character from "@/app/_models/Character";
-import { getLevelInfoForClass, LevelInfo } from "@/app/_api/dnd5eapi";
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Box, MenuItem, Select, Tab, useMediaQuery } from "@mui/material";
+import { Box, MenuItem, Select, Tab, Typography, useMediaQuery } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
 import { LoadingWrapper } from "../ui/LoadingWrapper";
+import { StyledAccordion } from "../ui/StyledAccordion";
+import { ActionInfo } from "./ActionInfo";
+import { CharacterResources } from "./CharacterResources";
 import { ClassFeatures } from "./class/ClassFeatures";
 import { RacialTraits } from "./race/RacialTraits";
 import { SpellInfo } from "./spells/SpellInfo";
-import { CharacterResources } from "./CharacterResources";
 import { WeaponInfo } from "./weapons/WeaponInfo";
+import { AbilityInfo } from "./abilities/AbilityInfo";
 
 interface CharacterInfoProps {
     character: Character;
@@ -27,13 +30,11 @@ export const CharacterInfo: React.FC<CharacterInfoProps> = ({ character }) => {
 
     const isMobile = useMediaQuery(`(max-width:${MOBILE_BREAK})`);
     const characterTabs = [
-        { label: "Class Features", value: "1" },
-        { label: "Racial Traits", value: "2" },
-        { label: "Spells", value: "3" },
-        { label: "Weapons", value: "4" },
-        { label: "Items", value: "5" },
-        { label: "Proficiencies", value: "6" },
-        { label: "Resources", value: "7" },
+        { label: "Info", value: "1" },
+        { label: "Spells", value: "2" },
+        { label: "Abilities", value: "3" },
+        { label: "Items", value: "4" },
+        { label: "Actions", value: "5" },
     ];
 
     return <LoadingWrapper isLoading={isLoadingClassInfo}>
@@ -48,28 +49,49 @@ export const CharacterInfo: React.FC<CharacterInfoProps> = ({ character }) => {
                             <MenuItem key={tab.value} value={tab.value}>{tab.label}</MenuItem>
                         ))}
                     </Select>
-                    : <TabList onChange={handleChange} aria-label="Character info tabs">
+                    : <TabList onChange={handleChange} aria-label="Character tabs">
                         {characterTabs.map((tab) => (
                             <Tab key={tab.value} label={tab.label} value={tab.value} />
                         ))}
                     </TabList>}
             </Box>
             <TabPanel value="1">
-                <ClassFeatures currentLevel={character.level} className={character.className} />
+                <Box>
+                    <StyledAccordion title="Class Features">
+                        <ClassFeatures
+                            currentLevel={character.level}
+                            className={character.className}
+                            characterId={character.characterId}
+                        />
+                    </StyledAccordion>
+
+                    <StyledAccordion title="Racial Traits">
+                        <RacialTraits
+                            race={character.race}
+                            characterId={character.characterId}
+                        />
+                    </StyledAccordion>
+
+                    <StyledAccordion title="Proficiencies">
+                        <Typography>No proficiencies yet!</Typography>
+                    </StyledAccordion>
+
+                    <StyledAccordion title="Resources">
+                        <CharacterResources characterId={character.characterId} />
+                    </StyledAccordion>
+                </Box>
             </TabPanel>
             <TabPanel value="2">
-                <RacialTraits race={character.race} />
+                <SpellInfo levelInfos={levelInfos} currentLevel={character.level} className={character.className} characterId={character.characterId} />
             </TabPanel>
             <TabPanel value="3">
-                <SpellInfo levelInfos={levelInfos} currentLevel={character.level} className={character.className} characterId={character.characterId} />
+                <AbilityInfo characterId={character.characterId} canEdit={true} />
             </TabPanel>
             <TabPanel value="4">
                 <WeaponInfo characterId={character.characterId} />
             </TabPanel>
-            <TabPanel value="5">No items yet!</TabPanel>
-            <TabPanel value="6">No proficiencies yet!</TabPanel>
-            <TabPanel value="7">
-                <CharacterResources characterId={character.characterId} />
+            <TabPanel value="5">
+                <ActionInfo characterId={character.characterId} className={character.className} />
             </TabPanel>
         </TabContext>
     </LoadingWrapper>

@@ -6,6 +6,8 @@ import { Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListIt
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { LoginForm } from '../LoginForm';
+import { SimpleDialog } from '../ui/SimpleDialog';
 
 export const Navbar: React.FC = () => {
     const router = useRouter();
@@ -13,6 +15,8 @@ export const Navbar: React.FC = () => {
 
     const isMobile = useMediaQuery(`(max-width:${NAVBAR_BREAK})`);
     const [drawerOpen, setDrawerOpen] = useState(false);
+
+    const [isOpen, setIsOpen] = useState(false);
 
     const navItems = [
         { label: "Recipes", path: "/recipes" },
@@ -34,6 +38,14 @@ export const Navbar: React.FC = () => {
         return false; // No tab selected for other routes
     };
 
+    const handleTabClick = (path: string) => {
+        if (path === '/login') {
+            setIsOpen(true);
+        } else {
+            router.push(path);
+        }
+    };
+
     return (
         <nav className="bg-white shadow-md sticky top-0 z-10">
             <Box className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -48,7 +60,7 @@ export const Navbar: React.FC = () => {
                                 <List>
                                     {navItems.map((item) => (
                                         <ListItem key={item.label} disablePadding>
-                                            <ListItemButton onClick={() => router.push(item.path)}>
+                                            <ListItemButton onClick={() => handleTabClick(item.path)}>
                                                 <ListItemText primary={item.label} />
                                             </ListItemButton>
                                         </ListItem>
@@ -60,11 +72,14 @@ export const Navbar: React.FC = () => {
                 ) : (
                     <Tabs value={getTabValue()} style={{ display: 'flex', flexWrap: 'wrap' }} textColor="primary" indicatorColor="primary">
                         {navItems.map((item) => (
-                            <Tab key={item.label} label={item.label} onClick={() => router.push(item.path)} />
+                            <Tab key={item.label} label={item.label} onClick={() => handleTabClick(item.path)} />
                         ))}
                     </Tabs>
                 )}
             </Box>
+            <SimpleDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                <LoginForm />
+            </SimpleDialog>
         </nav>
     );
 };

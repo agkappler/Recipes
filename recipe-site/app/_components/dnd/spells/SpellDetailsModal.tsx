@@ -1,17 +1,17 @@
 import { getRelativeUrlInfo, Spell } from "@/app/_api/dnd5eapi";
+import RequestManager from "@/app/_helpers/RequestManager";
+import { Add, Remove } from "@mui/icons-material";
+import { Box, Button, Chip } from "@mui/material";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { SimpleDialog } from "../../ui/SimpleDialog";
 import { DescriptionList } from "../DescriptionList";
-import { Button, Box } from "@mui/material";
-import { Add, Remove } from "@mui/icons-material";
-import RequestManager from "@/app/_helpers/RequestManager";
 
 interface SpllDetailsModalProps {
     isOpen: boolean;
     onClose: () => void;
     spell: Spell;
-    canLearn: boolean;
+    canEdit: boolean;
     characterId?: number;
     isKnown?: boolean;
     onSpellUpdate?: () => void;
@@ -21,13 +21,14 @@ export const SpellDetailsModal: React.FC<SpllDetailsModalProps> = ({
     isOpen,
     onClose,
     spell,
-    canLearn,
+    canEdit,
     characterId,
     isKnown = false,
     onSpellUpdate
 }) => {
     const { data: spellDetails, isLoading } = useSWR(spell.index, () => getRelativeUrlInfo(spell.url));
 
+    console.log(spellDetails);
     const handleAddSpell = async () => {
         if (characterId && spellDetails) {
             await RequestManager.post(`/character/${characterId}/addKnownSpell`, {
@@ -51,28 +52,36 @@ export const SpellDetailsModal: React.FC<SpllDetailsModalProps> = ({
 
     return <SimpleDialog title={spell.name} isOpen={isOpen} onClose={onClose}>
         <LoadingWrapper isLoading={isLoading} size={10}>
+            <Box display="flex" flexWrap="wrap" gap={1} mb={2} justifyContent="center">
+                {spellDetails?.concentration && <Chip label="Concentration" />}
+                {spellDetails?.casting_time && <Chip label={`Casting: ${spellDetails.casting_time}`} />}
+                {spellDetails?.range && <Chip label={`Range: ${spellDetails.range}`} />}
+                {spellDetails?.duration && <Chip label={`Duration: ${spellDetails.duration}`} />}
+                {spellDetails?.ritual && <Chip label="Ritual" />}
+                {spellDetails?.material && <Chip label={`Material: ${spellDetails.material}`} />}
+            </Box>
             <DescriptionList descriptions={spellDetails?.desc} />
         </LoadingWrapper>
-        {(canLearn || isKnown) && characterId && (
+        {canEdit && characterId && (
             <Box display="flex" gap={2} marginTop={2}>
-                {canLearn && !isKnown && (
-                    <Button
-                        color="primary"
-                        startIcon={<Add />}
-                        onClick={handleAddSpell}
-                    >
-                        Add to known spells
-                    </Button>
-                )}
-                {isKnown && (
-                    <Button
-                        color="error"
-                        startIcon={<Remove />}
-                        onClick={handleRemoveSpell}
-                    >
-                        Remove from known spells
-                    </Button>
-                )}
+                {isKnown
+                    ? (
+                        <Button
+                            color="error"
+                            startIcon={<Remove />}
+                            onClick={handleRemoveSpell}
+                        >
+                            Remove from known spells
+                        </Button>
+                    ) : (
+                        <Button
+                            color="primary"
+                            startIcon={<Add />}
+                            onClick={handleAddSpell}
+                        >
+                            Add to known spells
+                        </Button>
+                    )}
             </Box>
         )}
     </SimpleDialog>

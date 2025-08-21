@@ -56,7 +56,6 @@ export const WeaponForm: React.FC<WeaponFormProps> = ({
             <BasicForm
                 onSubmit={onSubmit}
                 defaultValues={weapon}
-                closeForm={closeForm}
                 errorMessage={errorMessage}
             >
                 <Grid container spacing={2} className="mb-2">
@@ -67,11 +66,25 @@ export const WeaponForm: React.FC<WeaponFormProps> = ({
                             requiredMessage="Weapon name is required"
                         />
                     </Grid>
-                    <Grid size={12}>
+                    <Grid size={6}>
                         <TextInput
                             label="Damage"
                             fieldName="damage"
                             requiredMessage="Damage is required"
+                        />
+                    </Grid>
+                    <Grid size={6}>
+                        <TextInput
+                            label="Damage Type"
+                            fieldName="damageType"
+                            requiredMessage="Damage type is required"
+                        />
+                    </Grid>
+                    <Grid size={12}>
+                        <TextInput
+                            label="Range"
+                            fieldName="range"
+                            requiredMessage="Range is required"
                         />
                     </Grid>
                     <Grid size={12}>

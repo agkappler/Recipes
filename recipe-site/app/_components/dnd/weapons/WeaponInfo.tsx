@@ -10,9 +10,10 @@ import { WeaponCard } from "./WeaponCard";
 
 interface WeaponInfoProps {
     characterId: number;
+    canEdit?: boolean;
 }
 
-export const WeaponInfo: React.FC<WeaponInfoProps> = ({ characterId }) => {
+export const WeaponInfo: React.FC<WeaponInfoProps> = ({ characterId, canEdit = true }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedWeapon, setSelectedWeapon] = useState<Weapon>();
 
@@ -35,12 +36,14 @@ export const WeaponInfo: React.FC<WeaponInfoProps> = ({ characterId }) => {
         <Box>
             <LoadingWrapper isLoading={isLoading}>
                 <Grid container spacing={2}>
-                    <Grid size={{ sm: 4, xs: 12 }}>
-                        <AddModelCard onClick={() => setIsOpen(true)} title="Add Weapon" />
-                    </Grid>
+                    {canEdit && (
+                        <Grid size={{ sm: 4, xs: 12 }}>
+                            <AddModelCard onClick={() => setIsOpen(true)} title="Add Weapon" />
+                        </Grid>
+                    )}
                     {weapons?.map((weapon, index) => (
                         <Grid key={index} size={{ sm: 4, xs: 12 }}>
-                            <WeaponCard weapon={weapon} onClick={onEditWeapon} />
+                            <WeaponCard weapon={weapon} onClick={canEdit ? onEditWeapon : undefined} />
                         </Grid>
                     ))}
                     {(!weapons || weapons.length === 0) && !isLoading && (

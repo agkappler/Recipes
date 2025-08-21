@@ -11,6 +11,7 @@ import { BasicForm } from "./inputs/BasicForm";
 import { TextInput } from "./inputs/TextInput";
 import { ErrorMessage } from "./ui/ErrorMessage";
 import { SimpleDialog } from "./ui/SimpleDialog";
+import { AlertMessage } from "./ui/AlertMessage";
 
 interface LoginFormInputs {
     username: string;
@@ -68,6 +69,7 @@ export const LoginForm: React.FC = () => {
             <Typography variant="h5" textAlign="center" mb={3}>
                 Login
             </Typography>
+            <AlertMessage message="Authentication is only required for write actions, so feel free to take a look around!" />
             <TextField
                 fullWidth
                 label="Username"
@@ -105,7 +107,6 @@ export const LoginForm: React.FC = () => {
             <BasicForm
                 errorMessage={userErrorMessage}
                 onSubmit={createUser}
-                closeForm={onClose}
             >
                 <Grid container spacing={2}>
                     <Grid size={12}>

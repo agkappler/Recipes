@@ -18,8 +18,8 @@ public class WeaponService extends BaseService {
 
     private static final String GET_WEAPONS_SQL = "SELECT * FROM weapons WHERE character_id = ?";
     private static final String GET_WEAPON_BY_ID_SQL = "SELECT * FROM weapons WHERE weapon_id = ?";
-    private static final String INSERT_WEAPON_SQL = "INSERT INTO weapons (character_id, name, damage, description) VALUES (?, ?, ?, ?) RETURNING weapon_id";
-    private static final String UPDATE_WEAPON_SQL = "UPDATE weapons SET name = ?, damage = ?, description = ? WHERE weapon_id = ?";
+    private static final String INSERT_WEAPON_SQL = "INSERT INTO weapons (character_id, name, damage, range, damage_type, description) VALUES (?, ?, ?, ?, ?, ?) RETURNING weapon_id";
+    private static final String UPDATE_WEAPON_SQL = "UPDATE weapons SET name = ?, damage = ?, range = ?, damage_type = ?, description = ? WHERE weapon_id = ?";
     private static final String DELETE_WEAPON_SQL = "DELETE FROM weapons WHERE weapon_id = ?";
 
     public WeaponService(DataSource dataSource, Data data) {
@@ -54,7 +54,9 @@ public class WeaponService extends BaseService {
                     ps.setInt(1, weapon.getCharacterId());
                     ps.setString(2, weapon.getName());
                     ps.setString(3, weapon.getDamage());
-                    ps.setString(4, weapon.getDescription());
+                    ps.setString(4, weapon.getRange());
+                    ps.setString(5, weapon.getDamageType());
+                    ps.setString(6, weapon.getDescription());
                 });
         weapon.setWeaponId(weaponId);
         return weapon;
@@ -70,8 +72,10 @@ public class WeaponService extends BaseService {
                 (PreparedStatement ps) -> {
                     ps.setString(1, weapon.getName());
                     ps.setString(2, weapon.getDamage());
-                    ps.setString(3, weapon.getDescription());
-                    ps.setInt(4, weapon.getWeaponId());
+                    ps.setString(3, weapon.getRange());
+                    ps.setString(4, weapon.getDamageType());
+                    ps.setString(5, weapon.getDescription());
+                    ps.setInt(6, weapon.getWeaponId());
                 });
 
         return weapon;
@@ -89,6 +93,8 @@ public class WeaponService extends BaseService {
         weapon.setCharacterId(rs.getInt("character_id"));
         weapon.setName(rs.getString("name"));
         weapon.setDamage(rs.getString("damage"));
+        weapon.setRange(rs.getString("range"));
+        weapon.setDamageType(rs.getString("damage_type"));
         weapon.setDescription(rs.getString("description"));
         return weapon;
     }
