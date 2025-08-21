@@ -9,7 +9,6 @@ import { useState } from "react";
 import useSWR from "swr";
 import { LoadingWrapper } from "../ui/LoadingWrapper";
 import { StyledAccordion } from "../ui/StyledAccordion";
-import { ActionInfo } from "./ActionInfo";
 import { CharacterResources } from "./CharacterResources";
 import { ClassFeatures } from "./class/ClassFeatures";
 import { RacialTraits } from "./race/RacialTraits";
@@ -34,7 +33,6 @@ export const CharacterInfo: React.FC<CharacterInfoProps> = ({ character }) => {
         { label: "Spells", value: "2" },
         { label: "Abilities", value: "3" },
         { label: "Items", value: "4" },
-        { label: "Actions", value: "5" },
     ];
 
     return <LoadingWrapper isLoading={isLoadingClassInfo}>
@@ -89,9 +87,6 @@ export const CharacterInfo: React.FC<CharacterInfoProps> = ({ character }) => {
             </TabPanel>
             <TabPanel value="4">
                 <WeaponInfo characterId={character.characterId} />
-            </TabPanel>
-            <TabPanel value="5">
-                <ActionInfo characterId={character.characterId} className={character.className} />
             </TabPanel>
         </TabContext>
     </LoadingWrapper>

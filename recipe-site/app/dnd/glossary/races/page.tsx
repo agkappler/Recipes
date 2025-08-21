@@ -31,7 +31,7 @@ export default function DnDRacesPage() {
         <PageHeader
             title="DnD Races"
             rightContainer={<Button startIcon={<Add />} onClick={() => setIsOpen(true)}>Add Race</Button>}
-            leftContainer={<LinkButton url="/dnd" label={"Back to Characters"} isForward={false} />}
+            leftContainer={<LinkButton url="/dnd/glossary" label={"Glossary"} isForward={false} />}
         />
         <LoadingWrapper isLoading={isLoadingApi || isLoadingCustomRaces}>
             <Box display="flex" justifyContent="center">

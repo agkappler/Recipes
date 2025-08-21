@@ -1,3 +1,4 @@
+'use client'
 import RequestManager from "@/app/_helpers/RequestManager";
 import CustomDndRace from "@/app/_models/CustomDndRace";
 import { BaseDndResponse, getRaces } from "@/app/_api/dnd5eapi";
