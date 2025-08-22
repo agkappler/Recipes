@@ -6,7 +6,8 @@ public enum AbilitySource {
     CLASS(1),
     RACE(2),
     FEAT(3),
-    OTHER(4);
+    OTHER(4),
+    BACKGROUND(5);
 
     private Integer value;
 
@@ -14,7 +15,8 @@ public enum AbilitySource {
             1, CLASS,
             2, RACE,
             3, FEAT,
-            4, OTHER);
+            4, OTHER,
+            5, BACKGROUND);
 
     AbilitySource(Integer value) {
         this.value = value;

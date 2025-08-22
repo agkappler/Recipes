@@ -1,4 +1,4 @@
-import { ABILITY_SOURCE_OPTIONS, AbilitySource, USAGE_TYPE_OPTIONS, UsageType } from "@/app/_constants/AbilitySource";
+import { ABILITY_SOURCE_OPTIONS, AbilitySource, USAGE_TYPE_OPTIONS, UsageType } from "@/app/_constants/Abilities";
 import { getErrorMessage } from "@/app/_helpers/Errors";
 import RequestManager from "@/app/_helpers/RequestManager";
 import Ability from "@/app/_models/Ability";

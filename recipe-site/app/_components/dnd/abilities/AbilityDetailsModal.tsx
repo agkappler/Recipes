@@ -1,6 +1,6 @@
 import Ability from "@/app/_models/Ability";
 import { Box, Chip, Typography } from "@mui/material";
-import { getLabelForAbilitySource, getLabelForUsageType } from "@/app/_constants/AbilitySource";
+import { getLabelForAbilitySource, getLabelForUsageType } from "@/app/_constants/Abilities";
 import { SimpleDialog } from "../../ui/SimpleDialog";
 
 interface AbilityDetailsModalProps {

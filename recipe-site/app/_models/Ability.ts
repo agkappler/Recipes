@@ -1,4 +1,4 @@
-import { AbilitySource, UsageType } from "@/app/_constants/AbilitySource";
+import { AbilitySource, UsageType } from "@/app/_constants/Abilities";
 
 export default class Ability {
     abilityId: number;

@@ -4,14 +4,16 @@ export enum AbilitySource {
     Class = "CLASS",
     Race = "RACE",
     Feat = "FEAT",
-    Other = "OTHER"
+    Other = "OTHER",
+    Background = "BACKGROUND"
 }
 
 export const ABILITY_SOURCE_OPTIONS = [
     { value: AbilitySource.Class, label: "Class" },
     { value: AbilitySource.Race, label: "Race" },
     { value: AbilitySource.Feat, label: "Feat" },
-    { value: AbilitySource.Other, label: "Other" }
+    { value: AbilitySource.Other, label: "Other" },
+    { value: AbilitySource.Background, label: "Background" }
 ];
 
 export function getLabelForAbilitySource(source: AbilitySource): string {
@@ -27,6 +29,7 @@ export function getColorForAbilitySource(source: AbilitySource): ChipColor {
         case AbilitySource.Feat:
             return "warning";
         case AbilitySource.Other:
+        case AbilitySource.Background:
         default:
             return "default";
     }
@@ -36,7 +39,8 @@ export enum UsageType {
     Action = "ACTION",
     BonusAction = "BONUS_ACTION",
     Reaction = "REACTION",
-    FreeAction = "FREE"
+    FreeAction = "FREE",
+    Passive = "PASSIVE"
 }
 
 export const USAGE_TYPE_OPTIONS = [
@@ -44,6 +48,7 @@ export const USAGE_TYPE_OPTIONS = [
     { value: UsageType.BonusAction, label: "Bonus Action" },
     { value: UsageType.Reaction, label: "Reaction" },
     { value: UsageType.FreeAction, label: "Free Action" },
+    { value: UsageType.Passive, label: "Passive" }
 ];
 
 export function getLabelForUsageType(usage: UsageType): string {
@@ -60,6 +65,8 @@ export function getColorForUsageType(usage: UsageType): ChipColor {
             return "warning";
         case UsageType.FreeAction:
             return "success";
+        case UsageType.Passive:
+            return "info";
         default:
             return "default";
     }

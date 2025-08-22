@@ -6,7 +6,8 @@ public enum UsageType {
     ACTION(1),
     BONUS_ACTION(2),
     REACTION(3),
-    FREE(4);
+    FREE(4),
+    PASSIVE(5);
 
     private Integer value;
 
@@ -14,7 +15,8 @@ public enum UsageType {
             1, ACTION,
             2, BONUS_ACTION,
             3, REACTION,
-            4, FREE);
+            4, FREE,
+            5, PASSIVE);
 
     UsageType(Integer value) {
         this.value = value;

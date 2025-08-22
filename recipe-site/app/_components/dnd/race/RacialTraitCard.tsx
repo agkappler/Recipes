@@ -1,5 +1,5 @@
 import { DndItem, getRelativeUrlInfo } from "@/app/_api/dnd5eapi";
-import { AbilitySource } from "@/app/_constants/AbilitySource";
+import { AbilitySource } from "@/app/_constants/Abilities";
 import { Add } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import React, { useState } from "react";

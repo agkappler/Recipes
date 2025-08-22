@@ -1,4 +1,4 @@
-import { getColorForAbilitySource, getLabelForAbilitySource, getLabelForUsageType, getColorForUsageType } from "@/app/_constants/AbilitySource";
+import { getColorForAbilitySource, getLabelForAbilitySource, getLabelForUsageType, getColorForUsageType } from "@/app/_constants/Abilities";
 import Ability from "@/app/_models/Ability";
 import { Box, Chip } from "@mui/material";
 import { useState } from "react";

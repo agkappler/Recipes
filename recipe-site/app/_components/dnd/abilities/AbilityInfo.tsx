@@ -1,4 +1,4 @@
-import { AbilitySource } from "@/app/_constants/AbilitySource";
+import { AbilitySource } from "@/app/_constants/Abilities";
 import RequestManager from "@/app/_helpers/RequestManager";
 import Ability from "@/app/_models/Ability";
 import { Box, Grid, Typography } from "@mui/material";
