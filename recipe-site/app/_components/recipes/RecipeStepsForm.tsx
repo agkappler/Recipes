@@ -42,7 +42,6 @@ export const RecipeStepsForm: React.FC<RecipeStepsFormProps> = ({ isOpen, onClos
             errorMessage={errorMessage}
         >
             <ListInput
-                title="Instructions"
                 fieldName="steps"
                 addText="Add Step"
                 defaultItem={{ recipeId: recipeId }}

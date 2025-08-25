@@ -12,20 +12,51 @@ import { BaseDndResponse, getRaces } from "@/app/_api/dnd5eapi";
 import { Add } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, MenuItem, Select, Tab } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import useSWR from "swr";
+import { CustomRaceTraits } from "../../../_components/dnd/race/CustomRaceTraits";
 
 export default function DnDRacesPage() {
-    const { data: apiRaceResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/races', () => getRaces(), { onSuccess: (data) => setSelectedRace(data.results[0].index ?? "") });
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const { data: apiRaceResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>('/races', () => getRaces());
     const { data: customRaces, isLoading: isLoadingCustomRaces, mutate } = useSWR<CustomDndRace[]>('/customRaces', () => RequestManager.get<CustomDndRace[]>('/races'));
     const races = [...(apiRaceResults?.results ?? []), ...(customRaces ?? []).map(r => new CustomDndRace(r))].sort((a, b) => a.name.localeCompare(b.name));
-    const [selectedRace, setSelectedRace] = useState<string>(races[0]?.index ?? "");
+    const [selectedRace, setSelectedRace] = useState<string>("");
+    const [isCustom, setIsCustom] = useState<boolean>(false);
     const [value, setValue] = useState("1");
     const handleChange = (_: React.SyntheticEvent, newValue: string) => {
         setValue(newValue);
     };
 
     const [isOpen, setIsOpen] = useState(false);
+
+    // Handle query parameter for selected race
+    useEffect(() => {
+        const raceParam = searchParams.get('race');
+        if (races.length > 0) {
+            if (raceParam) {
+                const raceObj = races.find(r => r.index === raceParam);
+                if (raceObj) {
+                    setSelectedRace(raceParam);
+                    setIsCustom('isCustom' in raceObj ? (raceObj as CustomDndRace).isCustom : false);
+                }
+            } else if (!selectedRace) {
+                // Default to first race if no query param and no race selected
+                const firstRace = races[0];
+                setSelectedRace(firstRace.index);
+                setIsCustom('isCustom' in firstRace ? (firstRace as CustomDndRace).isCustom : false);
+            }
+        }
+    }, [searchParams, races]);
+
+    const handleRaceChange = (raceIndex: string) => {
+        // Update the URL with the new race selection
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set('race', raceIndex);
+        router.replace(`/dnd/glossary/races?${newSearchParams.toString()}`);
+    };
 
     return <>
         <PageHeader
@@ -37,7 +68,7 @@ export default function DnDRacesPage() {
             <Box display="flex" justifyContent="center">
                 <Select
                     value={selectedRace}
-                    onChange={(e) => setSelectedRace(e.target.value as string)}
+                    onChange={(e) => handleRaceChange(e.target.value as string)}
                 >
                     {races.map((r, index) => (
                         <MenuItem key={index} value={r.index}>{r.name}</MenuItem>
@@ -52,7 +83,9 @@ export default function DnDRacesPage() {
                     </TabList>
                 </Box>
                 <TabPanel value="1">
-                    {selectedRace && <RacialTraits race={selectedRace} />}
+                    {selectedRace && (isCustom
+                        ? <CustomRaceTraits raceId={(races.find(r => r.index === selectedRace) as CustomDndRace)?.raceId} />
+                        : <RacialTraits race={selectedRace} />)}
                 </TabPanel>
                 <TabPanel value="2">
                     <Subraces race={selectedRace} />

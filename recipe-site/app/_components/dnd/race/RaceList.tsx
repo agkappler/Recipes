@@ -17,7 +17,7 @@ export const RaceList: React.FC = () => {
         <LoadingWrapper isLoading={isLoadingApi || isLoadingCustomRaces}>
             <Grid container spacing={2} textAlign="center">
                 {races.map((r, index) => (<Grid key={index} size={{ xs: 12, sm: 4 }}>
-                    <Paper elevation={3} className="p-2" role="button" onClick={() => router.push(`/dnd/races`)}>
+                    <Paper elevation={3} className="p-2" role="button" onClick={() => router.push(`/dnd/glossary/races?race=${r.index}`)}>
                         <Typography variant="h6">{r.name}</Typography>
                     </Paper>
                 </Grid>))}

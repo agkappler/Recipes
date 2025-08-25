@@ -115,3 +115,23 @@ CREATE TABLE IF NOT EXISTS abilities (
 
 -- Create index on character_id for efficient lookups of all abilities for a character
 CREATE INDEX IF NOT EXISTS idx_abilities_character_id ON abilities (character_id);
+
+CREATE TABLE IF NOT EXISTS custom_dnd_subclasses (
+	subclass_id SERIAL PRIMARY KEY,
+	name TEXT NOT NULL,
+	class_index TEXT NOT NULL,
+	is_custom_class BOOLEAN DEFAULT FALSE
+);
+
+CREATE INDEX IF NOT EXISTS idx_custom_dnd_subclasses_class_index ON custom_dnd_subclasses (class_index);
+
+CREATE TABLE IF NOT EXISTS subclass_features (
+	subclass_feature_id SERIAL PRIMARY KEY,
+	subclass_id INTEGER NOT NULL,
+	name TEXT NOT NULL,
+	description TEXT NOT NULL,
+	level INTEGER NOT NULL,
+	FOREIGN KEY (subclass_id) REFERENCES custom_dnd_subclasses(subclass_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_subclass_features_subclass_id ON subclass_features (subclass_id);

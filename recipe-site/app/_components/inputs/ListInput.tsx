@@ -4,7 +4,7 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 
 interface ListInputProps<T> {
-    title: string;
+    title?: string;
     fieldName: string;
     defaultItem: T;
     listItemComponent: React.FC<{ idx: number, removeButton: React.ReactNode }>;
@@ -17,7 +17,7 @@ export const ListInput = <T,>({ title, fieldName, defaultItem, listItemComponent
     const addItem = () => methods.setValue(fieldName, [...items, defaultItem]);
     const removeItem = (index: number) => methods.setValue(fieldName, items.filter((_, i) => i !== index));
     return <>
-        <Typography variant="h6" gutterBottom>{title}</Typography>
+        {title && <Typography variant="h6" gutterBottom>{title}</Typography>}
         {items.map((_, idx) => (
             listItemComponent({
                 idx,

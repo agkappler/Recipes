@@ -35,7 +35,7 @@ export const BasicForm = <T extends FieldValues,>({ children, defaultValues, err
             <form onSubmit={methods.handleSubmit(awaitSubmit)}>
                 {children}
                 {isAuthenticated && (
-                    <Box className="flex justify-between py-2">
+                    <Box className={`flex py-2 ${onDelete === undefined ? 'justify-center' : 'justify-between'}`}>
                         {onDelete !== undefined && <Button type="button" variant="outlined" color="secondary" loading={isLoading} onClick={awaitDelete}>Delete</Button>}
                         <Button type="submit" variant="contained" color="primary" loading={isLoading}>Submit</Button>
                     </Box>

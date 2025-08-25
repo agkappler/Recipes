@@ -3,7 +3,7 @@ import { capitalize, Typography } from "@mui/material";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { ClassSpecificInfo } from "./ClassSpecificInfo";
-import { FeatureCard } from "./FeatureCard";
+import { ApiFeatureItem } from "./ApiFeatureItem";
 import { DndClass, getNameForClass } from "@/app/_constants/DndClass";
 
 interface ClassFeaturesProps {
@@ -31,7 +31,7 @@ export const ClassFeatures: React.FC<ClassFeaturesProps> = ({ currentLevel, clas
                 <ClassSpecificInfo levelInfo={currentLevelInfo} />
             }
             {activeLevelFeatures?.map((f: FeatureAndLevel) => (
-                <FeatureCard
+                <ApiFeatureItem
                     key={f.index}
                     feature={f}
                     characterId={characterId}
@@ -41,7 +41,7 @@ export const ClassFeatures: React.FC<ClassFeaturesProps> = ({ currentLevel, clas
             {currentLevel < 20 && (<>
                 <Typography variant="h6">Next Level Features:</Typography>
                 {nextLevelFeatures?.map((f: any) => (
-                    <FeatureCard
+                    <ApiFeatureItem
                         key={f.index}
                         feature={f}
                         characterId={characterId}

@@ -1,7 +1,7 @@
 import { DndItem, getLevelInfoForSubclass, LevelInfo } from "@/app/_api/dnd5eapi";
 import useSWR from "swr";
 import { LoadingWrapper } from "../../ui/LoadingWrapper";
-import { FeatureCard } from "./FeatureCard";
+import { ApiFeatureItem } from "./ApiFeatureItem";
 
 interface SubclassInfoProps {
     subclassName: string;
@@ -13,7 +13,7 @@ export const SubclassInfo: React.FC<SubclassInfoProps> = ({ subclassName }) => {
     return <>
         <LoadingWrapper isLoading={isLoading}>
             {features.map((feature: { levelInfo: LevelInfo } & DndItem, index: number) => (
-                <FeatureCard key={index} feature={feature} />
+                <ApiFeatureItem key={index} feature={feature} />
             ))}
         </LoadingWrapper>
     </>

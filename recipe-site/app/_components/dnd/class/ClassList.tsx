@@ -16,7 +16,7 @@ export const ClassList: React.FC = () => {
         <LoadingWrapper isLoading={isLoadingApi || isLoadingCustomClasses}>
             <Grid container spacing={2} textAlign="center">
                 {classes.map((c, index) => (<Grid key={index} size={{ xs: 12, sm: 4 }}>
-                    <Paper elevation={3} className="p-2" role="button" onClick={() => router.push(`/dnd/classes`)}>
+                    <Paper elevation={3} className="p-2" role="button" onClick={() => router.push(`/dnd/glossary/classes?class=${c.index}`)}>
                         <Typography variant="h6">{c.name}</Typography>
                     </Paper>
                 </Grid>))}
