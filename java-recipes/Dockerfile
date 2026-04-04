@@ -1,5 +1,5 @@
 
-FROM openjdk:21-jdk
+FROM eclipse-temurin:21-jre-jammy
 
 # Set a working directory
 WORKDIR /java-recipes
