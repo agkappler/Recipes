@@ -39,12 +39,12 @@ isProject: false
 
 ## How to use this plan (moving forward)
 
-- **Keep a copy in the repo (recommended):** Version the same content under the monorepo — e.g. `[docs/migration/lambda-dynamodb.md](docs/migration/lambda-dynamodb.md)` or `docs/architecture/` — so it **travels with PRs**, code review can reference it, and clones have the doc offline. Pick **one canonical location** (the repo file is best long-term); avoid maintaining **two divergent** copies. If you use Cursor’s plan UI, either **sync** edits to the repo file each time or treat the **repo file as canonical** and open that path in Cursor when iterating.
-- **Optional:** One line in root `[README.md](README.md)` linking to the migration doc (only if you want discoverability without clutter).
-- **Single source of truth:** Treat that **canonical file** as the **architecture + checklist** for the migration. When something changes (e.g. you lock **Cognito** for JWT), **edit it** so future you (and AI sessions) do not contradict it.
+- **Canonical location (this repo):** Root file [`lambda_dynamodb_migration.plan.md`](lambda_dynamodb_migration.plan.md) — **edit this file** for all plan changes so git history stays accurate. If Cursor’s **Plans** UI still has a copy, treat **this path as source of truth** (or delete the duplicate after confirming sync) so nothing drifts.
+- **Optional:** One line in [`README.md`](README.md) pointing to `./lambda_dynamodb_migration.plan.md` for discoverability.
+- **Single source of truth:** This file is the **architecture + checklist**; update it when decisions change (e.g. locking **Cognito** for JWT).
 - **Todos:** The YAML **`todos`** at the top are the **work queue**. Mark items **`completed`** in this file as you finish them (or mirror them in GitHub Issues / Jira if you prefer — keep one place authoritative).
-- **New chats:** Reference the **repo path** to the plan (or attach the file) and say “continue the bounties / Lambda migration per plan.”
-- **Per vertical:** After bounties ships, **copy the same phases** (tables → handler → API → auth → frontend) for the next feature; extend **this** doc or add a short `docs/migration/README.md` index if you split by vertical.
+- **New chats:** Reference **`lambda_dynamodb_migration.plan.md`** at repo root (or attach it) and say “continue the bounties / Lambda migration per plan.”
+- **Per vertical:** After bounties ships, **copy the same phases** (tables → handler → API → auth → frontend) for the next feature; extend **this** doc or add new sections below — no separate index required unless the file grows unwieldy.
 - **Do not delete Java** until an explicit cutover milestone (already a locked rule).
 
 ## Implementation order (where to start)
