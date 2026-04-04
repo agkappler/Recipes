@@ -8,22 +8,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-	@Autowired
-	private ApiRequestInterceptor apiRequestInterceptor;
-	
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-	    registry.addInterceptor(apiRequestInterceptor)
-	            .addPathPatterns("/**"); // intercept all paths
-	}
-    
-	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-	    registry.addMapping("/**")
-			.allowedOrigins("https://localhost:3000", "https://fargopolis.com", "https://www.fargopolis.com") // Or "*" to allow all
-			.allowedMethods("GET", "POST", "PUT", "DELETE")
-			.allowCredentials(true)
-			.allowedHeaders("*");
-	}
-}
+    @Autowired
+    private ApiRequestInterceptor apiRequestInterceptor;
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(apiRequestInterceptor)
+                .addPathPatterns("/**"); // intercept all paths
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000", "https://localhost:3000", "https://fargopolis.com", "https://www.fargopolis.com")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowCredentials(true)
+                .allowedHeaders("*")
+                .maxAge(3600);
+    }
+}

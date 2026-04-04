@@ -36,6 +36,10 @@ dependencies {
     implementation 'software.amazon.awssdk:ssooidc'
     implementation 'software.amazon.awssdk:secretsmanager'
     implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:bedrock'
+    implementation 'software.amazon.awssdk:bedrockagent'
+    implementation 'software.amazon.awssdk:apache-client'
+    implementation 'software.amazon.awssdk:bedrockdataautomation'
 	
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'

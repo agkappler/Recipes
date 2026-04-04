@@ -7,8 +7,5 @@ app:
 server:
   port: 8443
   ssl:
-    enabled: true
-    key-store: classpath:localhost.p12
-    key-store-password: changeit
-    key-store-type: PKCS12
-    key-alias: localhost
+    certificate: classpath:localhost.pem
+    certificate-private-key: classpath:localhost-key.pem
