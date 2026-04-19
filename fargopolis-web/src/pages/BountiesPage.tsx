@@ -32,15 +32,17 @@ export function BountiesPage() {
     setIsCategoryOpen(false);
   };
 
-  const { data: bounties, error: bountiesError, isLoading: isLoadingBounties, mutate } = useSWR<Bounty[]>("/bounties", () =>
-    RequestManager.get<Bounty[]>("/bounties")
-  );
+    const { data: bounties, error: bountiesError, isLoading: isLoadingBounties, mutate } = useSWR<Bounty[]>("/bounties", () =>
+        RequestManager.getGateway<Bounty[]>("/bounties")
+    );
   const {
     data: bountyCategories,
     error: bountyCategoriesError,
     isLoading: isLoadingBountyCategories,
     mutate: mutateCategories,
-  } = useSWR<BountyCategory[]>("/bountyCategories", () => RequestManager.get<BountyCategory[]>("/bountyCategories"));
+  } = useSWR<BountyCategory[]>("/bountyCategories", () =>
+        RequestManager.getGateway<BountyCategory[]>("/bountyCategories")
+    );
   if (bountiesError || bountyCategoriesError) {
     return <ErrorMessage errorMessage={(bountiesError ?? bountyCategoriesError)?.message} />;
   }

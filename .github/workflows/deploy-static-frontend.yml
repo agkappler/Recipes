@@ -2,8 +2,8 @@
 #   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION (same as other workflows)
 #   STATIC_SITE_BUCKET — S3 bucket name (CDK output SiteBucketName)
 #   CLOUDFRONT_DISTRIBUTION_ID — distribution to invalidate (CDK output CloudFrontDistributionId)
-#   VITE_API_URL — origin for the Java/API layer (baked into the client bundle at build time).
-#     Use the same value you previously used for NEXT_PUBLIC_API_URL if migrating.
+#   VITE_API_URL — origin for the Java API (baked into the client bundle at build time).
+#   VITE_API_GATEWAY_URL — API Gateway base URL for Lambda HTTP API (FargopolisApi HttpApiUrl output).
 
 name: Deploy static frontend (S3 + CloudFront)
 
@@ -49,6 +49,7 @@ jobs:
         working-directory: fargopolis-web
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_API_GATEWAY_URL: ${{ secrets.VITE_API_GATEWAY_URL }}
         run: pnpm run build
 
       - name: Configure AWS credentials

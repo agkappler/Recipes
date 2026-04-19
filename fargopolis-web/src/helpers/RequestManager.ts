@@ -4,11 +4,26 @@ import User from "@/models/User";
 export default class RequestManager {
     private static baseUrl = import.meta.env.VITE_API_URL ?? "";
     private static apiUrl = `${this.baseUrl}/api`;
+    private static baseGatewayUrl = import.meta.env.VITE_API_GATEWAY_URL ?? "";
+    private static gatewayApiUrl = `${this.baseGatewayUrl}/api`;
 
     static async get<T = unknown>(url: string): Promise<T> {
-        const response = await fetch(this.apiUrl + url, {
+        return this.getWithBase<T>(this.apiUrl, url);
+    }
+
+    /** Bounty routes — use API Gateway + Lambda when `VITE_API_GATEWAY_URL` is set. */
+    static async getGateway<T = unknown>(url: string): Promise<T> {
+        return this.getWithBase<T>(this.gatewayApiUrl, url, "omit");
+    }
+
+    private static async getWithBase<T>(
+        urlBase: string,
+        path: string,
+        credentials: RequestCredentials = "include",
+    ): Promise<T> {
+        const response = await fetch(urlBase + path, {
             method: "GET",
-            credentials: "include",
+            credentials,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -18,9 +33,30 @@ export default class RequestManager {
     }
 
     static async post<T = unknown>(url: string, data: T, customHeaders?: HeadersInit): Promise<T> {
-        const response = await fetch(this.apiUrl + url, {
+        return this.postWithBase<T>(this.apiUrl, url, data, customHeaders);
+    }
+
+    /** Bounty mutations — use API Gateway + Lambda when `VITE_API_GATEWAY_URL` is set. */
+    static async postGateway<T = unknown>(url: string, data: T, customHeaders?: HeadersInit): Promise<T> {
+        return this.postWithBase<T>(
+            this.gatewayApiUrl,
+            url,
+            data,
+            customHeaders,
+            "omit",
+        );
+    }
+
+    private static async postWithBase<T>(
+        urlBase: string,
+        path: string,
+        data: T,
+        customHeaders?: HeadersInit,
+        credentials: RequestCredentials = "include",
+    ): Promise<T> {
+        const response = await fetch(urlBase + path, {
             method: "POST",
-            credentials: "include",
+            credentials,
             headers: customHeaders ?? {
                 "Content-Type": "application/json",
             },
@@ -92,14 +128,17 @@ export default class RequestManager {
 
     private static async handleResponse<T = unknown>(response: Response): Promise<T> {
         if (!response.ok) {
-            let errorData = { errorMessage: "An error occurred while fetching data." };
+            let errorData: { errorMessage?: string; message?: string } = {
+                errorMessage: "An error occurred while fetching data.",
+            };
             try {
                 errorData = await response.json();
             } catch (error) {
                 console.error("Error parsing error response:", error);
             }
 
-            throw new Error(errorData.errorMessage);
+            const msg = errorData.errorMessage ?? errorData.message ?? "An error occurred while fetching data.";
+            throw new Error(msg);
         }
 
         const responseData = await response.json();

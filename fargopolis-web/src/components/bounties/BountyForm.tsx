@@ -29,10 +29,10 @@ export const BountyForm: React.FC<BountyFormProps> = ({ isOpen, onClose, bounty,
     const onSubmit = async (data: Bounty) => {
         try {
             if (isEdit) {
-                await RequestManager.post("/updateBounty", data);
+                await RequestManager.postGateway("/updateBounty", data);
             } else {
                 data.status = BountyStatus.Active;
-                await RequestManager.post(`/createBounty`, data);
+                await RequestManager.postGateway(`/createBounty`, data);
             }
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));

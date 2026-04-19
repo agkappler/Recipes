@@ -22,7 +22,7 @@ export const BountyCategoryForm: React.FC<BountyCategoryFormProps> = ({ onClose,
 
     const onSubmit = async (data: BountyCategory) => {
         try {
-            await RequestManager.post(`/createBountyCategory`, data);
+            await RequestManager.postGateway(`/createBountyCategory`, data);
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;
