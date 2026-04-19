@@ -12,7 +12,7 @@ todos:
     content: "Bounties slice: Python 3.12 + boto3; later slice optional Go — document in stack when added"
     status: completed
   - id: cdk-bounties-stack
-    content: "FargopolisApi stack: DynamoDB tables, shared HttpApi (CORS incl. allowCredentials), Bounties Lambda + routes, IAM, CfnOutputs (HttpApiUrl, table names). Layer A wire secret not yet enforced."
+    content: "FargopolisApi stack: DynamoDB tables, shared HttpApi (CORS incl. allowCredentials), Bounties Lambda + routes, IAM, Secrets Manager wire secret, CfnOutputs"
     status: completed
   - id: bounties-lambda
     content: "Bounty handlers in Python under infrastructure/lambdas/bounties; wired from CDK with table env vars"
@@ -24,8 +24,8 @@ todos:
     content: "fargopolis-web: VITE_API_GATEWAY_URL + .env.example; GitHub build secret; RequestManager gateway fetch (credentials omit for cross-origin); plan table under Local dev. Optional: FastAPI dev_server for handler iteration without deploy"
     status: completed
   - id: api-secret-layer-a
-    content: "Enforce shared wire secret on mutation routes (or all routes); SSM Parameter Store or Secrets Manager; inject into Lambda env or authorizer — no NEXT_PUBLIC_ exposure"
-    status: pending
+    content: "Secrets Manager `apiKey` + Lambda env dynamic ref; POST routes require X-Api-Key or Bearer; fargopolis-web VITE_BOUNTIES_WIRE_SECRET (bundle exposure — proxy later)"
+    status: completed
   - id: auth-structure-layer-b
     content: "Durable Layer B on Next (Route Handler proxy, Clerk/Cognito/Next session, etc.); interim Java-session bridge only if needed; see jwt-design section in doc body"
     status: pending
@@ -71,10 +71,9 @@ Phases **0–4** and **bounties strangler routing** are **done in repo** for the
 
 ### Next steps (ordered)
 
-1. **API secret (Layer A)** — Wire **wire secret / API key** for mutations (or all routes); **SSM** or **Secrets Manager** (`todo`: **`api-secret-layer-a`**).
-2. **Auth structure (Layer B)** — **Durable** user auth on **Next** for mutations (proxy + server-only secret); optional IdP (`todo`: **`auth-structure-layer-b`**; **`jwt-design`** umbrella).
-3. **Custom domain cutover** — After Java no longer owns **`api.fargopolis.com`**, map that hostname to API Gateway and update env (`todo`: **`api-domain-cutover`**).
-4. **Optional** — FastAPI **`dev_server`** beside the Lambda handler for faster local iteration without deploy (nice-to-have; not blocking).
+1. **Auth structure (Layer B)** — **Durable** user auth on **Next** for mutations (proxy + server-only secret); optional IdP (`todo`: **`auth-structure-layer-b`**; **`jwt-design`** umbrella). Layer **A** is implemented (Secrets Manager + **`VITE_BOUNTIES_WIRE_SECRET`** — treat as interim while bundle exposes the key).
+2. **Custom domain cutover** — After Java no longer owns **`api.fargopolis.com`**, map that hostname to API Gateway and update env (`todo`: **`api-domain-cutover`**).
+3. **Optional** — FastAPI **`dev_server`** beside the Lambda handler for faster local iteration without deploy (nice-to-have; not blocking).
 
 Mark YAML **`todos`** **`completed`** as each step ships.
 
@@ -115,7 +114,7 @@ Mark YAML **`todos`** **`completed`** as each step ships.
 
 ### Phase 5 — Auth (`jwt-design` + `api-secret-layer-a` + `auth-structure-layer-b`)
 
-- **Status:** **Not started** — implement in order: **Layer A** (wire secret) then **Layer B** (Next-side identity). See **Next steps** above.
+- **Status:** **Layer A done** — Secrets Manager **`apiKey`** on **[`FargopolisHttpApiConstruct`](infrastructure/lib/constructs/fargopolis-http-api-construct.ts)** (shared by all HTTP API Lambdas), env **`API_KEY_SECRET`** in handlers, POST routes require **`X-Api-Key`** or **`Authorization: Bearer`**; stack output **`HttpApiWireSecretArn`**. **Layer B** — not started (Next proxy / IdP / session). See **Next steps** above.
 - **Lock** **Layer A + B:** **(A)** API key/wire secret on API Gateway (or Lambda); **(B)** **user authentication** on the Next mutation path for the **post-Java** world (see **Layer B** — **Clerk/Cognito**, **custom JWT after your login**, or **Next admin session**). **Java session** only as a **temporary** bridge while Spring still runs login.
 - **CDK:** **API keys**, **JWT authorizer** (if browser forwards IdP token to Gateway), or **Lambda authorizer**; secrets from **Secrets Manager** / SSM.
 - **Client:** Bounty **mutations** call the **same-origin proxy** with **`credentials: 'include'`** so session cookies reach the Route Handler; do not expose the wire secret via **`NEXT_PUBLIC_`**.

@@ -24,6 +24,7 @@ export class FargopolisApiStack extends cdk.Stack {
 
         this.bountiesApi = new BountiesApiRoutesConstruct(this, 'BountiesApi', {
             httpApi: this.httpApiGateway.httpApi,
+            apiKeySecret: this.httpApiGateway.apiKeySecret,
             categoryTable: this.bounties.categoryTable,
             bountyTable: this.bounties.bountyTable,
         });
@@ -39,6 +40,12 @@ export class FargopolisApiStack extends cdk.Stack {
         new cdk.CfnOutput(this, 'HttpApiUrl', {
             description: 'Shared HTTP API base URL (all Lambda routes; use with /api/... paths)',
             value: this.httpApiGateway.httpApi.apiEndpoint,
+        });
+        // Never output the secret *value* — it would appear in CloudFormation, consoles, and logs. ARN only.
+        new cdk.CfnOutput(this, 'HttpApiWireSecretArn', {
+            description:
+                'Secrets Manager ARN for the shared wire secret (safe to output). Retrieve apiKey via CLI: aws secretsmanager get-secret-value --secret-id <arn> --query SecretString --output text | jq -r .apiKey',
+            value: this.httpApiGateway.apiKeySecret.secretArn,
         });
     }
 }

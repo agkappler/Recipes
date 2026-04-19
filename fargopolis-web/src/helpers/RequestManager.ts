@@ -13,20 +13,33 @@ export default class RequestManager {
 
     /** Bounty routes — use API Gateway + Lambda when `VITE_API_GATEWAY_URL` is set. */
     static async getGateway<T = unknown>(url: string): Promise<T> {
-        return this.getWithBase<T>(this.gatewayApiUrl, url, "omit");
+        return this.getWithBase<T>(
+            this.gatewayApiUrl,
+            url,
+            "omit",
+            RequestManager.mergeWireKey({ "Content-Type": "application/json" }),
+        );
+    }
+
+    /** API key secret; must match Secrets Manager `apiKey`. */
+    private static mergeWireKey(headers: HeadersInit): HeadersInit {
+        const key = import.meta.env.VITE_API_KEY_SECRET?.trim();
+        if (!key) return headers;
+        const h = new Headers(headers);
+        h.set("X-Api-Key", key);
+        return h;
     }
 
     private static async getWithBase<T>(
         urlBase: string,
         path: string,
         credentials: RequestCredentials = "include",
+        headers?: HeadersInit,
     ): Promise<T> {
         const response = await fetch(urlBase + path, {
             method: "GET",
             credentials,
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: headers ?? { "Content-Type": "application/json" },
         });
 
         return await this.handleResponse(response);
@@ -38,11 +51,12 @@ export default class RequestManager {
 
     /** Bounty mutations — use API Gateway + Lambda when `VITE_API_GATEWAY_URL` is set. */
     static async postGateway<T = unknown>(url: string, data: T, customHeaders?: HeadersInit): Promise<T> {
+        const baseHeaders = customHeaders ?? { "Content-Type": "application/json" };
         return this.postWithBase<T>(
             this.gatewayApiUrl,
             url,
             data,
-            customHeaders,
+            RequestManager.mergeWireKey(baseHeaders),
             "omit",
         );
     }

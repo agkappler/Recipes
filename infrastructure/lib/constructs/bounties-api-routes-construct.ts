@@ -5,11 +5,13 @@ import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 
 export interface BountiesApiRoutesProps {
     /** Shared API — routes are registered here alongside future verticals. */
     readonly httpApi: apigwv2.HttpApi;
+    readonly apiKeySecret: secretsmanager.ISecret;
     readonly categoryTable: dynamodb.ITable;
     readonly bountyTable: dynamodb.ITable;
 }
@@ -51,8 +53,11 @@ export class BountiesApiRoutesConstruct extends Construct {
             environment: {
                 BOUNTY_CATEGORIES_TABLE_NAME: props.categoryTable.tableName,
                 BOUNTIES_TABLE_NAME: props.bountyTable.tableName,
+                API_KEY_SECRET: props.apiKeySecret.secretValueFromJson('apiKey').unsafeUnwrap(),
             },
         });
+
+        props.apiKeySecret.grantRead(this.handler);
 
         props.categoryTable.grantReadWriteData(this.handler);
         props.bountyTable.grantReadWriteData(this.handler);

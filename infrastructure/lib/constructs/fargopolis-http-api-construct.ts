@@ -1,16 +1,30 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 
 /**
  * Single API Gateway HTTP API for all Fargopolis Lambdas. Add routes from feature constructs
  * (bounties, recipes, …) so the app exposes one base URL, one CORS config, and one custom domain later.
+ *
  */
 export class FargopolisHttpApiConstruct extends Construct {
     public readonly httpApi: apigwv2.HttpApi;
+    /** Shared across all HTTP API Lambdas; validate `X-Api-Key` / `Authorization: Bearer` in each handler. */
+    public readonly apiKeySecret: secretsmanager.Secret;
 
     constructor(scope: Construct, id: string) {
         super(scope, id);
+
+        this.apiKeySecret = new secretsmanager.Secret(this, 'ApiKeySecret', {
+            description: 'API key secret for Fargopolis HTTP API.',
+            generateSecretString: {
+                secretStringTemplate: JSON.stringify({}),
+                generateStringKey: 'apiKey',
+                excludePunctuation: true,
+                passwordLength: 64,
+            },
+        });
 
         this.httpApi = new apigwv2.HttpApi(this, 'HttpApi', {
             apiName: 'fargopolis-api',

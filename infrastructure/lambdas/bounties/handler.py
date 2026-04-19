@@ -5,6 +5,7 @@ Paths mirror Java BaseApiController: /api/...
 
 from __future__ import annotations
 
+import hmac
 import json
 import os
 from decimal import Decimal
@@ -38,6 +39,36 @@ def _json_default(o: Any) -> Any:
     if isinstance(o, Decimal):
         return int(o) if o % 1 == 0 else float(o)
     raise TypeError(f"Object of type {type(o)} is not JSON serializable")
+
+
+def _extract_wire_token(event: dict[str, Any]) -> str | None:
+    headers = event.get("headers") or {}
+    for raw_key, value in headers.items():
+        if not value or not isinstance(value, str):
+            continue
+        key = raw_key.lower()
+        if key == "x-api-key":
+            return value.strip()
+        if key == "authorization" and value.lower().startswith("bearer "):
+            return value[7:].strip()
+    return None
+
+
+def _wire_auth_failure() -> dict[str, Any]:
+    return _json_response(401, {"message": "Unauthorized"})
+
+
+def _require_wire_secret(event: dict[str, Any]) -> dict[str, Any] | None:
+    """Layer A: all routes (except OPTIONS) require `X-Api-Key` or `Authorization: Bearer` matching the shared secret."""
+    expected = (os.environ.get("API_KEY_SECRET") or "").strip()
+    if not expected:
+        return _json_response(500, {"message": "Server configuration error"})
+    token = _extract_wire_token(event)
+    if not token:
+        return _wire_auth_failure()
+    if not hmac.compare_digest(token.encode("utf-8"), expected.encode("utf-8")):
+        return _wire_auth_failure()
+    return None
 
 
 def _parse_body(event: dict[str, Any]) -> dict[str, Any]:
@@ -221,19 +252,34 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         route_key = f"{method} {raw_path}"
 
         if route_key == "GET /api/bounties":
+            err = _require_wire_secret(event)
+            if err:
+                return err
             return _json_response(200, _get_bounties())
         if route_key == "GET /api/bountyCategories":
+            err = _require_wire_secret(event)
+            if err:
+                return err
             return _json_response(200, _get_categories())
 
         if route_key == "POST /api/createBounty":
+            err = _require_wire_secret(event)
+            if err:
+                return err
             body = _parse_body(event)
             return _json_response(200, _create_bounty(body))
 
         if route_key == "POST /api/updateBounty":
+            err = _require_wire_secret(event)
+            if err:
+                return err
             body = _parse_body(event)
             return _json_response(200, _update_bounty(body))
 
         if route_key == "POST /api/createBountyCategory":
+            err = _require_wire_secret(event)
+            if err:
+                return err
             body = _parse_body(event)
             return _json_response(200, _create_category(body))
 
