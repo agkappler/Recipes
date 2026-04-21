@@ -1,4 +1,5 @@
 import { NAVBAR_BREAK } from "@/constants/Media";
+import { Show, UserButton } from "@clerk/react";
 import { Menu } from "@mui/icons-material";
 import { Box, Button, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Tab, Tabs, useMediaQuery } from "@mui/material";
 import React, { useState } from "react";
@@ -54,9 +55,14 @@ export const Navbar: React.FC = () => {
                 </Button>
                 {isMobile ? (
                     <>
-                        <IconButton onClick={() => setDrawerOpen(true)} size="large">
-                            <Menu />
-                        </IconButton>
+                        <Box display="flex" alignItems="center" gap={1}>
+                            <Show when="signed-in">
+                                <UserButton />
+                            </Show>
+                            <IconButton onClick={() => setDrawerOpen(true)} size="large">
+                                <Menu />
+                            </IconButton>
+                        </Box>
                         <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
                             <Box sx={{ width: 200 }} role="presentation" onClick={() => setDrawerOpen(false)}>
                                 <List>
@@ -72,14 +78,20 @@ export const Navbar: React.FC = () => {
                         </Drawer>
                     </>
                 ) : (
-                    <Tabs value={getTabValue()} style={{ display: "flex", flexWrap: "wrap" }} textColor="primary" indicatorColor="primary">
-                        {navItems.map((item) => (
-                            <Tab key={item.label} label={item.label} onClick={() => handleTabClick(item.path)} />
-                        ))}
-                    </Tabs>
+                    <Box display="flex" alignItems="center" gap={1} flexWrap="wrap" justifyContent="flex-end">
+                        <Tabs value={getTabValue()} style={{ display: "flex", flexWrap: "wrap" }} textColor="primary" indicatorColor="primary">
+                            {navItems.map((item) => (
+                                <Tab key={item.label} label={item.label} onClick={() => handleTabClick(item.path)} />
+                            ))}
+                        </Tabs>
+
+                        <Show when="signed-in">
+                            <UserButton />
+                        </Show>
+                    </Box>
                 )}
             </Box>
-            <SimpleDialog isOpen={isOpen} onClose={() => setIsOpen(false)} maxWidth="xs">
+            <SimpleDialog isOpen={isOpen} onClose={() => setIsOpen(false)} maxWidth="md">
                 <LoginForm onLogin={() => setIsOpen(false)} />
             </SimpleDialog>
         </nav>

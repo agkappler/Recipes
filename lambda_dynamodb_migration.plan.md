@@ -1,6 +1,6 @@
 ---
 name: Lambda DynamoDB migration
-overview: Incremental migration from Spring Boot + PostgreSQL to AWS Lambda + DynamoDB. **Decisions:** **Two-layer auth** (wire secret + **durable** user auth on Next — **not** long-term Java session), **first vertical = bounties**, **two DynamoDB tables**, **CDK (TS)**, **Python Lambdas first**, **Go optional** later. Strangler keeps **Java code** until cutover; **session-based login** migrates off Java with the app.
+overview: Incremental migration from Spring Boot + PostgreSQL to AWS Lambda + DynamoDB. **Decisions:** **Clerk** session JWTs for **Lambda bounty writes** (any signed-in user); **Java** still serves other APIs and legacy login until cutover. **Primary Fargopolis UI = Vite [`fargopolis-web`](fargopolis-web/)** (not Next.js), **first vertical = bounties**, **two DynamoDB tables**, **CDK (TS)**, **Python Lambdas first**, **Go optional** later. Strangler keeps **Java code** until cutover; **session-based login** migrates off Java with the app.
 todos:
   - id: pick-vertical
     content: Choose first vertical and auth approach (sessions vs JWT/Cognito)
@@ -12,7 +12,7 @@ todos:
     content: "Bounties slice: Python 3.12 + boto3; later slice optional Go — document in stack when added"
     status: completed
   - id: cdk-bounties-stack
-    content: "FargopolisApi stack: DynamoDB tables, shared HttpApi (CORS incl. allowCredentials), Bounties Lambda + routes, IAM, Secrets Manager wire secret, CfnOutputs"
+    content: "FargopolisApi stack: DynamoDB tables, shared HttpApi (CORS incl. allowCredentials), Bounties Lambda + routes, IAM, CfnOutputs"
     status: completed
   - id: bounties-lambda
     content: "Bounty handlers in Python under infrastructure/lambdas/bounties; wired from CDK with table env vars"
@@ -24,16 +24,16 @@ todos:
     content: "fargopolis-web: VITE_API_GATEWAY_URL + .env.example; GitHub build secret; RequestManager gateway fetch (credentials omit for cross-origin); plan table under Local dev. Optional: FastAPI dev_server for handler iteration without deploy"
     status: completed
   - id: api-secret-layer-a
-    content: "Secrets Manager `apiKey` + Lambda env dynamic ref; POST routes require X-Api-Key or Bearer; fargopolis-web VITE_BOUNTIES_WIRE_SECRET (bundle exposure — proxy later)"
+    content: "Bounty POST routes: Clerk JWT via API default authorizer (JWKS, issuer, optional azp); GET public. CDK context `clerk` + `VITE_CLERK_PUBLISHABLE_KEY` in fargopolis-web."
     status: completed
   - id: auth-structure-layer-b
-    content: "Durable Layer B on Next (Route Handler proxy, Clerk/Cognito/Next session, etc.); interim Java-session bridge only if needed; see jwt-design section in doc body"
+    content: "Optional: BFF/proxy (Lambda URL, Worker, small server) for extra server-only secrets or session bridging; Clerk/Cognito/custom JWT; interim Java-session bridge only if needed; see jwt-design section in doc body"
     status: pending
   - id: jwt-design
     content: "Umbrella: Layer A + B locked in production; optional JWT authorizer at Gateway if browser forwards IdP token — fold into api-secret + auth-structure work"
     status: pending
   - id: routing
-    content: "Strangler (bounties): fargopolis-web bounties use VITE_API_GATEWAY_URL via RequestManager.getGateway/postGateway; other routes still VITE_API_URL (Java)"
+    content: "Strangler (bounties): fargopolis-web bounties use VITE_API_GATEWAY_URL via RequestManager.getGateway / postGatewayWithAuth; other routes still VITE_API_URL (Java)"
     status: completed
   - id: api-domain-cutover
     content: "After Java at api.fargopolis.com is deprecated: attach api.fargopolis.com to API Gateway (CDK DomainName + ApiMapping, ACM in API region, Route 53 alias); update fargopolis-web + GitHub env from execute-api URL to https://api.fargopolis.com"
@@ -66,12 +66,12 @@ Phases **0–4** and **bounties strangler routing** are **done in repo** for the
 ### Done (recent)
 
 - **`deploy-fargopolis-api`** — `FargopolisApi` deployed; **`HttpApiUrl`** is the **`execute-api.us-east-2…`** base (until Phase 7).
-- **`local-dev-workflow`** — [`fargopolis-web`](fargopolis-web/) **`VITE_API_GATEWAY_URL`**, **`.env.example`**, GitHub **`VITE_API_GATEWAY_URL`** secret for builds; **[`RequestManager`](fargopolis-web/src/helpers/RequestManager.ts)** **`getGateway` / `postGateway`** ( **`credentials: 'omit'`** toward API Gateway to satisfy CORS); CORS on **`FargopolisHttpApi`** includes **`allowCredentials`** for future credentialed use.
+- **`local-dev-workflow`** — [`fargopolis-web`](fargopolis-web/) **`VITE_API_GATEWAY_URL`**, **`.env.example`**, GitHub **`VITE_API_GATEWAY_URL`** secret for builds; **[`RequestManager`](fargopolis-web/src/helpers/RequestManager.ts)** **`getGateway` / `postGatewayWithAuth`** ( **`credentials: 'omit'`** toward API Gateway to satisfy CORS); CORS on **`FargopolisHttpApi`** includes **`allowCredentials`** for future credentialed use.
 - **`routing`** — Bounty board calls the **Lambda API**; **`VITE_API_URL`** remains for **Java** (auth, uploads, other APIs).
 
 ### Next steps (ordered)
 
-1. **Auth structure (Layer B)** — **Durable** user auth on **Next** for mutations (proxy + server-only secret); optional IdP (`todo`: **`auth-structure-layer-b`**; **`jwt-design`** umbrella). Layer **A** is implemented (Secrets Manager + **`VITE_BOUNTIES_WIRE_SECRET`** — treat as interim while bundle exposes the key).
+1. **Auth structure (optional BFF / extra hardening)** — Bounties already use **Clerk** + Lambda verification (`todo`: **`auth-structure-layer-b`** if you add a BFF or Gateway JWT authorizer later). **`jwt-design`** remains the umbrella for Cognito/API Gateway JWT patterns if you expand beyond the current setup.
 2. **Custom domain cutover** — After Java no longer owns **`api.fargopolis.com`**, map that hostname to API Gateway and update env (`todo`: **`api-domain-cutover`**).
 3. **Optional** — FastAPI **`dev_server`** beside the Lambda handler for faster local iteration without deploy (nice-to-have; not blocking).
 
@@ -114,15 +114,15 @@ Mark YAML **`todos`** **`completed`** as each step ships.
 
 ### Phase 5 — Auth (`jwt-design` + `api-secret-layer-a` + `auth-structure-layer-b`)
 
-- **Status:** **Layer A done** — Secrets Manager **`apiKey`** on **[`FargopolisHttpApiConstruct`](infrastructure/lib/constructs/fargopolis-http-api-construct.ts)** (shared by all HTTP API Lambdas), env **`API_KEY_SECRET`** in handlers, POST routes require **`X-Api-Key`** or **`Authorization: Bearer`**; stack output **`HttpApiWireSecretArn`**. **Layer B** — not started (Next proxy / IdP / session). See **Next steps** above.
-- **Lock** **Layer A + B:** **(A)** API key/wire secret on API Gateway (or Lambda); **(B)** **user authentication** on the Next mutation path for the **post-Java** world (see **Layer B** — **Clerk/Cognito**, **custom JWT after your login**, or **Next admin session**). **Java session** only as a **temporary** bridge while Spring still runs login.
-- **CDK:** **API keys**, **JWT authorizer** (if browser forwards IdP token to Gateway), or **Lambda authorizer**; secrets from **Secrets Manager** / SSM.
-- **Client:** Bounty **mutations** call the **same-origin proxy** with **`credentials: 'include'`** so session cookies reach the Route Handler; do not expose the wire secret via **`NEXT_PUBLIC_`**.
-- Mark **`api-secret-layer-a`**, **`auth-structure-layer-b`**, and umbrella **`jwt-design`** **completed** when production-intent behavior matches your threat model.
+- **Status:** **Bounty writes** — **Clerk** session JWT verified in **[`handler.py`](infrastructure/lambdas/bounties/handler.py)** ( **`clerk_auth.py`** ); CDK **`context.clerk`**; **`GET`** bounties/categories are **public**. Optional future: **BFF**, **API Gateway JWT authorizer**, or **Cognito** — see **jwt-design** / options below.
+- **Lock** for **non-bounty** routes: **Java session** or future **IdP** as you migrate off Spring. **Publishable** Clerk keys in **`VITE_*`** are **public by design** (same as any SPA IdP); **server** config uses issuer (and optional azp) in the authorizer Lambda env.
+- **CDK:** **`context.clerk`** for Lambda env; optional later **JWT authorizer** at Gateway if you stop verifying in Lambda.
+- **Client ([`fargopolis-web`](fargopolis-web/)):** Bounty **mutations** use **`postGatewayWithAuth`** + **`useAuth().getToken()`**. Anything truly secret stays **server-side** — not in **`VITE_*`** (except publishable keys meant for the browser).
+- Mark **`auth-structure-layer-b`** and umbrella **`jwt-design`** **completed** when production-intent behavior matches your threat model.
 
 ### Phase 6 — Strangler cutover (`routing`)
 
-- **Status:** **Bounties done** — [`fargopolis-web`](fargopolis-web/) uses **`VITE_API_GATEWAY_URL`** + **`RequestManager.getGateway` / `postGateway`** for bounty routes; **`VITE_API_URL`** (Java) for everything else.
+- **Status:** **Bounties done** — [`fargopolis-web`](fargopolis-web/) uses **`VITE_API_GATEWAY_URL`** + **`RequestManager.getGateway` / `postGatewayWithAuth`** for bounty routes; **`VITE_API_URL`** (Java) for everything else.
 - Production builds: set **`VITE_API_GATEWAY_URL`** in **GitHub Actions** secrets to match **`HttpApiUrl`**.
 - **Java stays** in repo; parity / soak as needed; **do not remove** Java bounties code until explicitly decided.
 
@@ -143,7 +143,7 @@ Mark YAML **`todos`** **`completed`** as each step ships.
 
 | Decision           | Choice           | Notes                                                                                                                                                                                                                                |
 | ------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Auth**           | **Two layers** | **(A)** **API key / shared secret** at **API Gateway**. **(B)** **Real user authentication** on **Next** for mutations — **end state does not rely on Java session** (that goes away with the Java app). Choose **IdP (Clerk/Cognito)**, **custom JWT** from a **Next/ Lambda login** you own, or **Next session** after password; use **Java session in the proxy only briefly** if needed during the strangler. Layer A = wire + scripts; Layer B = humans. **GET** public or gated. |
+| **Auth**           | **Bounties on Lambda** | **Clerk** session JWT (default API authorizer + **`clerk_auth.py`**); any signed-in user may write; **GET** public. **Other routes** still **Java** session until migrated. Optional later: **BFF**, **Gateway JWT authorizer**, **Cognito**. |
 | **First vertical** | **Bounties**     | Smallest relational surface: two Postgres tables, no `rel_*` join tables. Good proving ground for Lambda + Dynamo modeling.                                                                                                          |
 | **DynamoDB (bounties)** | **Two tables** | **`BountyCategories`** and **`Bounties`** as separate DynamoDB tables — mirrors Postgres, simple keys, clear IAM/backup per entity. Link: store `categoryId` on each bounty; resolve category with `GetItem` on the categories table (or denormalize category name on bounty for fewer reads). |
 | **IaC** | **AWS CDK (TypeScript)** | New AWS resources for this vertical are defined in **CDK** (`aws-cdk-lib`, constructs in TS), not one-off console setup — versioned, reviewable, repeatable per environment (`cdk deploy`). |
@@ -154,7 +154,7 @@ Mark YAML **`todos`** **`completed`** as each step ships.
 
 - **Scope:** Provision **DynamoDB** tables (`BountyCategories`, `Bounties`), **Lambda** function(s) for bounty APIs, **API Gateway** HTTP API (**shared** `FargopolisHttpApi` — one API for all future verticals), **IAM** (Lambda → DynamoDB least privilege), and **lightweight auth** on **POST** routes (API key, Lambda authorizer, or JWT if you choose) — from **CDK** TypeScript stacks.
 - **CDK vs handler language:** **CDK always TypeScript.** Bounties use **`lambda.Function` + `Runtime.PYTHON_3_12`** and **`Code.fromAsset`** for [`infrastructure/lambdas/bounties`](infrastructure/lambdas/bounties) (Python). A **later** Go Lambda uses **`provided.al2023`** or **custom `bootstrap`** zip from **`Code.fromAsset`** when you add that slice.
-- **Outputs:** Export **API base URL** (`HttpApiUrl`) and table names via **`CfnOutput`** so **`NEXT_PUBLIC_BOUNTIES_API_URL`** (or CI) can mirror the shared API base after deploy.
+- **Outputs:** Export **API base URL** (`HttpApiUrl`) and table names via **`CfnOutput`** so **[`fargopolis-web`](fargopolis-web/)** **`VITE_API_GATEWAY_URL`** (or CI) can mirror the shared API base after deploy.
 - **Later verticals:** Add **new route constructs** that attach to the **same** `FargopolisHttpApi` (additional Lambdas/tables) — keeps one gateway URL and one CORS surface.
 
 ## Local development (fast iteration, low risk to production)
@@ -168,7 +168,7 @@ Mark YAML **`todos`** **`completed`** as each step ships.
 | **CDK app** | [`infrastructure/`](infrastructure/) — run **`cd infrastructure && npx cdk synth`** / **`npx cdk deploy FargopolisApi`**. |
 | **API stack** | `FargopolisApi` — DynamoDB + shared HTTP API + bounties Lambda (**`HttpApiUrl`** output). |
 | **Bounties handler** | [`infrastructure/lambdas/bounties/handler.py`](infrastructure/lambdas/bounties/handler.py) |
-| **Frontend** | [`fargopolis-web/`](fargopolis-web/) — **`VITE_API_URL`** (Java), **`VITE_API_GATEWAY_URL`** (Lambda); bounties use **`RequestManager.getGateway` / `postGateway`** (**`/api/...`**). |
+| **Frontend** | [`fargopolis-web/`](fargopolis-web/) — **`VITE_API_URL`** (Java), **`VITE_API_GATEWAY_URL`** (Lambda), **`VITE_CLERK_PUBLISHABLE_KEY`**; bounties use **`getGateway` / `postGatewayWithAuth`** (**`/api/...`**). |
 | **Optional** | FastAPI **`dev_server.py`** next to the handler for local iteration without deploy. |
 
 ### Isolate production
@@ -196,7 +196,7 @@ Run a **small FastAPI or Flask app** on `localhost` that **reuses the same Pytho
 | **Server** | Maps HTTP routes (`GET /bounties`, …) to the same logic Lambda uses; returns JSON like API Gateway. |
 | **DynamoDB** | boto3 uses **`AWS_PROFILE`** (dev) → same **dev** tables as deployed Lambdas if you choose the shared-DB approach. |
 | **JWT** | **Option A:** Forward `Authorization` and use valid **dev** tokens. **Option B (local only):** env flag `ALLOW_INSECURE_LOCAL_AUTH=1` or a **fixed dev secret** — **never** enable in Lambda; document clearly. |
-| **Next.js** | `.env.local`: `NEXT_PUBLIC_BOUNTIES_API_URL=http://localhost:8xxx` while iterating on handlers; switch to dev Gateway URL when testing authorizers/CORS end-to-end. |
+| **Vite (`fargopolis-web`)** | `.env`: `VITE_API_GATEWAY_URL=http://localhost:8xxx` (or FastAPI dev server) while iterating on handlers; switch to dev **`execute-api`** URL when testing authorizers/CORS end-to-end. |
 
 **Why it helps:** **Sub-second** restarts, debugger breakpoints, and no **deploy** for every line change — while still hitting **real DynamoDB** (if you want). Periodically **`cdk deploy`** to dev to confirm **Lambda packaging**, **IAM**, and **API Gateway auth** match deployed behavior.
 
@@ -204,7 +204,7 @@ Run a **small FastAPI or Flask app** on `localhost` that **reuses the same Pytho
 
 ### Fast iteration loops (combine as you like)
 
-1. **Local HTTP server + shared dev Dynamo** — Tightest loop for **handler + DB** logic; Next points at localhost.
+1. **Local HTTP server + shared dev Dynamo** — Tightest loop for **handler + DB** logic; **`fargopolis-web`** points at localhost.
 2. **Deploy to dev AWS only** — After handler changes, **`cdk deploy`** (with `--profile` + dev context) updates **dev** Lambda + API. Use **CDK `watch`** or **hotswap**-style workflows where supported so **code-only** changes redeploy in **seconds** without full CloudFormation churn. Validates **API Gateway**, **authorizer/API key**, and **IAM** as deployed.
 3. **Unit tests** — Factor **core logic**; **`pytest`** + **`moto`** or stubs for fast tests **without** network.
 4. **DynamoDB Local (optional)** — If you later want **offline** or **destructive** experiments without touching shared dev data — optional extra; not required if shared dev DB is acceptable.
@@ -213,9 +213,9 @@ Run a **small FastAPI or Flask app** on `localhost` that **reuses the same Pytho
 ### What to avoid
 
 - **No prod deploy** from ad-hoc scripts without review; treat **`cdk deploy`** to prod as a **release** step (CI + approval).
-- **Do not** point local Next.js at **prod** API when testing destructive operations on bounties.
+- **Do not** point local **`fargopolis-web`** (or dev proxies) at **prod** API when testing destructive operations on bounties.
 
-**Summary:** Prefer **dev account + non-prod profile**; **sharing one dev Dynamo between local runs and deployed dev** is fine if you accept coordination on destructive ops. Use a **local-only HTTP server** for the fastest handler iteration (Next → `localhost`); **`cdk deploy` to dev** to validate Lambda + API Gateway + **auth** periodically. Prod stays untouched until **promotion**.
+**Summary:** Prefer **dev account + non-prod profile**; **sharing one dev Dynamo between local runs and deployed dev** is fine if you accept coordination on destructive ops. Use a **local-only HTTP server** for the fastest handler iteration (**`fargopolis-web`** → `localhost`); **`cdk deploy` to dev** to validate Lambda + API Gateway + **auth** periodically. Prod stays untouched until **promotion**.
 
 ## Lambda handler language (locked staged plan)
 
@@ -298,10 +298,12 @@ For **personal / tiny admin** use, **skip full IdP** unless you want the practic
 | Approach | When to use |
 |----------|-------------|
 | **HTTP API route + API key** (AWS built-in) | **POST** routes require key; **GET** optional open or keyed — simplest **Gateway-side** gate |
-| **`Authorization: Bearer <long random secret>`** | Lambda (or **Lambda authorizer**) compares header to value from **Secrets Manager** / SSM — one secret rotated rarely; store copy in **`recipe-site` server-only env** or build-time injection for admin UI only |
+| **`Authorization: Bearer <long random secret>`** | Lambda (or **Lambda authorizer**) compares header to value from **Secrets Manager** / SSM — one secret rotated rarely; store copy in **BFF server-only env** (or build-time injection for admin UI only — **not** for public **`VITE_*`** bundles) |
 | **HTTP Basic** in front of admin routes only | Acceptable behind HTTPS for **you alone**; weaker UX for programmatic clients |
 
 **Reads:** Java today uses **`canRead`** on bounties — you can mirror that (same secret on GET) or make **GET public** if the data is non-sensitive and you only care about **tamper-proof writes**.
+
+**This repo (bounties on Lambda):** **Clerk** session JWT verified in Lambda; **GET** is public. The **Layer A / shared API key** material below is **generic background** (other apps, automation, historical options) — not the CDK path in this repository (no Secrets Manager wire key for HTTP API).
 
 ### How authentication & authorization work (simple setup)
 
@@ -309,7 +311,7 @@ For **personal / tiny admin** use, **skip full IdP** unless you want the practic
 
 | Layer | What it blocks | What it does **not** block |
 |-------|----------------|----------------------------|
-| **A. API Gateway + shared key** | Random people calling **`https://…execute-api…/bounties`** **directly** without the secret | Someone using **your own Next.js site** if your **proxy** adds the key for **every** caller |
+| **A. API Gateway + shared key** | Random people calling **`https://…execute-api…/bounties`** **directly** without the secret | Someone using **your own site** if your **BFF** adds the key for **every** caller |
 | **B. Who may trigger writes from the site** | Visitors who are **not** you | Requires **something only you have** before the proxy forwards — see below |
 
 If you only do **Layer A** and a **server proxy** that always attaches the key, **any visitor** who can submit the bounties form (or `fetch` your `/api/.../route`) gets writes — the server happily adds the secret. **Layer B is mandatory** for “only I can write from production” unless you never expose mutation UI to logged-out users **and** your proxy refuses requests without proof of identity.
@@ -320,10 +322,10 @@ Once you need “**only these humans** may trigger writes from the site,” you 
 
 | Approach | Best when |
 |----------|-----------|
-| **Java session (interim only)** | **While** Spring still serves `/authentication` — Next proxy validates cookie **against Java**; **plan to remove** once login moves off Java |
+| **Java session (interim only)** | **While** Spring still serves `/authentication` — BFF validates cookie **against Java**; **plan to remove** once login moves off Java |
 | **Clerk / Cognito / Auth0** | **Durable** Layer B: hosted login, MFA, JWTs for API Gateway, **no Java** |
-| **Custom JWT** | **Durable** Layer B **without** IdP: your login issues tokens (NEXT or Lambda) |
-| **Next-only password → session** | **Durable**, tiny crew, httpOnly cookie, **no JWT** at Gateway unless you add it later |
+| **Custom JWT** | **Durable** Layer B **without** IdP: your login issues tokens (Lambda or BFF) |
+| **BFF-only password → session** | **Durable**, tiny crew, httpOnly cookie on the BFF origin, **no JWT** at Gateway unless you add it later |
 
 The **shared API key alone** does not substitute for Layer B in the browser — it is **defense in depth** (and for **automation**). You can **also** forward the user’s **IdP access token** from proxy → API Gateway (JWT authorizer) if you want **AWS** to verify identity, not only the wire secret — optional hardening.
 
@@ -350,7 +352,7 @@ The **shared API key alone** does not substitute for Layer B in the browser — 
 
 ```mermaid
 sequenceDiagram
-  participant Browser as Browser_or_Next
+  participant Browser as Browser
   participant APIGW as API_Gateway_HTTP
   participant Lambda as Bounty_Lambda
   participant DDB as DynamoDB
@@ -369,7 +371,7 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-  participant Browser as Browser_or_Next
+  participant Browser as Browser
   participant APIGW as API_Gateway
   participant Lambda as Bounty_Lambda
   participant DDB as DynamoDB
@@ -384,24 +386,18 @@ sequenceDiagram
   end
 ```
 
-**Next.js and secrets (important):**
+**Vite (`fargopolis-web`) and secrets (important):**
 
-- Anything under **`NEXT_PUBLIC_`** is **visible in the browser bundle** — **do not** put the admin secret there.
-- **Safer patterns:** (1) **Route Handlers** or **Server Actions** that read **`process.env.ADMIN_API_SECRET`** (server-only) and **proxy** the request to API Gateway. (2) For a **personal** site only you use, some people still send the key from the client — that **exposes** the key to anyone who can open DevTools; acceptable **only** if you accept that risk or the site is effectively private.
-- **Local dev:** same header shape; secret in **`.env.local`** for **server-side** proxy only, or temporarily in a local-only admin script.
+- Anything under **`VITE_*`** is **embedded in the browser bundle** at build time. **`VITE_CLERK_PUBLISHABLE_KEY`** is **intended** to be public (same idea as other SPA IdP keys). **Issuer** and JWT **verification** stay in **authorizer Lambda env** (CDK **`context.clerk`**), not in the client.
+- **Optional BFF pattern (not current):** a server that holds **automation** or **extra** secrets and proxies to API Gateway — only if you outgrow direct **Clerk → Lambda** verification.
+- **Local dev:** point **`VITE_API_GATEWAY_URL`** at **`execute-api`** or a local dev server; Clerk keys from the same Clerk application as production (usually **dev** instance).
 
-**Production site — key in env **plus** who may call the proxy:**
+**Production — Clerk + Lambda (current bounties path):**
 
-- The **browser** still must **not** get **`NEXT_PUBLIC_` secrets**. The flow is:
-  1. Store **`BOUNTIES_ADMIN_SECRET`** (or API key) in **server-only** env on the host.
-  2. **Route Handler** (`app/api/bounties-proxy/.../route.ts`):
-     - **First:** Enforce **Layer B** — **IdP session**, **Next httpOnly session** after admin login, or **only during migration** a **Java session** check. If missing/invalid → **401**, **do not** call API Gateway.
-     - **Then:** **`fetch(API_GATEWAY_URL + …, { headers: { key/Authorization } })`** with the env secret and forward body/method.
-  3. Client components call **`/api/bounties-proxy/...`** with **`credentials: 'include'`** so cookies reach the Route Handler.
-- **GET** can stay public (direct to API URL) or proxied with the same session rule if reads should be private.
-- **Why both layers:** Layer A stops anonymous internet → AWS. Layer B stops anonymous internet → your **proxy** (which impersonates AWS using the secret). Without B, **public forms** = public writes.
-- **Hosting:** Server env only; never **`NEXT_PUBLIC_`** for the AWS secret.
-- **Weaker option:** Key in **`NEXT_PUBLIC_`** — exposes secret **and** still no identity; **avoid** for public production.
+- **Browser:** Clerk session; **`postGatewayWithAuth`** sends **`Authorization: Bearer`** (session JWT).
+- **Authorizer Lambda:** Verifies JWT (**JWKS**), **`iss`**, optional **`azp`**; passes **`sub`** to integrations. **Bounty handler** accepts any authenticated **`sub`** for writes.
+- **GET** bounties/categories: **public** (no token).
+- If you add a **BFF** later, it would sit **in front of** or **beside** this flow — not required for the current design.
 
 **Clerk / Cognito / custom JWT** below remain valid if you **later** need multi-user identity, SSO, or audit trails.
 
@@ -411,7 +407,7 @@ sequenceDiagram
 
 ### Option A — Amazon Cognito User Pools (most common on AWS)
 
-- **Issuance:** Users authenticate via **Cognito** (Hosted UI, or `InitiateAuth` from your Next app with USER_PASSWORD_AUTH / SRP). Cognito returns **ID token**, **access token**, and **refresh token** (JWTs for id/access).
+- **Issuance:** Users authenticate via **Cognito** (Hosted UI, or `InitiateAuth` from your SPA/BFF with USER_PASSWORD_AUTH / SRP). Cognito returns **ID token**, **access token**, and **refresh token** (JWTs for id/access).
 - **API calls:** Send **`Authorization: Bearer <access_token>`** (or ID token depending on resource-server setup; for API Gateway JWT authorizer, configure **audience** = Cognito **app client id** and use the token type Cognito documents for that authorizer — typically **access token** for custom scopes, **ID token** for simpler setups).
 - **Validation:** **HTTP API JWT authorizer** or **REST API JWT** — point **issuer** at `https://cognito-idp.<region>.amazonaws.com/<userPoolId>` and provide **audience** (app client id). No custom authorizer code if claims are enough.
 - **Custom claims (e.g. `canRead` / `canWrite`):** Add via **Cognito pre token generation** Lambda trigger, or map groups to claims.
@@ -437,7 +433,7 @@ sequenceDiagram
 ### Option D — Hybrid during the strangler (practical)
 
 - **Legacy:** Cookie session → Java for unmigrated routes **while** Spring still runs.
-- **Target:** **Java session goes away** with the Java app — plan **durable** Layer B (**Clerk/Cognito**, **custom JWT login**, or **Next session**) **before** or **as** you decommission Java auth.
+- **Target:** **Java session goes away** with the Java app — plan **durable** Layer B (**Clerk/Cognito**, **custom JWT login**, or **BFF session**) **before** or **as** you decommission Java auth.
 - **Overlap window:** Bounties may use **new auth** first; other pages on Java login until migrated; **avoid** assuming “Java session forever” in the plan.
 
 ### What to put in tokens
@@ -448,32 +444,32 @@ sequenceDiagram
 
 ### Frontend (all options)
 
-- `[RequestManager](recipe-site/app/_helpers/RequestManager.ts)` — for bounties: add **`Authorization: Bearer <secret>`** and/or **`x-api-key`** on **mutations** (or all calls), from **env** (never commit); if you use a full IdP later, swap to **Bearer** plus the IdP **access token**. Keep **unmigrated** pages on `credentials: "include"` to Java until unified.
+- **[`RequestManager`](fargopolis-web/src/helpers/RequestManager.ts)** (`fargopolis-web`) — bounties use **`getGateway`** (reads) and **`postGatewayWithAuth`** (Clerk **`getToken()`** → **`Authorization: Bearer`**). **[`recipe-site`](recipe-site/)** (Next) may still use `credentials: "include"` to **Java** for non-bounty routes until those migrate.
 
 ### Clerk vs custom JWT signing (Layer B + tokens to AWS)
 
-First clarify whether you **need JWT at API Gateway** for the **browser** path: **Layer B** can be **only** “proxy checks **Next session** (or IdP session) → adds wire secret” with **no** JWT. **Java session** is only an **interim** variant of that pattern while Spring remains.
+First clarify whether you **need JWT at API Gateway** for the **browser** path: today **Lambda** verifies Clerk JWTs; a **BFF** pattern is optional. **Java session** is only an **interim** variant for unmigrated routes while Spring remains.
 
 Choose **Clerk vs custom JWT** when you want **identity-bearing access tokens** validated at **API Gateway** (JWT authorizer) or passed to Lambda for **`sub`** / roles:
 
 | | **Clerk** | **Custom JWT** (you sign after login) |
 |--|-----------|----------------------------------------|
-| **Best for** | **Next-first** admin UX, hosted screens, social/MFA, **JWKS** fits HTTP API JWT authorizer with little code | **No** Clerk/Cognito; token must reflect **Java-verified** login, **Dynamo** user id, or custom claims **you** control |
+| **Best for** | **SPA + BFF** admin UX, hosted screens, social/MFA, **JWKS** fits HTTP API JWT authorizer with little code | **No** Clerk/Cognito; token must reflect **Java-verified** login, **Dynamo** user id, or custom claims **you** control |
 | **You implement** | Clerk config, **JWT template** / metadata, CDK authorizer **issuer + audience** | **Login path**, **RS256 + JWKS** (or HS256 + **Lambda authorizer**), **rotation**, refresh if browser holds access token |
-| **Strangler** | New **Clerk** user directory for admins; may **dual-login** with Java until unified | Can mint JWT **only after** Java/session check in **one** Route Handler or Lambda — **single** story possible but **you** build it |
+| **Strangler** | New **Clerk** user directory for admins; may **dual-login** with Java until unified | Can mint JWT **only after** Java/session check in **one** BFF or Lambda — **single** story possible but **you** build it |
 | **Risk/cost** | Vendor, MAU pricing (usually low for 1–3 users) | Crypto and auth **bugs** are on you; **faster** to get wrong |
 
-**Practical recommendation for your situation (tiny allowlist, Next site, Java still in play):**
+**Practical recommendation for your situation (tiny allowlist, Vite + BFF, Java still in play):**
 
-1. **During strangler only:** **Layer B = Java session** in the Next proxy **while** login still lives on Spring; **Layer A = wire secret**.
-2. **Before Java auth is removed:** Move Layer B to **Clerk/Cognito**, **Next password session**, or **custom JWT login** — **do not** leave bounties tied to a dead session store.
+1. **During strangler only:** unmigrated routes may still use **Java session**; **bounty writes** on Lambda use **Clerk** as implemented.
+2. **Before Java auth is removed:** Move Layer B to **Clerk/Cognito**, **BFF password session**, or **custom JWT login** — **do not** leave bounties tied to a dead session store.
 3. **If you want JWT at API Gateway:** **Clerk** is usually **less work** than **custom RS256 + JWKS + refresh**; **custom JWT** fits **no IdP** + full control.
 
-**Recommendation sketch (unchanged for Cognito):** All-AWS, no extra vendor → **Cognito**. **Next + product login** → **Clerk**. **Tokens tied tightly to legacy verify only** → **custom signing** or **session proxy without JWT**. Lock in **`jwt-design`** before CDK authorizers.
+**Recommendation sketch (unchanged for Cognito):** All-AWS, no extra vendor → **Cognito**. **Vite + Clerk (or similar) + BFF** → **Clerk**. **Tokens tied tightly to legacy verify only** → **custom signing** or **session proxy without JWT**. Lock in **`jwt-design`** before CDK authorizers.
 
 ## Strangler routing
 
-- `**NEXT_PUBLIC_BOUNTIES_API_URL`** (or similar) for bounties-only requests to API Gateway, **or** single host with path-based routes — either works; env split is usually fastest for a first slice.
+- **`VITE_API_GATEWAY_URL`** in **[`fargopolis-web`](fargopolis-web/)** for bounties requests to API Gateway (until a BFF path replaces direct calls), **or** single host with path-based routes behind a reverse proxy — either works; env split is usually fastest for a first slice.
 - Java + Postgres **unchanged** for non-bounty routes until those verticals migrate.
 - **Do not delete or gut Java during migration:** Treat `[java-recipes](java-recipes)` as the **source of truth** and **fallback** until each vertical is fully cut over and you deliberately choose decommissioning. Bounties may stop **receiving** frontend traffic for those paths, but **leave the code and DB paths in place** until the team agrees it is safe to remove (often after parity tests and a soak period). This avoids dead-ends if you need to **roll back** or **compare** behavior.
 
@@ -496,14 +492,14 @@ Choose **Clerk vs custom JWT** when you want **identity-bearing access tokens** 
 ## What you have today (unchanged summary)
 
 - Spring MVC + hand-written JDBC on PostgreSQL; `rel_`* and joins appear in **other** services (recipes, D&D), not in bounties.
-- Current frontend uses `credentials: "include"` for **Java** session — **bounties on Lambda** move to **durable Layer B** (not long-term Java session). **Layer A** wire secret as above.
+- **[`recipe-site`](recipe-site/)** may still use `credentials: "include"` for **Java** session on non-bounty routes; **[`fargopolis-web`](fargopolis-web/)** **bounty writes** use **Clerk** → **Lambda** JWT verification (no shared **VITE** wire key).
 
 ## Summary
 
 - **Bounties first** with **two DynamoDB tables** (categories + bounties): straightforward mapping from Postgres and clear ownership per table.
 - **AWS CDK (TypeScript)** defines the new tables, Lambdas, API Gateway, and related IAM/auth wiring — extend the same app as more verticals migrate.
 - **Local dev:** **Dev** profile/stack; **shared dev Dynamo** between laptop and dev Lambdas is OK; **local-only HTTP server** (e.g. FastAPI) for fastest iteration + **periodic `cdk deploy`** to validate Lambda/Gateway/**auth** — keep **prod** off the default path.
-- **Auth:** **API key/wire secret** (Layer A) **plus** **user authentication** (Layer B) — **target: no Java session**; use **Clerk/Cognito**, **Next session**, or **custom JWT**; Java cookie **only** as a **short-lived** strangler bridge.
+- **Auth:** **Bounty mutations** — **Clerk** JWTs verified in Lambda; **GET** public. **Other APIs** — **Java** session until migrated; optional **Cognito/BFF** later.
 - **Java:** **Coexist** during migration; **do not delete Java** as part of incremental slices — **optional full retirement** only as an **explicit later** decision when all verticals are migrated and validated. **Bounties:** **Python** handlers; **optional later Go** slice; **CDK** stays **TypeScript**.
 - **Future verticals** remain flexible: other features can add tables or adopt single-table patterns where joins/access patterns demand it.
 

@@ -1,7 +1,8 @@
 import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import BountyCategory from "@/models/BountyCategory";
-import { useState } from "react";
+import { useAuth } from "@clerk/react";
+import { type FC, useState } from "react";
 import { BasicForm } from "../inputs/BasicForm";
 import { TextInput } from "../inputs/TextInput";
 import { SimpleDialog } from "../ui/SimpleDialog";
@@ -12,17 +13,18 @@ interface BountyCategoryFormProps {
     updateBountyCategories: () => void;
 }
 
-export const BountyCategoryForm: React.FC<BountyCategoryFormProps> = ({ onClose, isOpen, updateBountyCategories }) => {
+export const BountyCategoryForm: FC<BountyCategoryFormProps> = ({ onClose, isOpen, updateBountyCategories }) => {
+    const { getToken } = useAuth();
     const [errorMessage, setErrorMessage] = useState<string>();
 
     const closeForm = () => {
         setErrorMessage(undefined);
         onClose();
-    }
+    };
 
     const onSubmit = async (data: BountyCategory) => {
         try {
-            await RequestManager.postGateway(`/createBountyCategory`, data);
+            await RequestManager.postGatewayWithAuth(`/createBountyCategory`, data, getToken);
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;
@@ -30,18 +32,13 @@ export const BountyCategoryForm: React.FC<BountyCategoryFormProps> = ({ onClose,
 
         updateBountyCategories();
         closeForm();
-    }
+    };
 
-    return <SimpleDialog title="Add Bounty Category" isOpen={isOpen} onClose={closeForm}>
-        <BasicForm
-            onSubmit={onSubmit}
-            errorMessage={errorMessage}
-        >
-            <TextInput
-                label="Name"
-                fieldName="name"
-                requiredMessage="Name is required"
-            />
-        </BasicForm>
-    </SimpleDialog>
-}
+    return (
+        <SimpleDialog title="Add Bounty Category" isOpen={isOpen} onClose={closeForm}>
+            <BasicForm onSubmit={onSubmit} errorMessage={errorMessage} isClerkForm>
+                <TextInput label="Name" fieldName="name" requiredMessage="Name is required" />
+            </BasicForm>
+        </SimpleDialog>
+    );
+};

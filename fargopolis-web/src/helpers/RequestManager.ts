@@ -11,23 +11,34 @@ export default class RequestManager {
         return this.getWithBase<T>(this.apiUrl, url);
     }
 
-    /** Bounty routes — use API Gateway + Lambda when `VITE_API_GATEWAY_URL` is set. */
+    /** Bounty read routes — public GET when using API Gateway + Lambda. */
     static async getGateway<T = unknown>(url: string): Promise<T> {
-        return this.getWithBase<T>(
-            this.gatewayApiUrl,
-            url,
-            "omit",
-            RequestManager.mergeWireKey({ "Content-Type": "application/json" }),
-        );
+        return this.getWithBase<T>(this.gatewayApiUrl, url, "omit", { "Content-Type": "application/json" });
     }
 
-    /** API key secret; must match Secrets Manager `apiKey`. */
-    private static mergeWireKey(headers: HeadersInit): HeadersInit {
-        const key = import.meta.env.VITE_API_KEY_SECRET?.trim();
-        if (!key) return headers;
-        const h = new Headers(headers);
-        h.set("X-Api-Key", key);
-        return h;
+    /**
+     * Bounty mutations — sends Clerk session JWT (`Authorization: Bearer`).
+     * Requires `VITE_CLERK_PUBLISHABLE_KEY` and a signed-in user.
+     */
+    static async postGatewayWithAuth<T>(
+        url: string,
+        data: T,
+        getToken: () => Promise<string | null>,
+    ): Promise<T> {
+        const token = await getToken();
+        if (!token) {
+            throw new Error("Sign in to perform this action.");
+        }
+        return this.postWithBase<T>(
+            this.gatewayApiUrl,
+            url,
+            data,
+            {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            "omit",
+        );
     }
 
     private static async getWithBase<T>(
@@ -49,17 +60,6 @@ export default class RequestManager {
         return this.postWithBase<T>(this.apiUrl, url, data, customHeaders);
     }
 
-    /** Bounty mutations — use API Gateway + Lambda when `VITE_API_GATEWAY_URL` is set. */
-    static async postGateway<T = unknown>(url: string, data: T, customHeaders?: HeadersInit): Promise<T> {
-        const baseHeaders = customHeaders ?? { "Content-Type": "application/json" };
-        return this.postWithBase<T>(
-            this.gatewayApiUrl,
-            url,
-            data,
-            RequestManager.mergeWireKey(baseHeaders),
-            "omit",
-        );
-    }
 
     private static async postWithBase<T>(
         urlBase: string,

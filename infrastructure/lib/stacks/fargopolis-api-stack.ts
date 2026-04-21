@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { BountiesApiRoutesConstruct } from '../constructs/bounties-api-routes-construct';
 import { BountiesConstruct } from '../constructs/bounties-construct';
+import { ClerkHttpAuthorizerConstruct } from '../constructs/clerk-http-authorizer-construct';
 import { FargopolisHttpApiConstruct } from '../constructs/fargopolis-http-api-construct';
 
 /**
@@ -10,6 +11,7 @@ import { FargopolisHttpApiConstruct } from '../constructs/fargopolis-http-api-co
  */
 export class FargopolisApiStack extends cdk.Stack {
     public readonly bounties: BountiesConstruct;
+    public readonly clerkAuthorizer: ClerkHttpAuthorizerConstruct;
     public readonly httpApiGateway: FargopolisHttpApiConstruct;
     public readonly bountiesApi: BountiesApiRoutesConstruct;
 
@@ -20,11 +22,22 @@ export class FargopolisApiStack extends cdk.Stack {
 
         this.bounties = new BountiesConstruct(this, 'Bounties');
 
-        this.httpApiGateway = new FargopolisHttpApiConstruct(this, 'HttpApiGateway');
+        const clerk = (this.node.tryGetContext('clerk') ?? {}) as {
+            jwtIssuer?: string;
+            publishableKey?: string;
+        };
+
+        this.clerkAuthorizer = new ClerkHttpAuthorizerConstruct(this, 'ClerkAuthorizer', {
+            jwtIssuer: clerk.jwtIssuer ?? '',
+            publishableKey: clerk.publishableKey ?? '',
+        });
+
+        this.httpApiGateway = new FargopolisHttpApiConstruct(this, 'HttpApiGateway', {
+            defaultAuthorizer: this.clerkAuthorizer.authorizer,
+        });
 
         this.bountiesApi = new BountiesApiRoutesConstruct(this, 'BountiesApi', {
             httpApi: this.httpApiGateway.httpApi,
-            apiKeySecret: this.httpApiGateway.apiKeySecret,
             categoryTable: this.bounties.categoryTable,
             bountyTable: this.bounties.bountyTable,
         });
@@ -40,12 +53,6 @@ export class FargopolisApiStack extends cdk.Stack {
         new cdk.CfnOutput(this, 'HttpApiUrl', {
             description: 'Shared HTTP API base URL (all Lambda routes; use with /api/... paths)',
             value: this.httpApiGateway.httpApi.apiEndpoint,
-        });
-        // Never output the secret *value* — it would appear in CloudFormation, consoles, and logs. ARN only.
-        new cdk.CfnOutput(this, 'HttpApiWireSecretArn', {
-            description:
-                'Secrets Manager ARN for the shared wire secret (safe to output). Retrieve apiKey via CLI: aws secretsmanager get-secret-value --secret-id <arn> --query SecretString --output text | jq -r .apiKey',
-            value: this.httpApiGateway.apiKeySecret.secretArn,
         });
     }
 }

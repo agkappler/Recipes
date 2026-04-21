@@ -1,11 +1,13 @@
 """
 Bounties HTTP API — API Gateway HTTP API v2 (payload format 2.0) + DynamoDB.
 Paths mirror Java BaseApiController: /api/...
+
+GET /api/bounties and /api/bountyCategories are public (Clerk authorizer allows unauthenticated
+access). POST mutations require a signed-in Clerk user (valid JWT from the authorizer).
 """
 
 from __future__ import annotations
 
-import hmac
 import json
 import os
 from decimal import Decimal
@@ -41,33 +43,20 @@ def _json_default(o: Any) -> Any:
     raise TypeError(f"Object of type {type(o)} is not JSON serializable")
 
 
-def _extract_wire_token(event: dict[str, Any]) -> str | None:
-    headers = event.get("headers") or {}
-    for raw_key, value in headers.items():
-        if not value or not isinstance(value, str):
-            continue
-        key = raw_key.lower()
-        if key == "x-api-key":
-            return value.strip()
-        if key == "authorization" and value.lower().startswith("bearer "):
-            return value[7:].strip()
-    return None
+def _authorizer_lambda_context(event: dict[str, Any]) -> dict[str, str]:
+    rc = event.get("requestContext") or {}
+    auth = rc.get("authorizer") or {}
+    raw = auth.get("lambda") if isinstance(auth.get("lambda"), dict) else auth
+    if not isinstance(raw, dict):
+        return {}
+    return {str(k): str(v) for k, v in raw.items() if v is not None}
 
 
-def _wire_auth_failure() -> dict[str, Any]:
-    return _json_response(401, {"message": "Unauthorized"})
-
-
-def _require_wire_secret(event: dict[str, Any]) -> dict[str, Any] | None:
-    """Layer A: all routes (except OPTIONS) require `X-Api-Key` or `Authorization: Bearer` matching the shared secret."""
-    expected = (os.environ.get("API_KEY_SECRET") or "").strip()
-    if not expected:
-        return _json_response(500, {"message": "Server configuration error"})
-    token = _extract_wire_token(event)
-    if not token:
-        return _wire_auth_failure()
-    if not hmac.compare_digest(token.encode("utf-8"), expected.encode("utf-8")):
-        return _wire_auth_failure()
+def _require_clerk_writer(event: dict[str, Any]) -> dict[str, Any] | None:
+    """POST routes: authorizer must have validated Clerk session JWT (any logged-in user)."""
+    ctx = _authorizer_lambda_context(event)
+    if ctx.get("authenticated") != "true" or not ctx.get("sub"):
+        return _json_response(401, {"message": "Unauthorized"})
     return None
 
 
@@ -252,32 +241,26 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         route_key = f"{method} {raw_path}"
 
         if route_key == "GET /api/bounties":
-            err = _require_wire_secret(event)
-            if err:
-                return err
             return _json_response(200, _get_bounties())
         if route_key == "GET /api/bountyCategories":
-            err = _require_wire_secret(event)
-            if err:
-                return err
             return _json_response(200, _get_categories())
 
         if route_key == "POST /api/createBounty":
-            err = _require_wire_secret(event)
+            err = _require_clerk_writer(event)
             if err:
                 return err
             body = _parse_body(event)
             return _json_response(200, _create_bounty(body))
 
         if route_key == "POST /api/updateBounty":
-            err = _require_wire_secret(event)
+            err = _require_clerk_writer(event)
             if err:
                 return err
             body = _parse_body(event)
             return _json_response(200, _update_bounty(body))
 
         if route_key == "POST /api/createBountyCategory":
-            err = _require_wire_secret(event)
+            err = _require_clerk_writer(event)
             if err:
                 return err
             body = _parse_body(event)

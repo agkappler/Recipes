@@ -1,7 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
+
+export interface FargopolisHttpApiConstructProps {
+    /**
+     * Applied to all routes unless overridden per route (e.g. `authorizer: new apigwv2.HttpNoneAuthorizer()` to skip auth).
+     */
+    readonly defaultAuthorizer?: apigwv2.IHttpRouteAuthorizer;
+}
 
 /**
  * Single API Gateway HTTP API for all Fargopolis Lambdas. Add routes from feature constructs
@@ -10,27 +16,16 @@ import { Construct } from 'constructs';
  */
 export class FargopolisHttpApiConstruct extends Construct {
     public readonly httpApi: apigwv2.HttpApi;
-    /** Shared across all HTTP API Lambdas; validate `X-Api-Key` / `Authorization: Bearer` in each handler. */
-    public readonly apiKeySecret: secretsmanager.Secret;
 
-    constructor(scope: Construct, id: string) {
+    constructor(scope: Construct, id: string, props?: FargopolisHttpApiConstructProps) {
         super(scope, id);
-
-        this.apiKeySecret = new secretsmanager.Secret(this, 'ApiKeySecret', {
-            description: 'API key secret for Fargopolis HTTP API.',
-            generateSecretString: {
-                secretStringTemplate: JSON.stringify({}),
-                generateStringKey: 'apiKey',
-                excludePunctuation: true,
-                passwordLength: 64,
-            },
-        });
 
         this.httpApi = new apigwv2.HttpApi(this, 'HttpApi', {
             apiName: 'fargopolis-api',
             description: 'Shared HTTP API for Fargopolis Lambda integrations',
+            defaultAuthorizer: props?.defaultAuthorizer,
             corsPreflight: {
-                allowHeaders: ['Content-Type', 'Authorization', 'X-Api-Key'],
+                allowHeaders: ['Content-Type', 'Authorization'],
                 allowMethods: [
                     apigwv2.CorsHttpMethod.GET,
                     apigwv2.CorsHttpMethod.POST,

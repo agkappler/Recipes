@@ -4,8 +4,8 @@ interface ImportMetaEnv {
     readonly VITE_API_URL?: string;
     /** Base URL of the API Gateway HTTP API. */
     readonly VITE_API_GATEWAY_URL?: string;
-    /** API Key. */
-    readonly VITE_API_KEY_SECRET?: string;
+    /** Clerk publishable key (same application as Lambda `CLERK_PUBLISHABLE_KEY`). */
+    readonly VITE_CLERK_PUBLISHABLE_KEY?: string;
 }
 
 interface ImportMeta {

@@ -1,16 +1,24 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/recipes-infra.ts",
-  "watch": {
-    "include": ["**"],
-    "exclude": [
-      "README.md",
-      "cdk*.json",
-      "**/*.d.ts",
-      "**/*.js",
-      "tsconfig.json",
-      "package*.json",
-      "node_modules",
-      "cdk.out"
-    ]
-  }
+    "app": "npx ts-node --prefer-ts-exts bin/recipes-infra.ts",
+    "context": {
+        "clerk": {
+            "jwtIssuer": "https://direct-sawfly-53.clerk.accounts.dev",
+            "publishableKey": "pk_test_ZGlyZWN0LXNhd2ZseS01My5jbGVyay5hY2NvdW50cy5kZXYk"
+        }
+    },
+    "watch": {
+        "include": [
+            "**"
+        ],
+        "exclude": [
+            "README.md",
+            "cdk*.json",
+            "**/*.d.ts",
+            "**/*.js",
+            "tsconfig.json",
+            "package*.json",
+            "node_modules",
+            "cdk.out"
+        ]
+    }
 }

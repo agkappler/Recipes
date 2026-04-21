@@ -1,22 +1,32 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
+import type { BundlingOptions, ILocalBundling } from 'aws-cdk-lib/core';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 
 export interface BountiesApiRoutesProps {
     /** Shared API — routes are registered here alongside future verticals. */
     readonly httpApi: apigwv2.HttpApi;
-    readonly apiKeySecret: secretsmanager.ISecret;
     readonly categoryTable: dynamodb.ITable;
     readonly bountyTable: dynamodb.ITable;
 }
 
-/** Resolve lambda asset when `cdk` is run from `infrastructure/` or repo root. */
+/** Host-side copy avoids Docker EPERM reading the bind-mounted repo on macOS. */
+function tryBundleBountyHandlerLocally(bountiesDir: string, outputDir: string): boolean {
+    try {
+        fs.mkdirSync(outputDir, { recursive: true });
+        fs.copyFileSync(path.join(bountiesDir, 'handler.py'), path.join(outputDir, 'handler.py'));
+        return true;
+    } catch (e) {
+        console.warn('Bounty handler: local bundling failed, falling back to Docker.', e);
+        return false;
+    }
+}
+
 function bountiesLambdaAssetPath(): string {
     const candidates = [
         path.join(process.cwd(), 'lambdas', 'bounties'),
@@ -34,6 +44,7 @@ function bountiesLambdaAssetPath(): string {
 
 /**
  * Bounties Lambda plus HTTP API routes on the shared {@link FargopolisHttpApiConstruct}.
+ * Uses the API-level default Clerk authorizer; writes require a signed-in user (validated JWT).
  */
 export class BountiesApiRoutesConstruct extends Construct {
     public readonly handler: lambda.Function;
@@ -43,21 +54,32 @@ export class BountiesApiRoutesConstruct extends Construct {
 
         const assetPath = bountiesLambdaAssetPath();
 
+        const localBundling: ILocalBundling = {
+            tryBundle(outputDir: string, _options: BundlingOptions): boolean {
+                return tryBundleBountyHandlerLocally(assetPath, outputDir);
+            },
+        };
+
         this.handler = new lambda.Function(this, 'BountyHandler', {
             runtime: lambda.Runtime.PYTHON_3_12,
             handler: 'handler.handler',
-            code: lambda.Code.fromAsset(assetPath),
+            code: lambda.Code.fromAsset(assetPath, {
+                bundling: {
+                    local: localBundling,
+                    image: lambda.Runtime.PYTHON_3_12.bundlingImage,
+                    user: 'root',
+                    bundlingFileAccess: cdk.BundlingFileAccess.VOLUME_COPY,
+                    command: ['bash', '-c', 'cp handler.py /asset-output/'],
+                },
+            }),
             architecture: lambda.Architecture.ARM_64,
             timeout: cdk.Duration.seconds(30),
             memorySize: 256,
             environment: {
                 BOUNTY_CATEGORIES_TABLE_NAME: props.categoryTable.tableName,
                 BOUNTIES_TABLE_NAME: props.bountyTable.tableName,
-                API_KEY_SECRET: props.apiKeySecret.secretValueFromJson('apiKey').unsafeUnwrap(),
             },
         });
-
-        props.apiKeySecret.grantRead(this.handler);
 
         props.categoryTable.grantReadWriteData(this.handler);
         props.bountyTable.grantReadWriteData(this.handler);
