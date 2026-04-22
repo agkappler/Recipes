@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 import os
 from typing import Any
 
 import jwt
 from jwt import PyJWKClient
-from jwt.exceptions import InvalidTokenError
+
+logger = logging.getLogger(__name__)
 
 _jwks_client: PyJWKClient | None = None
 
@@ -24,10 +26,6 @@ def _jwks_url() -> str:
     return f"{iss}/.well-known/jwks.json"
 
 
-def _publishable_key() -> str:
-    return (os.environ.get("CLERK_PUBLISHABLE_KEY") or "").strip()
-
-
 def _get_jwks_client() -> PyJWKClient:
     global _jwks_client
     url = _jwks_url()
@@ -40,28 +38,33 @@ def _get_jwks_client() -> PyJWKClient:
 
 def verify_clerk_bearer_token(token: str) -> dict[str, Any]:
     """
-    Validate Clerk-issued session JWT: signature (JWKS), iss, exp, optional azp.
+    Validate Clerk-issued session JWT: signature (JWKS), iss, exp.
+
+    Clerk's `azp` claim is the request Origin (e.g. http://localhost:5173), not the
+    publishable key — do not compare it to `pk_*`.
     """
     iss = _issuer()
     if not iss:
+        logger.error("Clerk JWT verification cannot run: CLERK_JWT_ISSUER is not configured")
         raise RuntimeError("CLERK_JWT_ISSUER is not configured")
 
-    jwks = _get_jwks_client()
-    signing_key = jwks.get_signing_key_from_jwt(token)
+    try:
+        jwks = _get_jwks_client()
+        signing_key = jwks.get_signing_key_from_jwt(token)
 
-    payload = jwt.decode(
-        token,
-        signing_key.key,
-        algorithms=["RS256"],
-        issuer=iss,
-        options={"verify_aud": False},
-        leeway=60,
-    )
-
-    pk = _publishable_key()
-    if pk:
-        azp = payload.get("azp")
-        if azp != pk:
-            raise InvalidTokenError("Invalid azp")
+        payload = jwt.decode(
+            token,
+            signing_key.key,
+            algorithms=["RS256"],
+            issuer=iss,
+            options={"verify_aud": False},
+            leeway=60,
+        )
+    except jwt.exceptions.PyJWTError as e:
+        logger.error("Clerk bearer token verification failed (PyJWT): %s", e)
+        raise
+    except Exception:
+        logger.exception("Clerk bearer token verification failed")
+        raise
 
     return payload

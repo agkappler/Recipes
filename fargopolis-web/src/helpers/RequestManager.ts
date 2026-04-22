@@ -18,7 +18,7 @@ export default class RequestManager {
 
     /**
      * Bounty mutations — sends Clerk session JWT (`Authorization: Bearer`).
-     * Requires `VITE_CLERK_PUBLISHABLE_KEY` and a signed-in user.
+     * Requires `VITE_CLERK_PUBLISHABLE_KEY` (Clerk SPA) and a signed-in user.
      */
     static async postGatewayWithAuth<T>(
         url: string,

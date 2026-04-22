@@ -24,12 +24,10 @@ export class FargopolisApiStack extends cdk.Stack {
 
         const clerk = (this.node.tryGetContext('clerk') ?? {}) as {
             jwtIssuer?: string;
-            publishableKey?: string;
         };
 
         this.clerkAuthorizer = new ClerkHttpAuthorizerConstruct(this, 'ClerkAuthorizer', {
             jwtIssuer: clerk.jwtIssuer ?? '',
-            publishableKey: clerk.publishableKey ?? '',
         });
 
         this.httpApiGateway = new FargopolisHttpApiConstruct(this, 'HttpApiGateway', {

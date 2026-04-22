@@ -11,7 +11,6 @@ import { Construct } from 'constructs';
 /** Clerk JWT verification for the shared HTTP API default authorizer. CDK context key `clerk`. */
 export interface ClerkHttpAuthorizerProps {
     readonly jwtIssuer: string;
-    readonly publishableKey: string;
 }
 
 /**
@@ -66,7 +65,6 @@ export class ClerkHttpAuthorizerConstruct extends Construct {
 
         const authorizerEnv: Record<string, string> = {
             CLERK_JWT_ISSUER: props.jwtIssuer,
-            CLERK_PUBLISHABLE_KEY: props.publishableKey,
         };
 
         const localBundling: ILocalBundling = {
