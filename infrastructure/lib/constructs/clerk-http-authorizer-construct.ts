@@ -19,6 +19,7 @@ export interface ClerkHttpAuthorizerProps {
  */
 function tryBundleClerkAuthorizerLocally(lambdasRoot: string, outputDir: string): boolean {
     try {
+        const requirements = path.join(lambdasRoot, 'clerk_authorizer', 'requirements.txt');
         fs.mkdirSync(outputDir, { recursive: true });
         execFileSync(
             'python3',
@@ -36,12 +37,15 @@ function tryBundleClerkAuthorizerLocally(lambdasRoot: string, outputDir: string)
                 '--only-binary=:all:',
                 '-t',
                 outputDir,
-                'PyJWT[crypto]==2.9.0',
+                '-r',
+                requirements,
             ],
             { stdio: 'inherit', env: process.env },
         );
         fs.copyFileSync(path.join(lambdasRoot, 'clerk_authorizer', 'handler.py'), path.join(outputDir, 'handler.py'));
-        fs.copyFileSync(path.join(lambdasRoot, 'shared', 'clerk_auth.py'), path.join(outputDir, 'clerk_auth.py'));
+        fs.mkdirSync(path.join(outputDir, 'shared'), { recursive: true });
+        fs.copyFileSync(path.join(lambdasRoot, 'shared', 'clerk_auth.py'), path.join(outputDir, 'shared', 'clerk_auth.py'));
+        fs.copyFileSync(path.join(lambdasRoot, 'shared', '__init__.py'), path.join(outputDir, 'shared', '__init__.py'));
         return true;
     } catch (e) {
         console.warn('Clerk authorizer: local bundling failed, falling back to Docker.', e);
@@ -87,9 +91,11 @@ export class ClerkHttpAuthorizerConstruct extends Construct {
                         'bash',
                         '-c',
                         [
-                            "pip install --no-cache-dir 'PyJWT[crypto]==2.9.0' -t /asset-output",
+                            'pip install --no-cache-dir -r clerk_authorizer/requirements.txt -t /asset-output',
                             'cp clerk_authorizer/handler.py /asset-output/',
-                            'cp shared/clerk_auth.py /asset-output/',
+                            'mkdir -p /asset-output/shared',
+                            'cp shared/clerk_auth.py /asset-output/shared/',
+                            'cp shared/__init__.py /asset-output/shared/',
                         ].join(' && '),
                     ],
                 },

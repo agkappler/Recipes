@@ -1,4 +1,4 @@
-import { BOUNTY_STATUS_OPTIONS, BountyStatus } from "@/constants/Status";
+import { BOUNTY_STATUS_OPTIONS } from "@/constants/Status";
 import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import Bounty from "@/models/Bounty";
@@ -39,8 +39,7 @@ export const BountyForm: FC<BountyFormProps> = ({
             if (isEdit) {
                 await RequestManager.postGatewayWithAuth("/updateBounty", data, getToken);
             } else {
-                data.status = BountyStatus.Active;
-                await RequestManager.postGatewayWithAuth(`/createBounty`, data, getToken);
+                await RequestManager.postGatewayWithAuth("/createBounty", data, getToken);
             }
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));

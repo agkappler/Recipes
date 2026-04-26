@@ -22,7 +22,7 @@ export class BountiesConstruct extends Construct {
         super(scope, id);
 
         this.categoryTable = new dynamodb.Table(this, 'BountyCategories', {
-            partitionKey: { name: 'categoryId', type: dynamodb.AttributeType.NUMBER },
+            partitionKey: { name: 'categoryId', type: dynamodb.AttributeType.STRING },
             billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
             pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
             removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -32,7 +32,7 @@ export class BountiesConstruct extends Construct {
         );
 
         this.bountyTable = new dynamodb.Table(this, 'Bounties', {
-            partitionKey: { name: 'bountyId', type: dynamodb.AttributeType.NUMBER },
+            partitionKey: { name: 'bountyId', type: dynamodb.AttributeType.STRING },
             billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
             pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
             removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -41,7 +41,7 @@ export class BountiesConstruct extends Construct {
 
         this.bountyTable.addGlobalSecondaryIndex({
             indexName: 'CategoryIndex',
-            partitionKey: { name: 'categoryId', type: dynamodb.AttributeType.NUMBER },
+            partitionKey: { name: 'categoryId', type: dynamodb.AttributeType.STRING },
         });
     }
 }

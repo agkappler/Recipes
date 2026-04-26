@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { execFileSync } from 'child_process';
 import * as cdk from 'aws-cdk-lib';
 import type { BundlingOptions, ILocalBundling } from 'aws-cdk-lib/core';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
@@ -18,7 +19,31 @@ export interface BountiesApiRoutesProps {
 /** Host-side copy avoids Docker EPERM reading the bind-mounted repo on macOS. */
 function tryBundleBountyHandlerLocally(bountiesDir: string, outputDir: string): boolean {
     try {
+        const requirements = path.join(bountiesDir, 'requirements.txt');
         fs.mkdirSync(outputDir, { recursive: true });
+        if (fs.existsSync(requirements)) {
+            execFileSync(
+                'python3',
+                [
+                    '-m',
+                    'pip',
+                    'install',
+                    '--no-cache-dir',
+                    '--platform',
+                    'manylinux2014_aarch64',
+                    '--implementation',
+                    'cp',
+                    '--python-version',
+                    '3.12',
+                    '--only-binary=:all:',
+                    '-t',
+                    outputDir,
+                    '-r',
+                    requirements,
+                ],
+                { stdio: 'inherit', env: process.env },
+            );
+        }
         fs.copyFileSync(path.join(bountiesDir, 'handler.py'), path.join(outputDir, 'handler.py'));
         return true;
     } catch (e) {
@@ -69,7 +94,14 @@ export class BountiesApiRoutesConstruct extends Construct {
                     image: lambda.Runtime.PYTHON_3_12.bundlingImage,
                     user: 'root',
                     bundlingFileAccess: cdk.BundlingFileAccess.VOLUME_COPY,
-                    command: ['bash', '-c', 'cp handler.py /asset-output/'],
+                    command: [
+                        'bash',
+                        '-c',
+                        [
+                            'if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt -t /asset-output; fi',
+                            'cp handler.py /asset-output/',
+                        ].join(' && '),
+                    ],
                 },
             }),
             architecture: lambda.Architecture.ARM_64,

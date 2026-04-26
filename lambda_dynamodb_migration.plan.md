@@ -135,6 +135,7 @@ Mark YAML **`todos`** **`completed`** as each step ships.
 
 ### After bounties
 
+- ID strategy for migrated objects: prefer string ULIDs over sequential numeric IDs to avoid scan-based ID allocation and improve write scalability. Apply this pattern to each future vertical migration unless there is a strong compatibility reason not to.
 - Optional **`go-handler-later`**; next **vertical** repeats Phases 2–6 (tables, handler, API, auth touchpoints, frontend env).
 - **`files-auth`** when you tackle uploads (S3, etc.).
 

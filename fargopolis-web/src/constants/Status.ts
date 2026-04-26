@@ -18,16 +18,19 @@ export function getColorForProjectStatus(status: ProjectStatus): ChipColor {
     }
 }
 
-export enum BountyStatus {
-    Active = "ACTIVE",
-    Overdue = "OVERDUE",
-    Complete = "COMPLETE"
-}
+/** String literals sent to / received from the Lambda API (DynamoDB stores uppercase). */
+export const BountyStatus = {
+    Active: "ACTIVE",
+    Overdue: "OVERDUE",
+    Complete: "COMPLETE",
+} as const;
+
+export type BountyStatus = (typeof BountyStatus)[keyof typeof BountyStatus];
 
 export const BOUNTY_STATUS_OPTIONS = [
     { value: BountyStatus.Active, label: "Active" },
     { value: BountyStatus.Complete, label: "Complete" },
-    { value: BountyStatus.Overdue, label: "Overdue" }
+    { value: BountyStatus.Overdue, label: "Overdue" },
 ];
 
 export function getLabelForBountyStatus(status: BountyStatus): string {

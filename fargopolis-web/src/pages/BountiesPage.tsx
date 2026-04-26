@@ -52,7 +52,7 @@ export function BountiesPage() {
             map[category.categoryId] = category;
             return map;
         },
-        {} as Record<number, BountyCategory>
+        {} as Record<string, BountyCategory>
     );
 
     return (

@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from clerk_auth import verify_clerk_bearer_token
+from shared.clerk_auth import verify_clerk_bearer_token
 
 READ_ROUTES = frozenset(
     {
