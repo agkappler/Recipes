@@ -1,12 +1,12 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { execFileSync } from 'child_process';
 import * as cdk from 'aws-cdk-lib';
-import type { BundlingOptions, ILocalBundling } from 'aws-cdk-lib/core';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import type { BundlingOptions, ILocalBundling } from 'aws-cdk-lib/core';
+import { execFileSync } from 'child_process';
 import { Construct } from 'constructs';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /** Clerk JWT verification for the shared HTTP API default authorizer. CDK context key `clerk`. */
 export interface ClerkHttpAuthorizerProps {
@@ -22,7 +22,7 @@ function tryBundleClerkAuthorizerLocally(lambdasRoot: string, outputDir: string)
         const requirements = path.join(lambdasRoot, 'clerk_authorizer', 'requirements.txt');
         fs.mkdirSync(outputDir, { recursive: true });
         execFileSync(
-            'python3',
+            'python3.12',
             [
                 '-m',
                 'pip',
@@ -91,7 +91,7 @@ export class ClerkHttpAuthorizerConstruct extends Construct {
                         'bash',
                         '-c',
                         [
-                            'pip install --no-cache-dir -r clerk_authorizer/requirements.txt -t /asset-output',
+                            'if [ -f clerk_authorizer/requirements.txt ]; then python3 -m pip install --no-cache-dir --platform manylinux2014_aarch64 --implementation cp --python-version 3.12 --only-binary=:all: -r clerk_authorizer/requirements.txt -t /asset-output; fi',
                             'cp clerk_authorizer/handler.py /asset-output/',
                             'mkdir -p /asset-output/shared',
                             'cp shared/clerk_auth.py /asset-output/shared/',

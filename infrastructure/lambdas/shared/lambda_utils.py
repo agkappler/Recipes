@@ -1,4 +1,4 @@
-"""Reusable Lambda helper utilities for HTTP + DynamoDB handlers."""
+"""HTTP + DynamoDB helpers for Lambdas (import as ``shared.lambda_utils``)."""
 
 from __future__ import annotations
 

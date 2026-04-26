@@ -1,3 +1,4 @@
 # Runtime dependencies for this Lambda deployment package.
-# Same module (`from ulid import ULID`) from 1.x through 3.x; Lambda (3.12) resolves latest, older local Pythons cap at 1.1.0.
-python-ulid>=1.1.0
+# Pin 1.1.0: same `from ulid import ULID` API, pure Python (no native wheels). python-ulid 3.x pulls
+# typing_extensions and is awkward with `pip -t` + arm64 if Docker bundling uses the wrong platform.
+python-ulid==1.1.0
