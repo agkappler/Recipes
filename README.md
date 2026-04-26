@@ -1,6 +1,24 @@
 # Recipes aka Fargopolis
 This platform was built as a personal project to explore different technologies, manage my own recipes, gamify recurring tasks as bounties, and organize Dungeons & Dragons characters. It's also a way to showcase my work and experiment with new ideas. Feel free to explore and see what I've been working on!
 
+## Architecture at a glance
+
+The app is in a **strangler** pattern: a **Vite** SPA ([`fargopolis-web/`](fargopolis-web/)) talks to two backends while domains migrate off Java.
+
+| Layer | What it is | How the client uses it |
+| ----- | ------------ | ------------------------ |
+| **Legacy** | **Spring Boot** + PostgreSQL ([`java-recipes/`](java-recipes/)) | `VITE_API_URL` + cookies — unmigrated features (e.g. recipes, DnD characters until their vertical moves). |
+| **New API** | **API Gateway (HTTP API)** + **Python Lambdas** + **DynamoDB** ([`infrastructure/`](infrastructure/)) | `VITE_API_GATEWAY_URL` — bounties today; more routes will join the same `HttpApiUrl`. **Writes** use **Clerk** session JWTs; **default authorizer** validates issuer from CDK `context.clerk`. |
+
+The **FargopolisApi** stack does **not** own the Vite *static* assets: those are **S3 + CloudFront** in **FargopolisFrontend** (separate from any future “user uploads” S3 work tracked in the migration plan). User-uploaded files still flow through the legacy app + bucket until the Recipes/DnD plan brings uploads under CDK.
+
+## Documentation
+
+- **[`infrastructure/README.md`](infrastructure/README.md)** — CDK stacks, Clerk context, bounties reference, deploy commands.
+- **[`fargopolis-web/README.md`](fargopolis-web/README.md)** — env vars, `RequestManager` (Java vs API Gateway), strangler rules.
+- **[`recipes_dnd_migration.plan.md`](recipes_dnd_migration.plan.md)** — next steps: Recipes + S3, then DnD characters.
+- **[`lambda_dynamodb_migration.plan.md`](lambda_dynamodb_migration.plan.md)** — archive pointer for the original bounties migration notes (no longer the live checklist).
+
 ## Machine setup
 
 For **CDK** (`npx cdk deploy` / `npx cdk synth` in `infrastructure/`) to bundle Python Lambdas **locally** (faster than Docker), your shell needs **Python 3.10+** on `PATH` — **3.12** matches the Lambda runtime. On macOS, the Xcode **Command Line Tools** `python3` is often **3.9** and is too old for that step (pip can error while compiling some wheel sources).

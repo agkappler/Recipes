@@ -1,3 +1,5 @@
+> **Legacy:** Active development of the Fargopolis UI lives in the Vite app [`../fargopolis-web/`](../fargopolis-web/README.md). This Next.js tree is kept for reference until it is removed.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
