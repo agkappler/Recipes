@@ -1,9 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { BountiesApiRoutesConstruct } from '../constructs/bounties-api-routes-construct';
 import { BountiesConstruct } from '../constructs/bounties-construct';
 import { ClerkHttpAuthorizerConstruct } from '../constructs/clerk-http-authorizer-construct';
 import { FargopolisHttpApiConstruct } from '../constructs/fargopolis-http-api-construct';
+import { PythonSharedLayerConstruct } from '../constructs/python-shared-layer-construct';
 
 /**
  * Serverless API resources (Lambda, API Gateway, DynamoDB, etc.).
@@ -11,6 +13,8 @@ import { FargopolisHttpApiConstruct } from '../constructs/fargopolis-http-api-co
  */
 export class FargopolisApiStack extends cdk.Stack {
     public readonly bounties: BountiesConstruct;
+    /** Shared `shared` package + common wheels; attach to new Python 3.12 arm64 handlers that import it. */
+    public readonly pythonSharedLayer: lambda.LayerVersion;
     public readonly clerkAuthorizer: ClerkHttpAuthorizerConstruct;
     public readonly httpApiGateway: FargopolisHttpApiConstruct;
     public readonly bountiesApi: BountiesApiRoutesConstruct;
@@ -22,11 +26,14 @@ export class FargopolisApiStack extends cdk.Stack {
 
         this.bounties = new BountiesConstruct(this, 'Bounties');
 
+        this.pythonSharedLayer = new PythonSharedLayerConstruct(this, 'PythonShared').layer;
+
         const clerk = (this.node.tryGetContext('clerk') ?? {}) as {
             jwtIssuer?: string;
         };
 
         this.clerkAuthorizer = new ClerkHttpAuthorizerConstruct(this, 'ClerkAuthorizer', {
+            pythonSharedLayer: this.pythonSharedLayer,
             jwtIssuer: clerk.jwtIssuer ?? '',
         });
 
@@ -35,6 +42,7 @@ export class FargopolisApiStack extends cdk.Stack {
         });
 
         this.bountiesApi = new BountiesApiRoutesConstruct(this, 'BountiesApi', {
+            pythonSharedLayer: this.pythonSharedLayer,
             httpApi: this.httpApiGateway.httpApi,
             categoryTable: this.bounties.categoryTable,
             bountyTable: this.bounties.bountyTable,

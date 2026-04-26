@@ -3,79 +3,22 @@ import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import type { BundlingOptions, ILocalBundling } from 'aws-cdk-lib/core';
-import { execFileSync } from 'child_process';
 import { Construct } from 'constructs';
-import * as fs from 'fs';
-import * as path from 'path';
+import { bundlingForPythonHandlerInLambdasTree, resolveLambdasRoot } from '../python-lambda-bundling';
 
 export interface BountiesApiRoutesProps {
+    /** `shared` package + common wheels (`python-lambda-bundling` / `PythonSharedLayerConstruct`). */
+    readonly pythonSharedLayer: lambda.LayerVersion;
     /** Shared API — routes are registered here alongside future verticals. */
     readonly httpApi: apigwv2.HttpApi;
     readonly categoryTable: dynamodb.ITable;
     readonly bountyTable: dynamodb.ITable;
 }
 
-/**
- * Lambdas root containing `bounties/` and `shared/` (same layout as the Clerk authorizer asset).
- * `pip install -t` runs first; we copy `shared/` afterward so a hypothetical PyPI `shared` package
- * cannot shadow our tree.
- */
-function lambdasRootForBounties(): string {
-    const candidates = [
-        path.join(process.cwd(), 'lambdas'),
-        path.join(process.cwd(), 'infrastructure', 'lambdas'),
-    ];
-    for (const dir of candidates) {
-        const handler = path.join(dir, 'bounties', 'handler.py');
-        const util = path.join(dir, 'shared', 'lambda_utils.py');
-        if (fs.existsSync(handler) && fs.existsSync(util)) {
-            return dir;
-        }
-    }
-    throw new Error(
-        `Could not find lambdas/bounties + shared/lambda_utils. Tried: ${candidates.join(', ')} (cwd=${process.cwd()})`,
-    );
-}
-
-/** Host-side copy avoids Docker EPERM reading the bind-mounted repo on macOS. */
-function tryBundleBountyHandlerLocally(lambdasRoot: string, outputDir: string): boolean {
-    try {
-        const requirements = path.join(lambdasRoot, 'bounties', 'requirements.txt');
-        const handlerSrc = path.join(lambdasRoot, 'bounties', 'handler.py');
-        const sharedSrc = path.join(lambdasRoot, 'shared');
-        fs.mkdirSync(outputDir, { recursive: true });
-        if (fs.existsSync(requirements)) {
-            execFileSync(
-                'python3.12',
-                [
-                    '-m',
-                    'pip',
-                    'install',
-                    '--no-cache-dir',
-                    '--platform',
-                    'manylinux2014_aarch64',
-                    '--implementation',
-                    'cp',
-                    '--python-version',
-                    '3.12',
-                    '--only-binary=:all:',
-                    '-t',
-                    outputDir,
-                    '-r',
-                    requirements,
-                ],
-                { stdio: 'inherit', env: process.env },
-            );
-        }
-        fs.copyFileSync(handlerSrc, path.join(outputDir, 'handler.py'));
-        fs.cpSync(sharedSrc, path.join(outputDir, 'shared'), { recursive: true });
-        return true;
-    } catch (e) {
-        console.warn('Bounty handler: local bundling failed, falling back to Docker.', e);
-        return false;
-    }
-}
+const BOUNTIES_ASSET = {
+    requiredPaths: ['bounties/handler.py', 'shared/lambda_utils.py'] as const,
+    layout: { handlerDir: 'bounties', shared: 'none' as const },
+} as const;
 
 /**
  * Bounties Lambda plus HTTP API routes on the shared {@link FargopolisHttpApiConstruct}.
@@ -87,34 +30,18 @@ export class BountiesApiRoutesConstruct extends Construct {
     constructor(scope: Construct, id: string, props: BountiesApiRoutesProps) {
         super(scope, id);
 
-        const assetPath = lambdasRootForBounties();
-
-        const localBundling: ILocalBundling = {
-            tryBundle(outputDir: string, _options: BundlingOptions): boolean {
-                return tryBundleBountyHandlerLocally(assetPath, outputDir);
-            },
-        };
+        const assetPath = resolveLambdasRoot(
+            [...BOUNTIES_ASSET.requiredPaths],
+            'bounties + shared/lambda_utils',
+        );
 
         this.handler = new lambda.Function(this, 'BountyHandler', {
             runtime: lambda.Runtime.PYTHON_3_12,
             handler: 'handler.handler',
             code: lambda.Code.fromAsset(assetPath, {
-                bundling: {
-                    local: localBundling,
-                    image: lambda.Runtime.PYTHON_3_12.bundlingImage,
-                    user: 'root',
-                    bundlingFileAccess: cdk.BundlingFileAccess.VOLUME_COPY,
-                    command: [
-                        'bash',
-                        '-c',
-                        [
-                            'if [ -f bounties/requirements.txt ]; then python3 -m pip install --no-cache-dir --platform manylinux2014_aarch64 --implementation cp --python-version 3.12 --only-binary=:all: -r bounties/requirements.txt -t /asset-output; fi',
-                            'cp bounties/handler.py /asset-output/',
-                            'cp -R shared /asset-output/',
-                        ].join(' && '),
-                    ],
-                },
+                bundling: bundlingForPythonHandlerInLambdasTree(BOUNTIES_ASSET.layout),
             }),
+            layers: [props.pythonSharedLayer],
             architecture: lambda.Architecture.ARM_64,
             timeout: cdk.Duration.seconds(30),
             memorySize: 256,

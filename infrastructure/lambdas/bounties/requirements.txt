@@ -1,4 +1,2 @@
-# Runtime dependencies for this Lambda deployment package.
-# Pin 1.1.0: same `from ulid import ULID` API, pure Python (no native wheels). python-ulid 3.x pulls
-# typing_extensions and is awkward with `pip -t` + arm64 if Docker bundling uses the wrong platform.
-python-ulid==1.1.0
+# Per-function packages for the bounties Lambda zip (installed with `pip -t` during CDK bundling).
+# Shared modules and most wheels live in the Fargopolis Python shared layer (`shared/requirements.txt`).
