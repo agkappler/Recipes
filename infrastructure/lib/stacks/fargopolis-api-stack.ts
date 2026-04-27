@@ -11,6 +11,8 @@ import { PythonSharedLayerConstruct } from '../constructs/python-shared-layer-co
 import { RecipesConstruct } from '../constructs/recipes-construct';
 import { RecipesApiRoutesConstruct } from '../constructs/recipes-api-routes-construct';
 import { FargopolisBucketConstruct } from '../constructs/fargopolis-bucket-construct';
+import { DndConstruct } from '../constructs/dnd-construct';
+import { DndApiRoutesConstruct } from '../constructs/dnd-api-routes-construct';
 
 /**
  * Serverless API resources (Lambda, API Gateway, DynamoDB, etc.).
@@ -30,6 +32,8 @@ export class FargopolisApiStack extends cdk.Stack {
     public readonly bountiesApi: BountiesApiRoutesConstruct;
     public readonly filesApi: FilesApiRoutesConstruct;
     public readonly recipesApi: RecipesApiRoutesConstruct;
+    public readonly dnd: DndConstruct;
+    public readonly dndApi: DndApiRoutesConstruct;
 
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
@@ -39,6 +43,7 @@ export class FargopolisApiStack extends cdk.Stack {
         this.bounties = new BountiesConstruct(this, 'Bounties');
         this.recipes = new RecipesConstruct(this, 'Recipes');
         this.files = new FilesConstruct(this, 'Files');
+        this.dnd = new DndConstruct(this, 'Dnd');
         this.userUploads = new FargopolisBucketConstruct(this, 'UserUploads');
 
         this.pythonSharedLayer = new PythonSharedLayerConstruct(this, 'PythonShared').layer;
@@ -74,6 +79,12 @@ export class FargopolisApiStack extends cdk.Stack {
             recipeTable: this.recipes.recipeTable,
             fileTable: this.files.fileTable,
         });
+        this.dndApi = new DndApiRoutesConstruct(this, 'DndApi', {
+            pythonSharedLayer: this.pythonSharedLayer,
+            httpApi: this.httpApiGateway.httpApi,
+            characterTable: this.dnd.characterTable,
+            fileTable: this.files.fileTable,
+        });
 
         new cdk.CfnOutput(this, 'BountyCategoriesTableName', {
             description: 'DynamoDB table for bounty categories',
@@ -90,6 +101,10 @@ export class FargopolisApiStack extends cdk.Stack {
         new cdk.CfnOutput(this, 'FilesTableName', {
             description: 'DynamoDB table for shared file metadata (recipes + DnD)',
             value: this.files.fileTable.tableName,
+        });
+        new cdk.CfnOutput(this, 'DndCharactersTableName', {
+            description: 'DynamoDB table for DnD character documents (nested resources/spells/weapons/abilities)',
+            value: this.dnd.characterTable.tableName,
         });
         new cdk.CfnOutput(this, 'FargopolisBucket', {
             description: 'S3 bucket for user uploads (objects keyed as {uuId}_{filename})',

@@ -6,7 +6,7 @@ TypeScript [AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/home.html) app tha
 
 | Stack id | Purpose |
 | -------- | ------- |
-| **`FargopolisApi`** | HTTP API (API Gateway v2), DynamoDB, Python Lambdas (bounties today; more verticals later). |
+| **`FargopolisApi`** | HTTP API (API Gateway v2), DynamoDB, Python Lambdas (bounties, recipes, and DnD). |
 | **`FargopolisFrontend`** | Private S3 + CloudFront (OAC) for the Vite SPA build — **not** the same bucket as user file uploads. |
 
 List stacks: `npx cdk list`. Deploy one stack: `npx cdk deploy FargopolisApi` (or `FargopolisFrontend`). Add [`--profile`](#using-a-named-aws-profile) (or set `AWS_PROFILE`) whenever you are not using the default credentials.
@@ -15,14 +15,18 @@ List stacks: `npx cdk list`. Deploy one stack: `npx cdk deploy FargopolisApi` (o
 
 - **[`FargopolisApiStack`](lib/stacks/fargopolis-api-stack.ts)** composes:
   - **[`BountiesConstruct`](lib/constructs/bounties-construct.ts)** — DynamoDB tables for bounty categories and bounties.
+  - **[`RecipesConstruct`](lib/constructs/recipes-construct.ts)** — DynamoDB table for recipe documents (ingredients/steps nested).
+  - **[`DndConstruct`](lib/constructs/dnd-construct.ts)** — DynamoDB table for character-centric DnD documents (resources, known spells, weapons, abilities nested).
   - **[`PythonSharedLayerConstruct`](lib/constructs/python-shared-layer-construct.ts)** — shared `infrastructure/lambdas/shared` code and wheels for Python 3.12 / arm64 handlers.
   - **[`ClerkHttpAuthorizerConstruct`](lib/constructs/clerk-http-authorizer-construct.ts)** — default HTTP API authorizer: verifies Clerk-issued JWTs (issuer from context).
   - **[`FargopolisHttpApiConstruct`](lib/constructs/fargopolis-http-api-construct.ts)** — shared **HTTP API** with CORS; all Lambda-backed routes use this same base URL.
   - **[`BountiesApiRoutesConstruct`](lib/constructs/bounties-api-routes-construct.ts)** — bounties Lambda and routes (reference pattern for the next verticals).
   - **[`FilesApiRoutesConstruct`](lib/constructs/files-api-routes-construct.ts)** — dedicated files/uploads Lambda for S3 presigned PUT + file URL reads (`GET /api/fileUrl/{fileId}`, `POST /api/files/presignPut`).
+  - **[`RecipesApiRoutesConstruct`](lib/constructs/recipes-api-routes-construct.ts)** — recipes Lambda + parity routes from legacy Spring.
+  - **[`DndApiRoutesConstruct`](lib/constructs/dnd-api-routes-construct.ts)** — DnD Lambda + parity routes for characters/resources/abilities/weapons/known spells.
 - **[`FargopolisBucketConstruct`](lib/constructs/fargopolis-bucket-construct.ts)** — private **user-uploads S3** (recipe avatars, DnD files, etc.). Not the Vite/CloudFront site bucket. CDK **creates** the bucket (S3-managed encryption, block public access, CORS for browser presigned PUT/GET, `RemovalPolicy.RETAIN`). Optional **`uploadsBucket.corsAllowedOrigins`** in context; default `['*']`.
 
-**Outputs (CloudFormation):** `HttpApiUrl`, `BountyCategoriesTableName`, `BountiesTableName`, `RecipesTableName`, `FilesTableName`, **`FargopolisBucket`** — the SPA and CI set `VITE_API_GATEWAY_URL` to `HttpApiUrl` for strangler traffic to Lambdas.
+**Outputs (CloudFormation):** `HttpApiUrl`, `BountyCategoriesTableName`, `BountiesTableName`, `RecipesTableName`, `DndCharactersTableName`, `FilesTableName`, **`FargopolisBucket`** — the SPA and CI set `VITE_API_GATEWAY_URL` to `HttpApiUrl` for strangler traffic to Lambdas.
 
 ### User-uploads bucket: IAM and presigned URLs
 

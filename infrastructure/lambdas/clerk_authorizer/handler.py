@@ -71,7 +71,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
                 # Invalid or expired token on a public read — still allow the GET; no user context.
                 return _allow({"authenticated": "false"})
 
-        if method == "POST" and raw_path.startswith("/api/"):
+        if (method == "POST" or method == "PUT" or method == "DELETE") and raw_path.startswith("/api/"):
             if not token:
                 return _deny()
             try:
