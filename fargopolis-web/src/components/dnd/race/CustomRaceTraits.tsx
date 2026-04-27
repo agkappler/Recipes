@@ -1,6 +1,7 @@
 import RequestManager from "@/helpers/RequestManager";
 import CustomDndRace from "@/models/CustomDndRace";
 import RacialTrait from "@/models/RacialTrait";
+import { useAuth } from "@clerk/react";
 import { Build, Edit } from "@mui/icons-material";
 import { Box, Grid, Paper, Typography } from "@mui/material";
 import { useState } from "react";
@@ -11,12 +12,19 @@ import { RaceForm } from "./RaceForm";
 import { RacialTraitsForm } from "./RacialTraitsForm";
 
 interface CustomRaceTraitsProps {
-    raceId: number;
+    raceId: string;
 }
 
 export const CustomRaceTraits: React.FC<CustomRaceTraitsProps> = ({ raceId }) => {
-    const { data: race, isLoading: isLoadingRace, mutate: mutateRace } = useSWR(`/races/${raceId}`, () => RequestManager.get<CustomDndRace>(`/races/${raceId}`));
-    const { data: racialTraits, isLoading, mutate: updateTraits } = useSWR<RacialTrait[]>(`/races/${raceId}/traits`, () => RequestManager.get<RacialTrait[]>(`/races/${raceId}/traits`));
+    const { getToken, isLoaded, isSignedIn } = useAuth();
+    const { data: race, isLoading: isLoadingRace, mutate: mutateRace } = useSWR(
+        raceId ? `/gateway/races/${raceId}` : null,
+        () => RequestManager.getGatewayWithAuth<CustomDndRace | null>(`/races/${raceId}`, getToken),
+    );
+    const { data: racialTraits, isLoading, mutate: updateTraits } = useSWR(
+        raceId ? `/gateway/races/${raceId}/traits` : null,
+        () => RequestManager.getGateway<RacialTrait[]>(`/races/${raceId}/traits`),
+    );
     const [isRaceFormOpen, setIsRaceFormOpen] = useState<boolean>(false);
     const [isTraitsFormOpen, setIsTraitsFormOpen] = useState<boolean>(false);
 
@@ -45,10 +53,12 @@ export const CustomRaceTraits: React.FC<CustomRaceTraitsProps> = ({ raceId }) =>
                     <Typography variant="h6" textAlign="center">{race?.name}</Typography>
                 </Grid>
                 <Grid size={{ md: 2 }} className="flex justify-end">
-                    <ActionMenu
-                        options={menuOptions}
-                        ariaLabel="Race options"
-                    />
+                    {isLoaded && isSignedIn && (
+                        <ActionMenu
+                            options={menuOptions}
+                            ariaLabel="Race options"
+                        />
+                    )}
                 </Grid>
             </Grid>
             <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
@@ -65,7 +75,7 @@ export const CustomRaceTraits: React.FC<CustomRaceTraitsProps> = ({ raceId }) =>
             <RaceForm
                 isOpen={isRaceFormOpen}
                 onClose={() => setIsRaceFormOpen(false)}
-                dndRace={race}
+                dndRace={race ? new CustomDndRace(race as CustomDndRace) : undefined}
                 updateDndRaces={mutateRace}
             />
             <RacialTraitsForm

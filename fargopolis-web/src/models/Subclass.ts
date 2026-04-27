@@ -1,13 +1,13 @@
 export default class Subclass {
-    subclassId: number;
+    subclassId: string;
     name: string;
     index: string;
     classIndex: string;
     isCustomClass: boolean;
     isCustom: boolean;
 
-    constructor(subclassId: number, name: string, index: string, classIndex: string, isCustomClass: boolean, isCustom: boolean) {
-        this.subclassId = subclassId;
+    constructor(subclassId: string, name: string, index: string, classIndex: string, isCustomClass: boolean, isCustom: boolean) {
+        this.subclassId = String(subclassId ?? "");
         this.name = name;
         this.index = index;
         this.classIndex = classIndex;

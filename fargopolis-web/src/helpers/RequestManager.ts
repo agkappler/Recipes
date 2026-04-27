@@ -25,6 +25,19 @@ export default class RequestManager {
     }
 
     /**
+     * Authenticated GET on the API Gateway (sends Clerk Bearer when a token is available).
+     * Use for routes that return user-specific data when signed in (e.g. custom DnD races).
+     */
+    static async getGatewayWithAuth<T = unknown>(url: string, getToken: () => Promise<string | null>): Promise<T> {
+        const token = await getToken();
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
+        return this.getWithBase<T>(this.gatewayApiUrl, url, "omit", headers);
+    }
+
+    /**
      * Bounty mutations — sends Clerk session JWT (`Authorization: Bearer`).
      * Requires `VITE_CLERK_PUBLISHABLE_KEY` (Clerk SPA) and a signed-in user.
      */
@@ -224,7 +237,10 @@ export default class RequestManager {
             throw new Error(msg);
         }
 
-        const responseData = await response.json();
-        return responseData;
+        const text = await response.text();
+        if (!text.trim()) {
+            return undefined as T;
+        }
+        return JSON.parse(text) as T;
     }
 }

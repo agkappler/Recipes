@@ -1,6 +1,7 @@
 import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import CustomDndRace from "@/models/CustomDndRace";
+import { useAuth } from "@clerk/react";
 import { Grid } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../../inputs/BasicForm";
@@ -15,8 +16,9 @@ interface RaceFormProps {
 }
 
 export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, updateDndRaces }) => {
+    const { getToken } = useAuth();
     const isEdit = dndRace !== undefined;
-    const defaultRace = new CustomDndRace({ raceId: 0, name: "", description: "", index: "", isCustom: true, traits: [] });
+    const defaultRace = new CustomDndRace({ raceId: "", name: "", description: "", index: "", isCustom: true, traits: [] });
     const [errorMessage, setErrorMessage] = useState<string>();
     const closeForm = () => {
         setErrorMessage(undefined);
@@ -30,7 +32,7 @@ export const RaceForm: React.FC<RaceFormProps> = ({ isOpen, onClose, dndRace, up
             if (isEdit) {
                 // await RequestManager.post("/updateBounty", data);
             } else {
-                await RequestManager.post(`/createRace`, data);
+                await RequestManager.postGatewayWithAuth("/createRace", data, getToken);
             }
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));

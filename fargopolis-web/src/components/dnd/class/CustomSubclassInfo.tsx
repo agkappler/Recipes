@@ -6,11 +6,18 @@ import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { FeatureItem } from "./FeatureItem";
 
 interface CustomSubclassInfoProps {
-    subclassId: number;
+    subclassId: string;
 }
 
 export const CustomSubclassInfo: React.FC<CustomSubclassInfoProps> = ({ subclassId }) => {
-    const { data: subclassFeatures, isLoading } = useSWR<SubclassFeature[]>(`/subclasses/${subclassId}/features`, () => RequestManager.get<SubclassFeature[]>(`/subclasses/${subclassId}/features`));
+    const { data: subclassFeatures, isLoading } = useSWR(
+        subclassId ? ([`/gateway/subclasses`, subclassId, "features"] as const) : null,
+        () => RequestManager.getGateway<SubclassFeature[]>(`/subclasses/${subclassId}/features`),
+    );
+
+    if (!subclassId) {
+        return null;
+    }
 
     return <>
         <LoadingWrapper isLoading={isLoading}>

@@ -1,6 +1,7 @@
 import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import Subclass from "@/models/Subclass";
+import { useAuth } from "@clerk/react";
 import { Grid } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../../inputs/BasicForm";
@@ -15,8 +16,9 @@ interface SubclassFormProps {
 }
 
 export const SubclassForm: React.FC<SubclassFormProps> = ({ isOpen, onClose, subclass, updateSubclasses }) => {
+    const { getToken } = useAuth();
     const isEdit = subclass !== undefined;
-    const defaultSubclass = new Subclass(0, "", "", "", true, true);
+    const defaultSubclass = new Subclass("", "", "", "", true, true);
     const [errorMessage, setErrorMessage] = useState<string>();
     const closeForm = () => {
         setErrorMessage(undefined);
@@ -26,9 +28,9 @@ export const SubclassForm: React.FC<SubclassFormProps> = ({ isOpen, onClose, sub
     const onSubmit = async (data: Subclass) => {
         try {
             if (isEdit) {
-                await RequestManager.post("/updateSubclass", data);
+                await RequestManager.putGatewayWithAuth(`/subclasses/updateSubclass/${data.subclassId}`, data, getToken);
             } else {
-                await RequestManager.post(`/createSubclass`, data);
+                await RequestManager.postGatewayWithAuth("/subclasses/createSubclass", data, getToken);
             }
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));

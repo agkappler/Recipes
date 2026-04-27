@@ -1,6 +1,7 @@
 import { BaseDndResponse, getSubclasses } from "@/api/dnd5eapi";
 import RequestManager from "@/helpers/RequestManager";
 import Subclass from "@/models/Subclass";
+import { useAuth } from "@clerk/react";
 import { Add, Build, Edit } from "@mui/icons-material";
 import { Box, Grid, MenuItem, Select, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -17,8 +18,12 @@ interface SubclassesProps {
 }
 
 export const Subclasses: React.FC<SubclassesProps> = ({ classIndex }) => {
+    const { isLoaded, isSignedIn } = useAuth();
     const { data: apiSubclassResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>(`/classes/${classIndex}/subclasses`, () => getSubclasses(classIndex));
-    const { data: customSubclasses, isLoading: isLoadingCustomSubclasses } = useSWR<Subclass[]>(`/customSubclasses/${classIndex}`, () => RequestManager.get<Subclass[]>(`/subclasses/class/${classIndex}`));
+    const { data: customSubclasses, isLoading: isLoadingCustomSubclasses, mutate: mutateCustomSubclasses } = useSWR(
+        [`/gateway/subclasses/class`, classIndex] as const,
+        () => RequestManager.getGateway<Subclass[]>(`/subclasses/class/${classIndex}`),
+    );
     const subclasses = [...(apiSubclassResults?.results ?? []), ...(customSubclasses ?? [])].sort((a, b) => a.name.localeCompare(b.name));
     const [selectedSubclass, setSelectedSubclass] = useState<string>("");
     const [isCustom, setIsCustom] = useState<boolean>(false);
@@ -82,26 +87,28 @@ export const Subclasses: React.FC<SubclassesProps> = ({ classIndex }) => {
                     </Box>
                 </Grid>
                 <Grid size={2} className="flex justify-end">
-                    <ActionMenu
-                        options={menuOptions}
-                        ariaLabel="Subclass options"
-                    />
+                    {isLoaded && isSignedIn && (
+                        <ActionMenu
+                            options={menuOptions}
+                            ariaLabel="Subclass options"
+                        />
+                    )}
                 </Grid>
             </Grid>
         </LoadingWrapper>
         {selectedSubclass && (isCustom
-            ? <CustomSubclassInfo subclassId={(subclasses.find(s => s.index === selectedSubclass) as Subclass)?.subclassId} />
+            ? <CustomSubclassInfo subclassId={String((subclasses.find(s => s.index === selectedSubclass) as Subclass)?.subclassId ?? "")} />
             : <SubclassInfo subclassName={selectedSubclass} />)}
         <SubclassForm
             isOpen={isSubclassFormOpen}
             onClose={() => setIsSubclassFormOpen(false)}
             subclass={isCustom ? (subclasses.find(s => s.index === selectedSubclass) as Subclass) : undefined}
-            updateSubclasses={() => { }}
+            updateSubclasses={() => void mutateCustomSubclasses()}
         />
         <SubclassFeaturesForm
             isOpen={isFeaturesFormOpen}
             onClose={onCloseFeatures}
-            subclassId={(subclasses.find(s => s.index === selectedSubclass) as Subclass)?.subclassId ?? 0}
+            subclassId={String((subclasses.find(s => s.index === selectedSubclass) as Subclass)?.subclassId ?? "")}
         />
     </>
 }

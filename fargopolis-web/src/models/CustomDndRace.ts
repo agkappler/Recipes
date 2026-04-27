@@ -1,7 +1,7 @@
 import RacialTrait from "./RacialTrait";
 
 export default class CustomDndRace {
-    raceId: number;
+    raceId: string;
     name: string;
     index: string;
     description: string;
@@ -9,7 +9,7 @@ export default class CustomDndRace {
     isCustom = true;
 
     constructor(race: CustomDndRace) {
-        this.raceId = race.raceId;
+        this.raceId = String(race.raceId ?? "");
         this.name = race.name;
         this.description = race.description;
         this.index = race.index;

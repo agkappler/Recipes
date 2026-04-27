@@ -1,6 +1,7 @@
 import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import RacialTrait from "@/models/RacialTrait";
+import { useAuth } from "@clerk/react";
 import { Grid } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../../inputs/BasicForm";
@@ -9,7 +10,7 @@ import { TextInput } from "../../inputs/TextInput";
 import { SimpleDialog } from "../../ui/SimpleDialog";
 
 interface RacialTraitsFormProps {
-    raceId: number;
+    raceId: string;
     isOpen: boolean;
     onClose: () => void;
     racialTraits: RacialTrait[] | undefined;
@@ -21,10 +22,11 @@ interface RacialTraitsFormData {
 }
 
 export const RacialTraitsForm: React.FC<RacialTraitsFormProps> = ({ isOpen, onClose, racialTraits, updateTraits, raceId }) => {
+    const { getToken } = useAuth();
     const [errorMessage, setErrorMessage] = useState<string>();
     const onSubmit = async (data: RacialTraitsFormData) => {
         try {
-            await RequestManager.post(`/races/${raceId}/updateTraits`, data.traits);
+            await RequestManager.postGatewayWithAuth(`/races/${raceId}/updateTraits`, data.traits, getToken);
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;

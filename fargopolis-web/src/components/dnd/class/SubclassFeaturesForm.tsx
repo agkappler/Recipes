@@ -1,6 +1,7 @@
 import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import SubclassFeature from "@/models/SubclassFeature";
+import { useAuth } from "@clerk/react";
 import { Grid } from "@mui/material";
 import { useState } from "react";
 import useSWR from "swr";
@@ -12,7 +13,7 @@ import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { SimpleDialog } from "../../ui/SimpleDialog";
 
 interface SubclassFeaturesFormProps {
-    subclassId: number;
+    subclassId: string;
     isOpen: boolean;
     onClose: () => void;
 }
@@ -22,14 +23,15 @@ interface SubclassFeaturesFormData {
 }
 
 export const SubclassFeaturesForm: React.FC<SubclassFeaturesFormProps> = ({ isOpen, onClose, subclassId }) => {
-    const { data: subclassFeatures, isLoading, mutate: updateFeatures } = useSWR<SubclassFeature[]>(
-        isOpen ? `/subclasses/${subclassId}/features` : null,
-        () => RequestManager.get<SubclassFeature[]>(`/subclasses/${subclassId}/features`)
+    const { getToken } = useAuth();
+    const { data: subclassFeatures, isLoading, mutate: updateFeatures } = useSWR(
+        isOpen && subclassId ? ([`/gateway/subclasses`, subclassId, "features"] as const) : null,
+        () => RequestManager.getGateway<SubclassFeature[]>(`/subclasses/${subclassId}/features`),
     );
     const [errorMessage, setErrorMessage] = useState<string>();
     const onSubmit = async (data: SubclassFeaturesFormData) => {
         try {
-            await RequestManager.post(`/subclasses/${subclassId}/updateFeatures`, data.features);
+            await RequestManager.postGatewayWithAuth(`/subclasses/${subclassId}/updateFeatures`, data.features, getToken);
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;

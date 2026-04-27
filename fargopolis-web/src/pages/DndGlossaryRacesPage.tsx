@@ -8,6 +8,7 @@ import { LoadingWrapper } from "@/components/ui/LoadingWrapper";
 import { PageHeader } from "@/components/ui/PageHeader";
 import RequestManager from "@/helpers/RequestManager";
 import CustomDndRace from "@/models/CustomDndRace";
+import { useAuth } from "@clerk/react";
 import { Add } from "@mui/icons-material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Button, MenuItem, Select, Tab } from "@mui/material";
@@ -18,17 +19,24 @@ import useSWR from "swr";
 export function DndGlossaryRacesPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { getToken, isLoaded, isSignedIn } = useAuth();
   const { data: apiRaceResults, isLoading: isLoadingApi } = useSWR<BaseDndResponse>("/races", () => getRaces());
   const {
     data: customRaces,
     isLoading: isLoadingCustomRaces,
     mutate,
-  } = useSWR<CustomDndRace[]>("/customRaces", () => RequestManager.get<CustomDndRace[]>("/races"));
-  const races = [...(apiRaceResults?.results ?? []), ...(customRaces ?? []).map((r) => new CustomDndRace(r))].sort((a, b) =>
+  } = useSWR(
+    isLoaded ? (["customRacesGateway", isSignedIn] as const) : null,
+    () => RequestManager.getGatewayWithAuth<CustomDndRace[]>("/races", getToken),
+  );
+  const races = [...(apiRaceResults?.results ?? []), ...((customRaces ?? []) as CustomDndRace[]).map((r) => new CustomDndRace(r))].sort((a, b) =>
     a.name.localeCompare(b.name)
   );
   const [selectedRace, setSelectedRace] = useState<string>("");
   const [isCustom, setIsCustom] = useState<boolean>(false);
+  const selectedCustomRaceId = String(
+    (races.find((r) => r.index === selectedRace) as CustomDndRace | undefined)?.raceId ?? "",
+  );
   const [value, setValue] = useState("1");
   const handleChange = (_: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -64,7 +72,7 @@ export function DndGlossaryRacesPage() {
       <PageHeader
         title="DnD Races"
         rightContainer={
-          <Button startIcon={<Add />} onClick={() => setIsOpen(true)}>
+          <Button startIcon={<Add />} disabled={!isLoaded || !isSignedIn} onClick={() => setIsOpen(true)}>
             Add Race
           </Button>
         }
@@ -90,7 +98,9 @@ export function DndGlossaryRacesPage() {
           <TabPanel value="1">
             {selectedRace &&
               (isCustom ? (
-                <CustomRaceTraits raceId={(races.find((r) => r.index === selectedRace) as CustomDndRace)?.raceId} />
+                selectedCustomRaceId ? (
+                  <CustomRaceTraits raceId={selectedCustomRaceId} />
+                ) : null
               ) : (
                 <RacialTraits race={selectedRace} />
               ))}

@@ -43,8 +43,8 @@ export const CharacterFormFields: React.FC<CharacterFormFieldsProps> = ({
 
     // Get custom subclasses for the selected class
     const { data: customSubclassesForClass } = useSWR<Subclass[]>(
-        selectedClass ? `/subclasses/class/${selectedClass}` : null,
-        () => RequestManager.get<Subclass[]>(`/subclasses/class/${selectedClass}`)
+        selectedClass ? [`/gateway/subclasses/class`, selectedClass] as const : null,
+        () => RequestManager.getGateway<Subclass[]>(`/subclasses/class/${selectedClass}`),
     );
 
     const allSubclasses = [...(subclassData?.results ?? []), ...(customSubclassesForClass ?? [])].sort((a, b) => a.name.localeCompare(b.name));

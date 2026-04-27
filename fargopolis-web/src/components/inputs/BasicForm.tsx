@@ -24,7 +24,8 @@ export const BasicForm = <T extends FieldValues,>({
     const methods = useForm<T>({ defaultValues: defaultValues as DefaultValues<T> });
     const { isAuthenticated } = useAppContext();
     const { isLoaded, isSignedIn } = useAuth();
-    const canWrite = isClerkForm ? (isLoaded && isSignedIn) : isAuthenticated;
+    /** Clerk-only gate for serverless mutations; legacy session auth when `isClerkForm` is false. */
+    const canWrite = isClerkForm ? isLoaded && isSignedIn : isAuthenticated;
     const [isLoading, setIsLoading] = useState(false);
     const awaitSubmit = async (data: T) => {
         setIsLoading(true);

@@ -24,7 +24,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
     character,
     updateCharacters
 }) => {
-    const { getToken } = useAuth();
+    const { getToken, isLoaded, isSignedIn } = useAuth();
     const isEdit = character !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
     const closeForm = () => {
@@ -34,7 +34,10 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
 
     const { data: classes } = useSWR<{ results: DndItem[] }>("/classes", () => getClasses());
     const { data: races } = useSWR<{ results: DndItem[] }>("/races", () => getRaces());
-    const { data: customRaces } = useSWR<CustomDndRace[]>("/customRaces", () => RequestManager.get<CustomDndRace[]>("/races"));
+    const { data: customRaces } = useSWR(
+        isLoaded ? (["customRacesGateway", isSignedIn] as const) : null,
+        () => RequestManager.getGatewayWithAuth<CustomDndRace[]>("/races", getToken),
+    );
 
     // Combine API and custom data
     const allRaces = [...(races?.results ?? []), ...(customRaces ?? [])].sort((a, b) => a.name.localeCompare(b.name));

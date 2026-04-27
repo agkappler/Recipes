@@ -1,11 +1,11 @@
 export default class SubclassFeature {
-    subclassFeatureId: number;
+    subclassFeatureId: string;
     name: string;
     level: number;
     description: string;
-    subclassId: number;
+    subclassId: string;
 
-    constructor(subclassFeatureId: number, name: string, level: number, description: string, subclassId: number) {
+    constructor(subclassFeatureId: string, name: string, level: number, description: string, subclassId: string) {
         this.subclassFeatureId = subclassFeatureId;
         this.name = name;
         this.level = level;
