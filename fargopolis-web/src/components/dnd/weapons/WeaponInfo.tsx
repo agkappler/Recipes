@@ -9,7 +9,7 @@ import { WeaponForm } from "./WeaponForm";
 import { WeaponCard } from "./WeaponCard";
 
 interface WeaponInfoProps {
-    characterId: number;
+    characterId: string;
     canEdit?: boolean;
 }
 
@@ -19,7 +19,7 @@ export const WeaponInfo: React.FC<WeaponInfoProps> = ({ characterId, canEdit = t
 
     const { data: weapons, isLoading, mutate } = useSWR<Weapon[]>(
         `/characterWeapons/${characterId}`,
-        () => RequestManager.get<Weapon[]>(`/characterWeapons/${characterId}`)
+        () => RequestManager.getGateway<Weapon[]>(`/characterWeapons/${characterId}`),
     );
 
     const onClose = () => {
@@ -41,8 +41,8 @@ export const WeaponInfo: React.FC<WeaponInfoProps> = ({ characterId, canEdit = t
                             <AddModelCard onClick={() => setIsOpen(true)} title="Add Weapon" />
                         </Grid>
                     )}
-                    {weapons?.map((weapon, index) => (
-                        <Grid key={index} size={{ sm: 4, xs: 12 }}>
+                    {weapons?.map((weapon) => (
+                        <Grid key={weapon.weaponId} size={{ sm: 4, xs: 12 }}>
                             <WeaponCard weapon={weapon} onClick={canEdit ? onEditWeapon : undefined} />
                         </Grid>
                     ))}

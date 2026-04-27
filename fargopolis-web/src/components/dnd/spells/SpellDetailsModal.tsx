@@ -1,5 +1,6 @@
 import { getRelativeUrlInfo, Spell } from "@/api/dnd5eapi";
 import RequestManager from "@/helpers/RequestManager";
+import { useAuth } from "@clerk/react";
 import { Add, Remove } from "@mui/icons-material";
 import { Box, Button, Chip } from "@mui/material";
 import useSWR from "swr";
@@ -12,7 +13,7 @@ interface SpllDetailsModalProps {
     onClose: () => void;
     spell: Spell;
     canEdit: boolean;
-    characterId?: number;
+    characterId?: string;
     isKnown?: boolean;
     onSpellUpdate?: () => void;
 }
@@ -26,17 +27,21 @@ export const SpellDetailsModal: React.FC<SpllDetailsModalProps> = ({
     isKnown = false,
     onSpellUpdate
 }) => {
+    const { getToken } = useAuth();
     const { data: spellDetails, isLoading } = useSWR(spell.index, () => getRelativeUrlInfo(spell.url));
 
-    console.log(spellDetails);
     const handleAddSpell = async () => {
         if (characterId && spellDetails) {
-            await RequestManager.post(`/character/${characterId}/addKnownSpell`, {
-                characterId,
-                spellKey: spellDetails.index,
-                spellName: spellDetails.name,
-                spellLevel: spellDetails.level
-            });
+            await RequestManager.postGatewayWithAuth(
+                `/character/${characterId}/addKnownSpell`,
+                {
+                    characterId,
+                    spellKey: spellDetails.index,
+                    spellName: spellDetails.name,
+                    spellLevel: spellDetails.level,
+                },
+                getToken,
+            );
             onSpellUpdate?.();
             onClose();
         }
@@ -44,7 +49,10 @@ export const SpellDetailsModal: React.FC<SpllDetailsModalProps> = ({
 
     const handleRemoveSpell = async () => {
         if (characterId && spellDetails) {
-            await RequestManager.delete(`/character/${characterId}/deleteKnownSpell?spellKey=${spellDetails.index}`);
+            await RequestManager.deleteGatewayWithAuth(
+                `/character/${characterId}/deleteKnownSpell?spellKey=${spellDetails.index}`,
+                getToken,
+            );
             onSpellUpdate?.();
             onClose();
         }

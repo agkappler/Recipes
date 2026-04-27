@@ -18,7 +18,9 @@ export function DndPage() {
     setIsOpen(false);
     setSelectedCharacter(undefined);
   };
-  const { data: characters, isLoading, mutate } = useSWR<Character[]>("/characters", () => RequestManager.get<Character[]>("/characters"));
+  const { data: characters, isLoading, mutate } = useSWR<Character[]>("/characters", () =>
+    RequestManager.getGateway<Character[]>("/characters"),
+  );
 
   return (
     <>

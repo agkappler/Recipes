@@ -9,7 +9,7 @@ import { useState } from "react";
 import { MOBILE_BREAK } from "@/constants/Media";
 
 interface ActionInfoProps {
-    characterId: number;
+    characterId: string;
     className: string;
 }
 

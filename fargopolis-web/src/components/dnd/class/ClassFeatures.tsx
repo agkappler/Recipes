@@ -10,7 +10,7 @@ interface ClassFeaturesProps {
     currentLevel: number;
     className: DndClass;
     subclassName?: string;
-    characterId?: number;
+    characterId?: string;
 }
 
 export interface FeatureAndLevel extends DndItem {

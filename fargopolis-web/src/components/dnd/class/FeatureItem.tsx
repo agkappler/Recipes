@@ -9,7 +9,7 @@ interface FeatureItemProps {
     name: string;
     level: number;
     descriptions: string[];
-    characterId?: number;
+    characterId?: string;
     className?: string;
     children?: React.ReactNode;
 }

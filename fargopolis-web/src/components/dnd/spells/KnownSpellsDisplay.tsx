@@ -7,7 +7,7 @@ import { LoadingWrapper } from "../../ui/LoadingWrapper";
 import { SpellCard } from "./SpellCard";
 
 interface KnownSpellsDisplayProps {
-    characterId: number;
+    characterId: string;
     className: string;
     canEdit: boolean;
     onSpellUpdate?: () => void;
@@ -26,7 +26,7 @@ export const KnownSpellsDisplay: React.FC<KnownSpellsDisplayProps> = ({
 
     const { data: knownSpells, isLoading: isLoadingKnownSpells, mutate } = useSWR<Record<string, KnownSpell>>(
         `/character/${characterId}/knownSpells`,
-        () => RequestManager.get<Record<string, KnownSpell>>(`/character/${characterId}/knownSpells`)
+        () => RequestManager.getGateway<Record<string, KnownSpell>>(`/character/${characterId}/knownSpells`),
     );
 
     const spellsByLevel = (spellData?.results as Spell[])?.reduce((acc, spell) => {

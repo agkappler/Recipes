@@ -44,6 +44,7 @@ export const SubclassForm: React.FC<SubclassFormProps> = ({ isOpen, onClose, sub
             onSubmit={onSubmit}
             errorMessage={errorMessage}
             defaultValues={subclass ?? defaultSubclass}
+            isClerkForm
         >
             <Grid container spacing={2} className="mb-2">
                 <Grid size={12}>

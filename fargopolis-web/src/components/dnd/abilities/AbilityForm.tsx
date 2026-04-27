@@ -2,6 +2,7 @@ import { ABILITY_SOURCE_OPTIONS, AbilitySource, USAGE_TYPE_OPTIONS, UsageType } 
 import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import Ability from "@/models/Ability";
+import { useAuth } from "@clerk/react";
 import { Grid } from "@mui/material";
 import React, { useState } from "react";
 import { BasicForm } from "../../inputs/BasicForm";
@@ -12,7 +13,7 @@ import { SimpleDialog } from "../../ui/SimpleDialog";
 interface AbilityFormProps {
     isOpen: boolean;
     onClose: () => void;
-    characterId?: number;
+    characterId?: string;
     ability?: Ability;
     defaultSource?: AbilitySource;
     defaultSourceDescription?: string;
@@ -32,6 +33,7 @@ export const AbilityForm: React.FC<AbilityFormProps> = ({
     defaultDescription,
     onAbilityUpdate
 }) => {
+    const { getToken } = useAuth();
     const isEdit = ability !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
 
@@ -45,8 +47,8 @@ export const AbilityForm: React.FC<AbilityFormProps> = ({
             return ability;
         }
         return {
-            abilityId: 0,
-            characterId: characterId || 0,
+            abilityId: "",
+            characterId: characterId ?? "",
             name: defaultName || "",
             description: defaultDescription || "",
             source: defaultSource || AbilitySource.Other,
@@ -60,14 +62,14 @@ export const AbilityForm: React.FC<AbilityFormProps> = ({
         try {
             const abilityData = {
                 ...data,
-                characterId: characterId || 0,
-                abilityId: ability?.abilityId || 0
+                characterId: characterId ?? "",
+                abilityId: ability?.abilityId ?? "",
             };
 
             if (isEdit) {
-                await RequestManager.put(`/updateAbility/${ability.abilityId}`, abilityData);
+                await RequestManager.putGatewayWithAuth(`/updateAbility/${ability.abilityId}`, abilityData, getToken);
             } else {
-                await RequestManager.post(`/addAbility/${characterId}`, abilityData);
+                await RequestManager.postGatewayWithAuth(`/addAbility/${characterId}`, abilityData, getToken);
             }
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
@@ -82,7 +84,7 @@ export const AbilityForm: React.FC<AbilityFormProps> = ({
         if (!ability || !characterId) return;
 
         try {
-            await RequestManager.delete(`/deleteAbility/${ability.abilityId}`);
+            await RequestManager.deleteGatewayWithAuth(`/deleteAbility/${ability.abilityId}`, getToken);
             onAbilityUpdate?.();
             closeForm();
         } catch (error: unknown) {
@@ -97,6 +99,7 @@ export const AbilityForm: React.FC<AbilityFormProps> = ({
                 defaultValues={getDefaultValues()}
                 onDelete={isEdit ? handleDelete : undefined}
                 errorMessage={errorMessage}
+                isClerkForm
             >
                 <Grid container spacing={2} className="mb-2">
                     <Grid size={12}>

@@ -8,7 +8,7 @@ import { AbilityForm } from "./AbilityForm";
 
 interface AbilityCardProps {
     ability: Ability;
-    characterId?: number;
+    characterId?: string;
     canEdit?: boolean;
     onAbilityUpdate?: () => void;
     onClick?: (ability: Ability) => void;

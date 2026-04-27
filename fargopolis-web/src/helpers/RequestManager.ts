@@ -49,6 +49,46 @@ export default class RequestManager {
         );
     }
 
+    static async putGatewayWithAuth<TRequest = unknown, TResponse = unknown>(
+        url: string,
+        data: TRequest,
+        getToken: () => Promise<string | null>,
+    ): Promise<TResponse> {
+        const token = await getToken();
+        if (!token) {
+            throw new Error("Sign in to perform this action.");
+        }
+        const response = await fetch(this.gatewayApiUrl + url, {
+            method: "PUT",
+            credentials: "omit",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+        });
+        return await this.handleResponse<TResponse>(response);
+    }
+
+    static async deleteGatewayWithAuth<TResponse = unknown>(
+        url: string,
+        getToken: () => Promise<string | null>,
+    ): Promise<TResponse> {
+        const token = await getToken();
+        if (!token) {
+            throw new Error("Sign in to perform this action.");
+        }
+        const response = await fetch(this.gatewayApiUrl + url, {
+            method: "DELETE",
+            credentials: "omit",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return await this.handleResponse<TResponse>(response);
+    }
+
     private static async getWithBase<T>(
         urlBase: string,
         path: string,

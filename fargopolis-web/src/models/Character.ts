@@ -2,15 +2,15 @@ import { DndClass } from "@/constants/DndClass";
 import { DndRace } from "@/constants/DndRace";
 
 export default class Character {
-    characterId: number;
+    characterId: string;
     name: string;
     race: DndRace;
     className: DndClass;
     subclassName: string;
     level: number;
-    avatarId?: number;
+    avatarId?: string | number;
 
-    constructor(characterId: number, name: string, race: DndRace, className: DndClass, subclassName: string, level: number) {
+    constructor(characterId: string, name: string, race: DndRace, className: DndClass, subclassName: string, level: number) {
         this.characterId = characterId;
         this.name = name;
         this.race = race;

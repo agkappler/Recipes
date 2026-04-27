@@ -11,7 +11,7 @@ import { DraconicAncestryTable } from "./DraconicAncestryTable";
 
 interface RacialTraitCardProps {
     trait: DndItem;
-    characterId?: number;
+    characterId?: string;
     raceName?: string;
 }
 

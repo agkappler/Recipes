@@ -14,7 +14,7 @@ export function CharacterActionsPage() {
   const { id } = useParams();
   const { data: character, isLoading: isLoadingCharacter, error } = useSWR<Character>(
     id ? `/character/${id}` : null,
-    () => RequestManager.get<Character>(`/character/${id}`)
+    () => RequestManager.getGateway<Character>(`/character/${id}`),
   );
 
   if (!id) return <ErrorMessage errorMessage="Missing character id." />;

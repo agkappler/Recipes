@@ -3,6 +3,7 @@ import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import CustomDndRace from "@/models/CustomDndRace";
 import FileMetadata from "@/models/FileMetadata";
+import { useAuth } from "@clerk/react";
 import React, { useState } from "react";
 import useSWR from "swr";
 import Character from "@/models/Character";
@@ -23,6 +24,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
     character,
     updateCharacters
 }) => {
+    const { getToken } = useAuth();
     const isEdit = character !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
     const closeForm = () => {
@@ -44,9 +46,9 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
     const onSubmit = async (data: Character) => {
         try {
             if (isEdit) {
-                await RequestManager.post("/updateCharacter", data);
+                await RequestManager.postGatewayWithAuth("/updateCharacter", data, getToken);
             } else {
-                await RequestManager.post('/createCharacter', data);
+                await RequestManager.postGatewayWithAuth("/createCharacter", data, getToken);
             }
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
@@ -58,7 +60,11 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
     }
 
     const onUpload = async (fileMetadata: FileMetadata) => {
-        await RequestManager.post(`/updateAvatar?characterId=${character?.characterId}&fileId=${fileMetadata.fileId}`, {});
+        await RequestManager.postGatewayWithAuth(
+            `/updateAvatar?characterId=${character?.characterId}&fileId=${fileMetadata.fileId}`,
+            {},
+            getToken,
+        );
         updateCharacters();
     }
 
@@ -67,6 +73,7 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({
             onSubmit={onSubmit}
             defaultValues={character}
             errorMessage={errorMessage}
+            isClerkForm
         >
             <CharacterFormFields
                 character={character}

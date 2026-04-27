@@ -7,7 +7,7 @@ import { FeatureItem } from "./FeatureItem";
 
 interface FeatureCardProps {
     feature: FeatureAndLevel;
-    characterId?: number;
+    characterId?: string;
     className?: string;
 }
 

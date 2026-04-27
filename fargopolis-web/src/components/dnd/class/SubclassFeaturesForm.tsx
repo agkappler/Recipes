@@ -44,6 +44,7 @@ export const SubclassFeaturesForm: React.FC<SubclassFeaturesFormProps> = ({ isOp
             onSubmit={onSubmit}
             defaultValues={{ features: subclassFeatures ?? [] }}
             errorMessage={errorMessage}
+            isClerkForm
         >
             <LoadingWrapper isLoading={isLoading}>
                 <ListInput

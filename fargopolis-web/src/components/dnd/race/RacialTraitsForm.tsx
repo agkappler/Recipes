@@ -39,6 +39,7 @@ export const RacialTraitsForm: React.FC<RacialTraitsFormProps> = ({ isOpen, onCl
             onSubmit={onSubmit}
             defaultValues={{ traits: racialTraits ?? [] }}
             errorMessage={errorMessage}
+            isClerkForm
         >
             <ListInput
                 fieldName="traits"

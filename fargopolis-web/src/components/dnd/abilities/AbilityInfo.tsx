@@ -10,7 +10,7 @@ import { AbilityForm } from "./AbilityForm";
 import { AbilityCard } from "./AbilityCard";
 
 interface AbilityInfoProps {
-    characterId: number;
+    characterId: string;
     canEdit?: boolean;
 }
 
@@ -20,7 +20,7 @@ export const AbilityInfo: React.FC<AbilityInfoProps> = ({ characterId, canEdit =
 
     const { data: abilities, isLoading, mutate } = useSWR<Ability[]>(
         `/characterAbilities/${characterId}`,
-        () => RequestManager.get<Ability[]>(`/characterAbilities/${characterId}`)
+        () => RequestManager.getGateway<Ability[]>(`/characterAbilities/${characterId}`),
     );
 
     const sortAbilitiesByType = (abilities: Ability[]) => {

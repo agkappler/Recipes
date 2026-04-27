@@ -20,7 +20,7 @@ export function CharacterDetailPage() {
   const navigate = useNavigate();
   const { data: character, isLoading, error, mutate } = useSWR<Character>(
     id ? `/character/${id}` : null,
-    () => RequestManager.get<Character>(`/character/${id}`)
+    () => RequestManager.getGateway<Character>(`/character/${id}`),
   );
 
   const handleEdit = () => {

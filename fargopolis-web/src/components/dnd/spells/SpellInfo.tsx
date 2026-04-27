@@ -13,12 +13,15 @@ interface SpellInfoProps {
     levelInfos: LevelInfo[] | undefined;
     currentLevel: number;
     className: string;
-    characterId: number;
+    characterId: string;
 }
 
 export const SpellInfo: React.FC<SpellInfoProps> = ({ levelInfos, currentLevel, className, characterId }) => {
     const { data: spellData, isLoading } = useSWR<BaseDndResponse>(`/spells/${className}`, () => getSpellsForClass(className));
-    const { data: knownSpells, mutate } = useSWR<Record<string, KnownSpell>>(`/character/${characterId}/knownSpells`, () => RequestManager.get<Record<string, KnownSpell>>(`/character/${characterId}/knownSpells`));
+    const { data: knownSpells, mutate } = useSWR<Record<string, KnownSpell>>(
+        `/character/${characterId}/knownSpells`,
+        () => RequestManager.getGateway<Record<string, KnownSpell>>(`/character/${characterId}/knownSpells`),
+    );
 
     if (levelInfos === undefined) return <ErrorMessage errorMessage="Missing level data." />;
     const spellcasting = levelInfos.find(l => l.level === currentLevel)?.spellcasting;

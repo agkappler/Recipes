@@ -6,7 +6,7 @@ import { RacialTraitCard } from "./RacialTraitCard";
 
 interface RacialTraitsProps {
     race: string;
-    characterId?: number;
+    characterId?: string;
 }
 
 export const RacialTraits: React.FC<RacialTraitsProps> = ({ race, characterId }) => {

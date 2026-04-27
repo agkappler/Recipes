@@ -8,7 +8,7 @@ interface SpellCardProps {
     spell: Spell;
     isKnown?: boolean;
     canEdit: boolean;
-    characterId?: number;
+    characterId?: string;
     onSpellUpdate?: () => void;
 }
 

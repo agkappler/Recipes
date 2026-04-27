@@ -1,6 +1,7 @@
 import { FileRole } from "@/constants/FileRole";
 import RequestManager from "@/helpers/RequestManager";
 import FileMetadata from "@/models/FileMetadata";
+import { useAuth } from "@clerk/react";
 import { Box, Typography } from "@mui/material";
 import useSWR from "swr";
 import { FileUpload } from "../inputs/FileUpload";
@@ -8,13 +9,21 @@ import { FileWrapper } from "../ui/FileWrapper";
 import { LoadingWrapper } from "../ui/LoadingWrapper";
 
 interface CharacterResourcesProps {
-    characterId: number;
+    characterId: string;
 }
 
 export const CharacterResources: React.FC<CharacterResourcesProps> = ({ characterId }) => {
-    const { data, isLoading, mutate } = useSWR<number[]>(`/character/${characterId}/resourceIds`, () => RequestManager.get<number[]>(`/character/${characterId}/resourceIds`));
+    const { getToken } = useAuth();
+    const { data, isLoading, mutate } = useSWR<(string | number)[]>(
+        `/character/${characterId}/resourceIds`,
+        () => RequestManager.getGateway<(string | number)[]>(`/character/${characterId}/resourceIds`),
+    );
     const onUpload = async (fileMetadata: FileMetadata) => {
-        await RequestManager.post(`/character/addResource?characterId=${characterId}&fileId=${fileMetadata.fileId}`, {});
+        await RequestManager.postGatewayWithAuth(
+            `/character/addResource?characterId=${characterId}&fileId=${fileMetadata.fileId}`,
+            {},
+            getToken,
+        );
         mutate();
     }
 

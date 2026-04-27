@@ -1,8 +1,8 @@
 import { AbilitySource, UsageType } from "@/constants/Abilities";
 
 export default class Ability {
-    abilityId: number;
-    characterId: number;
+    abilityId: string;
+    characterId: string;
     name: string;
     description: string;
     source: AbilitySource;
@@ -11,8 +11,8 @@ export default class Ability {
     recovery: string;
 
     constructor(
-        abilityId: number,
-        characterId: number,
+        abilityId: string,
+        characterId: string,
         name: string,
         description: string,
         source: AbilitySource,
