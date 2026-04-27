@@ -19,8 +19,19 @@ List stacks: `npx cdk list`. Deploy one stack: `npx cdk deploy FargopolisApi` (o
   - **[`ClerkHttpAuthorizerConstruct`](lib/constructs/clerk-http-authorizer-construct.ts)** — default HTTP API authorizer: verifies Clerk-issued JWTs (issuer from context).
   - **[`FargopolisHttpApiConstruct`](lib/constructs/fargopolis-http-api-construct.ts)** — shared **HTTP API** with CORS; all Lambda-backed routes use this same base URL.
   - **[`BountiesApiRoutesConstruct`](lib/constructs/bounties-api-routes-construct.ts)** — bounties Lambda and routes (reference pattern for the next verticals).
+  - **[`FilesApiRoutesConstruct`](lib/constructs/files-api-routes-construct.ts)** — dedicated files/uploads Lambda for S3 presigned PUT + file URL reads (`GET /api/fileUrl/{fileId}`, `POST /api/files/presignPut`).
+- **[`FargopolisBucketConstruct`](lib/constructs/fargopolis-bucket-construct.ts)** — private **user-uploads S3** (recipe avatars, DnD files, etc.). Not the Vite/CloudFront site bucket. CDK **creates** the bucket (S3-managed encryption, block public access, CORS for browser presigned PUT/GET, `RemovalPolicy.RETAIN`). Optional **`uploadsBucket.corsAllowedOrigins`** in context; default `['*']`.
 
-**Outputs (CloudFormation):** `HttpApiUrl`, `BountyCategoriesTableName`, `BountiesTableName` — the SPA and CI set `VITE_API_GATEWAY_URL` to `HttpApiUrl` for strangler traffic to Lambdas.
+**Outputs (CloudFormation):** `HttpApiUrl`, `BountyCategoriesTableName`, `BountiesTableName`, `RecipesTableName`, `FilesTableName`, **`FargopolisBucket`** — the SPA and CI set `VITE_API_GATEWAY_URL` to `HttpApiUrl` for strangler traffic to Lambdas.
+
+### User-uploads bucket: IAM and presigned URLs
+
+- **Name in AWS / CI:** stack output **`FargopolisBucket`** (the bucket name string).
+- **Lambdas** that mint presigned URLs or manage upload metadata should set **`UPLOADS_BUCKET_ENV_NAME`** (the env var name pointer, e.g. `FARGOPOLIS_UPLOADS_BUCKET_NAME`) and set that concrete env var to `props.uploadsBucket.bucket.bucketName`; then call **`userUploads.grantReadWrite(lambdaFunction)`** for object permissions. Default GET presign TTL is **15 minutes**, matching Java `S3Facade`.
+- **Object keys:** use **`{uuId}_{filename}`** (same as the legacy app) so existing objects and Dynamo metadata stay aligned.
+- **Browser upload flow:** API returns a presigned **PUT** URL and `Content-Type`; the SPA **`PUT`**s the file to S3 with **exactly** that `Content-Type` (required for SigV4). Downloads use a presigned **GET** URL.
+- **Java overlap:** while Spring still handles some routes, attach IAM on the task/instance role allowing `s3:GetObject`, `s3:PutObject` on `arn:aws:s3:::<FargopolisBucketOutput>/*` (tighten ARNs if you use a prefix).
+- **Dedicated files Lambda:** S3 IAM is intentionally concentrated in [`FilesApiRoutesConstruct`](lib/constructs/files-api-routes-construct.ts); recipe/dnd handlers can stay bucket-agnostic and call files routes instead.
 
 ### Clerk JWT issuer
 
@@ -74,5 +85,6 @@ npx cdk deploy --all --profile YOUR_PROFILE
 2. New Lambda directory under `infrastructure/lambdas/<name>/` with `requirements.txt` and handler; attach **`PythonSharedLayerConstruct`** if you import `shared/`.
 3. New routes construct: register integrations on the **same** `HttpApi` from `FargopolisHttpApiConstruct` (see `BountiesApiRoutesConstruct`).
 4. Wire the construct into `FargopolisApiStack` and add `CfnOutput`s as needed.
+5. If the vertical uses **uploads / presigned URLs**: set `UPLOADS_BUCKET_ENV_NAME` and the concrete bucket env var (for example `FARGOPOLIS_UPLOADS_BUCKET_NAME`) from `this.userUploads.bucket.bucketName`, then call **`this.userUploads.grantReadWrite(yourHandler)`** after the function is created.
 
 See the migration checklist at repo root: [`../recipes_dnd_migration.plan.md`](../recipes_dnd_migration.plan.md).
