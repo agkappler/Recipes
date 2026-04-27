@@ -1,6 +1,7 @@
 import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import Ingredient from "@/models/Ingredient";
+import { useAuth } from "@clerk/react";
 import { Grid } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../inputs/BasicForm";
@@ -12,20 +13,25 @@ interface IngredientFormProps {
     isOpen: boolean;
     onClose: () => void;
     ingredient?: Ingredient;
-    recipeId: number;
+    recipeId: string;
     updateIngredients: () => void;
 }
 
 export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose, ingredient, recipeId, updateIngredients }) => {
+    const { getToken } = useAuth();
     const isEdit = ingredient !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
 
     const onSubmit = async (data: Ingredient) => {
         try {
             if (isEdit) {
-                await RequestManager.post("/updateIngredient", data);
+                await RequestManager.postGatewayWithAuth(
+                    "/updateIngredient",
+                    { ...data, recipeId },
+                    getToken
+                );
             } else {
-                await RequestManager.post(`/addIngredientToRecipe/${recipeId}`, data);
+                await RequestManager.postGatewayWithAuth(`/addIngredientToRecipe/${recipeId}`, data, getToken);
             }
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
@@ -40,6 +46,8 @@ export const IngredientForm: React.FC<IngredientFormProps> = ({ isOpen, onClose,
         <BasicForm
             errorMessage={errorMessage}
             onSubmit={onSubmit}
+            defaultValues={ingredient}
+            isClerkForm
         >
             <Grid container spacing={2} className="mb-2">
                 <Grid size={12}>

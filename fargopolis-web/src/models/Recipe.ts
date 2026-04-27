@@ -1,16 +1,21 @@
 
+import Ingredient from "./Ingredient";
+import RecipeStep from "./RecipeStep";
+
 export default class Recipe {
-    recipeId: number;
+    recipeId: string;
     name: string;
     description: string;
     quantity: string;
     prepTimeMinutes: number;
     cookTimeMinutes: number;
     totalCalories: number;
-    avatarId: number | undefined;
+    avatarId: string | undefined;
+    ingredients?: Ingredient[];
+    steps?: RecipeStep[];
 
     constructor(
-        recipeId: number,
+        recipeId: string,
         name: string,
         description: string,
         quantity: string,

@@ -1,12 +1,12 @@
 export default class RecipeStep {
-    stepId: number;
-    recipeId: number;
+    stepId: string;
+    recipeId: string;
     stepNumber: number;
     description: string;
 
     constructor(
-        stepId: number,
-        recipeId: number,
+        stepId: string,
+        recipeId: string,
         stepNumber: number,
         description: string
     ) {

@@ -5,11 +5,12 @@ import { ListInput } from "../inputs/ListInput";
 import { useState } from "react";
 import RequestManager from "@/helpers/RequestManager";
 import { getErrorMessage } from "@/helpers/Errors";
+import { useAuth } from "@clerk/react";
 import { Grid, Typography } from "@mui/material";
 import { TextInput } from "../inputs/TextInput";
 
 interface RecipeStepsFormProps {
-    recipeId: number;
+    recipeId: string;
     isOpen: boolean;
     onClose: () => void;
     recipeSteps: RecipeStep[] | undefined;
@@ -21,11 +22,12 @@ interface RecipeStepsFormData {
 }
 
 export const RecipeStepsForm: React.FC<RecipeStepsFormProps> = ({ isOpen, onClose, recipeSteps, updateSteps, recipeId }) => {
+    const { getToken } = useAuth();
     const [errorMessage, setErrorMessage] = useState<string>();
     const onSubmit = async (data: RecipeStepsFormData) => {
         data.steps.forEach((step, idx) => step.stepNumber = idx + 1);
         try {
-            await RequestManager.post(`/updateStepsForRecipe/${recipeId}`, data.steps);
+            await RequestManager.postGatewayWithAuth(`/updateStepsForRecipe/${recipeId}`, data.steps, getToken);
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
             return;
@@ -40,6 +42,7 @@ export const RecipeStepsForm: React.FC<RecipeStepsFormProps> = ({ isOpen, onClos
             onSubmit={onSubmit}
             defaultValues={{ steps: recipeSteps ?? [] }}
             errorMessage={errorMessage}
+            isClerkForm
         >
             <ListInput
                 fieldName="steps"

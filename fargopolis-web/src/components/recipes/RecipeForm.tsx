@@ -3,6 +3,7 @@ import { getErrorMessage } from "@/helpers/Errors";
 import RequestManager from "@/helpers/RequestManager";
 import FileMetadata from "@/models/FileMetadata";
 import Recipe from "@/models/Recipe";
+import { useAuth } from "@clerk/react";
 import { Grid } from "@mui/material";
 import { useState } from "react";
 import { BasicForm } from "../inputs/BasicForm";
@@ -19,14 +20,15 @@ interface RecipeFormProps {
 }
 
 export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeData, updateRecipe }) => {
+    const { getToken } = useAuth();
     const isEdit = recipeData !== undefined;
     const [errorMessage, setErrorMessage] = useState<string>();
     const onSubmit = async (data: Recipe) => {
         try {
             if (isEdit) {
-                await RequestManager.post("/updateRecipe", data);
+                await RequestManager.postGatewayWithAuth("/updateRecipe", data, getToken);
             } else {
-                await RequestManager.post("/createRecipe", data);
+                await RequestManager.postGatewayWithAuth("/createRecipe", data, getToken);
             }
         } catch (error: unknown) {
             setErrorMessage(getErrorMessage(error));
@@ -38,7 +40,11 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeD
     }
 
     const onUpload = async (fileMetadata: FileMetadata) => {
-        await RequestManager.post(`/updateRecipeAvatar?recipeId=${recipeData?.recipeId}&fileId=${fileMetadata.fileId}`, {});
+        await RequestManager.postGatewayWithAuth(
+            `/updateRecipeAvatar?recipeId=${recipeData?.recipeId}&fileId=${fileMetadata.fileId}`,
+            {},
+            getToken
+        );
         updateRecipe();
     }
 
@@ -47,6 +53,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ isOpen, onClose, recipeD
             onSubmit={onSubmit}
             defaultValues={recipeData}
             errorMessage={errorMessage}
+            isClerkForm
         >
             <Grid container spacing={2} className="mb-2">
                 {isEdit && <Grid size={12}>

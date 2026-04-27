@@ -1,7 +1,7 @@
 import { FileRole } from "@/constants/FileRole";
 
 export default class FileMetadata {
-    fileId: number;
+    fileId: string | number;
     uuId: string;
     filename: string;
     contentType: string;
@@ -10,7 +10,7 @@ export default class FileMetadata {
     url: string | undefined;
 
     constructor(
-        fileId: number,
+        fileId: string | number,
         uuId: string,
         filename: string,
         contentType: string,

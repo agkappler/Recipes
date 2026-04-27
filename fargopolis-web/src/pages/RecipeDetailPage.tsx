@@ -24,7 +24,7 @@ export function RecipeDetailPage() {
 
   const { data: recipeData, error, isLoading, mutate } = useSWR<Recipe>(
     id ? `/recipe/${id}` : null,
-    () => RequestManager.get<Recipe>(`/recipe/${id}`)
+    () => RequestManager.getGateway<Recipe>(`/recipe/${id}`)
   );
   if (!id) {
     return <ErrorMessage errorMessage="Missing recipe id." />;
@@ -67,8 +67,8 @@ export function RecipeDetailPage() {
             <Typography variant="body1">{recipeData.description}</Typography>
           </Box>
         )}
-        <RecipeSteps recipeId={Number(id)} />
-        <IngredientList recipeId={recipeData.recipeId} />
+        <RecipeSteps recipeId={id} recipeSteps={recipeData.steps ?? []} refreshRecipe={mutate} />
+        <IngredientList recipeId={recipeData.recipeId} ingredients={recipeData.ingredients ?? []} refreshRecipe={mutate} />
       </Box>
       <RecipeForm isOpen={isOpen} onClose={onClose} recipeData={recipeData} updateRecipe={mutate} />
     </LoadingWrapper>

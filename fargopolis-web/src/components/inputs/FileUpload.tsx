@@ -12,7 +12,7 @@ interface FileUploadButtonProps {
     label?: string;
     onUpload?: (fileMetadata: FileMetadata) => Promise<void>;
     isAvatar?: boolean;
-    currentAvatarId?: number;
+    currentAvatarId?: string | number;
 }
 
 export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = "Upload Files", onUpload, isAvatar = false, currentAvatarId }) => {

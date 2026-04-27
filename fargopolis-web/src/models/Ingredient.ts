@@ -1,11 +1,11 @@
 export default class Ingredient {
-    ingredientId: number;
+    ingredientId: string;
     name: string;
     quantity: string;
     calories: number;
 
     constructor(
-        ingredientId: number,
+        ingredientId: string,
         name: string,
         quantity: string,
         calories: number

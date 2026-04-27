@@ -3,15 +3,14 @@ import { Add, Edit } from "@mui/icons-material";
 import { Box, Button, Chip, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { IngredientForm } from "./IngredientForm";
-import useSWR from "swr";
-import RequestManager from "@/helpers/RequestManager";
-import { LoadingWrapper } from "../ui/LoadingWrapper";
 
 interface IngredientListProps {
-    recipeId: number;
+    recipeId: string;
+    ingredients: Ingredient[];
+    refreshRecipe: () => void;
 }
 
-export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
+export const IngredientList: React.FC<IngredientListProps> = ({ recipeId, ingredients, refreshRecipe }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | undefined>(undefined);
     const onClose = () => {
@@ -19,16 +18,15 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
         setSelectedIngredient(undefined);
     }
 
-    const { data: ingredients, isLoading: loadingIngredients, mutate: updateIngredients } = useSWR<Ingredient[]>(
-        `/ingredientsForRecipe/${recipeId}`,
-        () => RequestManager.get<Ingredient[]>(`/ingredientsForRecipe/${recipeId}`)
-    );
-
-    return <LoadingWrapper isLoading={loadingIngredients} message="Loading Ingredients...">
+    return <>
         <Box>
             <Box className="flex items-center justify-between mt-2 w-full">
                 <Typography variant="h6">Ingredients</Typography>
-                <Chip label={`Calories from Ingredients: ${ingredients?.reduce((total, ingredient) => total + (ingredient.calories || 0), 0) ?? 0}`} />
+                <Chip
+                    label={`Calories from Ingredients: ${
+                        ingredients?.reduce((total, ingredient) => total + Number(ingredient.calories ?? 0), 0) ?? 0
+                    }`}
+                />
                 <Button variant='text' onClick={() => setIsOpen(!isOpen)} startIcon={<Add />}>Add Ingredient</Button>
             </Box>
             <TableContainer component={Paper}>
@@ -70,7 +68,7 @@ export const IngredientList: React.FC<IngredientListProps> = ({ recipeId }) => {
             isOpen={isOpen}
             onClose={onClose}
             ingredient={selectedIngredient}
-            updateIngredients={updateIngredients}
+            updateIngredients={refreshRecipe}
         />}
-    </LoadingWrapper>
+    </>
 }

@@ -6,7 +6,7 @@ import useSWR from "swr";
 import { LoadingWrapper } from "./LoadingWrapper";
 
 interface FileWrapperProps {
-    fileId: number;
+    fileId: string | number;
 }
 
 export const FileWrapper: React.FC<FileWrapperProps> = ({ fileId }) => {

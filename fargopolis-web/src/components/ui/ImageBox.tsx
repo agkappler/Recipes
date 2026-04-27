@@ -5,7 +5,7 @@ import useSWR from "swr";
 import { LoadingWrapper } from "./LoadingWrapper";
 
 interface ImageBoxProps {
-    fileId: number;
+    fileId: string | number;
     altText: string;
 }
 
