@@ -1,5 +1,13 @@
+import { FileRole } from "@/constants/FileRole";
 import FileMetadata from "@/models/FileMetadata";
 import User from "@/models/User";
+
+interface PresignPutResponse extends FileMetadata {
+    uploadUrl: string;
+    uploadMethod: "PUT";
+    uploadHeaders: Record<string, string>;
+    objectKey: string;
+}
 
 export default class RequestManager {
     private static baseUrl = import.meta.env.VITE_API_URL ?? "";
@@ -20,16 +28,16 @@ export default class RequestManager {
      * Bounty mutations — sends Clerk session JWT (`Authorization: Bearer`).
      * Requires `VITE_CLERK_PUBLISHABLE_KEY` (Clerk SPA) and a signed-in user.
      */
-    static async postGatewayWithAuth<T>(
+    static async postGatewayWithAuth<TRequest = unknown, TResponse = unknown>(
         url: string,
-        data: T,
+        data: TRequest,
         getToken: () => Promise<string | null>,
-    ): Promise<T> {
+    ): Promise<TResponse> {
         const token = await getToken();
         if (!token) {
             throw new Error("Sign in to perform this action.");
         }
-        return this.postWithBase<T>(
+        return this.postWithBase<TRequest, TResponse>(
             this.gatewayApiUrl,
             url,
             data,
@@ -56,18 +64,22 @@ export default class RequestManager {
         return await this.handleResponse(response);
     }
 
-    static async post<T = unknown>(url: string, data: T, customHeaders?: HeadersInit): Promise<T> {
-        return this.postWithBase<T>(this.apiUrl, url, data, customHeaders);
+    static async post<TRequest = unknown, TResponse = unknown>(
+        url: string,
+        data: TRequest,
+        customHeaders?: HeadersInit
+    ): Promise<TResponse> {
+        return this.postWithBase<TRequest, TResponse>(this.apiUrl, url, data, customHeaders);
     }
 
 
-    private static async postWithBase<T>(
+    private static async postWithBase<TRequest = unknown, TResponse = unknown>(
         urlBase: string,
         path: string,
-        data: T,
+        data: TRequest,
         customHeaders?: HeadersInit,
         credentials: RequestCredentials = "include",
-    ): Promise<T> {
+    ): Promise<TResponse> {
         const response = await fetch(urlBase + path, {
             method: "POST",
             credentials,
@@ -77,17 +89,34 @@ export default class RequestManager {
             body: JSON.stringify(data),
         });
 
-        return await this.handleResponse(response);
+        return await this.handleResponse<TResponse>(response);
     }
 
-    static async uploadFile(fileData: FormData) {
-        const response = await fetch(this.apiUrl + "/uploadFile", {
-            method: "POST",
-            credentials: "include",
-            body: fileData,
+    static async uploadFileGatewayWithAuth(
+        file: File,
+        fileRole: FileRole,
+        getToken: () => Promise<string | null>,
+    ): Promise<FileMetadata> {
+        const payload = {
+            filename: file.name,
+            contentType: file.type || "application/octet-stream",
+            sizeBytes: file.size,
+            fileRole,
+        };
+        const presign = await this.postGatewayWithAuth<typeof payload, PresignPutResponse>(
+            "/files/presignPut",
+            payload,
+            getToken
+        );
+        const uploadResponse = await fetch(presign.uploadUrl, {
+            method: presign.uploadMethod,
+            headers: presign.uploadHeaders,
+            body: file,
         });
-
-        return await this.handleResponse<FileMetadata>(response);
+        if (!uploadResponse.ok) {
+            throw new Error("Failed to upload file to S3.");
+        }
+        return presign;
     }
 
     static async put<T = unknown>(url: string, data: T): Promise<T> {

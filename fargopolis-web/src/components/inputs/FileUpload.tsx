@@ -1,11 +1,11 @@
 import { FileRole } from "@/constants/FileRole";
 import RequestManager from "@/helpers/RequestManager";
 import FileMetadata from "@/models/FileMetadata";
+import { useAuth } from "@clerk/react";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Avatar, Box, Button, IconButton } from "@mui/material";
 import { useRef, useState } from "react";
 import useSWR from "swr";
-import { useAppContext } from "../AppContext";
 
 interface FileUploadButtonProps {
     fileRole: FileRole;
@@ -15,25 +15,35 @@ interface FileUploadButtonProps {
     currentAvatarId?: string | number;
 }
 
-export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = "Upload Files", onUpload, isAvatar = false, currentAvatarId }) => {
+export const FileUpload: React.FC<FileUploadButtonProps> = ({
+    fileRole,
+    label = "Upload Files",
+    onUpload,
+    isAvatar = false,
+    currentAvatarId,
+}) => {
     const size = "100px";
-    const { isAuthenticated } = useAppContext();
+    const { getToken, isLoaded, isSignedIn } = useAuth();
+    const canUpload = isLoaded && isSignedIn;
     const uploadFile = async (file: File) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('fileRole', fileRole);
-        const fileMetadata: FileMetadata = await RequestManager.uploadFile(formData);
+        const fileMetadata: FileMetadata = await RequestManager.uploadFileGatewayWithAuth(file, fileRole, getToken);
         if (onUpload) await onUpload(fileMetadata);
 
         return fileMetadata.url ?? "";
     }
 
-    const { data: currentAvatarUrl } = useSWR<FileMetadata | undefined>(`/fileUrl/${currentAvatarId}`, currentAvatarId !== undefined ? () => RequestManager.get<FileMetadata>(`/fileUrl/${currentAvatarId}`) : () => Promise.resolve(undefined), { onSuccess: (data) => setImageUrl(data?.url) });
+    const { data: currentAvatarUrl } = useSWR<FileMetadata | undefined>(
+        `gw/fileUrl/${currentAvatarId}`,
+        currentAvatarId !== undefined
+            ? () => RequestManager.getGateway<FileMetadata>(`/fileUrl/${currentAvatarId}`)
+            : () => Promise.resolve(undefined),
+        { onSuccess: (data) => setImageUrl(data?.url) }
+    );
     const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleClick = () => {
-        if (isAuthenticated) inputRef.current?.click();
+        if (canUpload) inputRef.current?.click();
     };
 
     const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +64,7 @@ export const FileUpload: React.FC<FileUploadButtonProps> = ({ fileRole, label = 
                         <CloudUploadIcon fontSize="large" />
                     </Avatar>
                 </IconButton>
-                : !isAuthenticated
+                : !canUpload
                     ? <></>
                     : <Button
                         onClick={handleClick}

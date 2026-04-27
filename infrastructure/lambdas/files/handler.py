@@ -32,12 +32,9 @@ def _s3() -> Any:
 
 
 def _uploads_bucket_name() -> str:
-    bucket_env_name = os.environ.get(UPLOADS_BUCKET_ENV)
-    if not bucket_env_name:
-        raise RuntimeError(f"Missing env {UPLOADS_BUCKET_ENV}")
-    bucket_name = os.environ.get(bucket_env_name)
+    bucket_name = os.environ.get(UPLOADS_BUCKET_ENV)
     if not bucket_name:
-        raise RuntimeError(f"Missing env {bucket_env_name}")
+        raise RuntimeError(f"Missing env {UPLOADS_BUCKET_ENV}")
     return bucket_name
 
 
