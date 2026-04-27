@@ -3,6 +3,7 @@ Files HTTP API for uploads + file metadata reads.
 
 Routes:
 - GET /api/fileUrl/{fileId}
+- GET /api/getLatestResumeUrl  (public; latest RESUME role, same shape as legacy Java ImageUrl)
 - POST /api/files/presignPut
 """
 
@@ -13,8 +14,9 @@ import os
 from typing import Any
 
 import boto3
+from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
-from shared.lambda_utils import generate_ulid, json_response, parse_body, require_clerk_writer, table_from_env
+from shared.lambda_utils import generate_ulid, json_response, parse_body, require_clerk_writer, scan_all_items, table_from_env
 
 VALID_FILE_ROLES = frozenset({"RECIPE_IMAGE", "CHARACTER_AVATAR", "CHARACTER_RESOURCE", "RESUME"})
 FILES_TABLE_ENV = "FILES_TABLE_NAME"
@@ -84,6 +86,34 @@ def _metadata_with_url(item: dict[str, Any]) -> dict[str, Any]:
     return metadata
 
 
+def _latest_resume_item(items: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Prefer highest numeric fileId (Postgres-era); else lexicographic max (ULID time-order)."""
+    if not items:
+        return None
+
+    def sort_key(item: dict[str, Any]) -> tuple:
+        fid = str(item.get("fileId") or "").strip()
+        if fid.isdigit():
+            return (0, int(fid))
+        return (1, fid)
+
+    return max(items, key=sort_key)
+
+
+def _get_latest_resume_url() -> dict[str, Any]:
+    table = table_from_env(FILES_TABLE_ENV)
+    # Dynamo uses string "RESUME"; legacy Postgres may have stored role as N(4) or string "4".
+    resume_filter = (
+        Attr("fileRole").eq("RESUME") | Attr("fileRole").eq(4) | Attr("fileRole").eq("4")
+    )
+    items = scan_all_items(table, FilterExpression=resume_filter)
+    latest = _latest_resume_item(items)
+    if not latest:
+        return json_response(200, {"url": ""})
+    url = presign_get_object_url(f'{latest.get("uuId", "")}_{latest.get("filename", "")}')
+    return json_response(200, {"url": url})
+
+
 def _get_file_url_by_id(raw_path: str) -> dict[str, Any]:
     file_id = raw_path[len(FILE_URL_ROUTE_PREFIX) :].strip()
     if not file_id:
@@ -137,6 +167,9 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
 
         if method == "OPTIONS":
             return {"statusCode": 200, "body": ""}
+
+        if method == "GET" and raw_path == "/api/getLatestResumeUrl":
+            return _get_latest_resume_url()
 
         if method == "GET" and raw_path.startswith(FILE_URL_ROUTE_PREFIX):
             return _get_file_url_by_id(raw_path)

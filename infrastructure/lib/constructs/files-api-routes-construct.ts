@@ -57,6 +57,7 @@ export class FilesApiRoutesConstruct extends Construct {
 
         const routeSpecs: { path: string; methods: apigwv2.HttpMethod[] }[] = [
             { path: '/api/fileUrl/{fileId}', methods: [apigwv2.HttpMethod.GET] },
+            { path: '/api/getLatestResumeUrl', methods: [apigwv2.HttpMethod.GET] },
             { path: '/api/files/presignPut', methods: [apigwv2.HttpMethod.POST] },
         ];
 
