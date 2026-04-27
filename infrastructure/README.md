@@ -91,4 +91,4 @@ npx cdk deploy --all --profile YOUR_PROFILE
 4. Wire the construct into `FargopolisApiStack` and add `CfnOutput`s as needed.
 5. If the vertical uses **uploads / presigned URLs**: set `UPLOADS_BUCKET_ENV_NAME` and the concrete bucket env var (for example `FARGOPOLIS_UPLOADS_BUCKET_NAME`) from `this.userUploads.bucket.bucketName`, then call **`this.userUploads.grantReadWrite(yourHandler)`** after the function is created.
 
-See the migration checklist at repo root: [`../recipes_dnd_migration.plan.md`](../recipes_dnd_migration.plan.md).
+See the migration record at repo root: [`../recipes_dnd_migration.plan.md`](../recipes_dnd_migration.plan.md). Post-ship follow-ons: [`../post_migration_cleanup.plan.md`](../post_migration_cleanup.plan.md).

@@ -12,6 +12,8 @@ import { RecipesConstruct } from '../constructs/recipes-construct';
 import { RecipesApiRoutesConstruct } from '../constructs/recipes-api-routes-construct';
 import { FargopolisBucketConstruct } from '../constructs/fargopolis-bucket-construct';
 import { DndConstruct } from '../constructs/dnd-construct';
+import { DndGlossaryConstruct } from '../constructs/dnd-glossary-construct';
+import { DndGlossaryApiRoutesConstruct } from '../constructs/dnd-glossary-api-routes-construct';
 import { DndApiRoutesConstruct } from '../constructs/dnd-api-routes-construct';
 
 /**
@@ -33,6 +35,9 @@ export class FargopolisApiStack extends cdk.Stack {
     public readonly filesApi: FilesApiRoutesConstruct;
     public readonly recipesApi: RecipesApiRoutesConstruct;
     public readonly dnd: DndConstruct;
+    /** Custom DnD races (nested traits) and subclasses (nested features) for glossary + character form. */
+    public readonly dndGlossary: DndGlossaryConstruct;
+    public readonly dndGlossaryApi: DndGlossaryApiRoutesConstruct;
     public readonly dndApi: DndApiRoutesConstruct;
 
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -44,6 +49,7 @@ export class FargopolisApiStack extends cdk.Stack {
         this.recipes = new RecipesConstruct(this, 'Recipes');
         this.files = new FilesConstruct(this, 'Files');
         this.dnd = new DndConstruct(this, 'Dnd');
+        this.dndGlossary = new DndGlossaryConstruct(this, 'DndGlossary');
         this.userUploads = new FargopolisBucketConstruct(this, 'UserUploads');
 
         this.pythonSharedLayer = new PythonSharedLayerConstruct(this, 'PythonShared').layer;
@@ -85,6 +91,12 @@ export class FargopolisApiStack extends cdk.Stack {
             characterTable: this.dnd.characterTable,
             fileTable: this.files.fileTable,
         });
+        this.dndGlossaryApi = new DndGlossaryApiRoutesConstruct(this, 'DndGlossaryApi', {
+            pythonSharedLayer: this.pythonSharedLayer,
+            httpApi: this.httpApiGateway.httpApi,
+            raceTable: this.dndGlossary.raceTable,
+            subclassTable: this.dndGlossary.subclassTable,
+        });
 
         new cdk.CfnOutput(this, 'BountyCategoriesTableName', {
             description: 'DynamoDB table for bounty categories',
@@ -105,6 +117,14 @@ export class FargopolisApiStack extends cdk.Stack {
         new cdk.CfnOutput(this, 'DndCharactersTableName', {
             description: 'DynamoDB table for DnD character documents (nested resources/spells/weapons/abilities)',
             value: this.dnd.characterTable.tableName,
+        });
+        new cdk.CfnOutput(this, 'DndGlossaryRacesTableName', {
+            description: 'DynamoDB table for custom DnD races (traits nested on each item)',
+            value: this.dndGlossary.raceTable.tableName,
+        });
+        new cdk.CfnOutput(this, 'DndGlossarySubclassesTableName', {
+            description: 'DynamoDB table for custom DnD subclasses (features nested on each item)',
+            value: this.dndGlossary.subclassTable.tableName,
         });
         new cdk.CfnOutput(this, 'FargopolisBucket', {
             description: 'S3 bucket for user uploads (objects keyed as {uuId}_{filename})',

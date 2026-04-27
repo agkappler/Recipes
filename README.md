@@ -7,16 +7,17 @@ The app is in a **strangler** pattern: a **Vite** SPA ([`fargopolis-web/`](fargo
 
 | Layer | What it is | How the client uses it |
 | ----- | ------------ | ------------------------ |
-| **Legacy** | **Spring Boot** + PostgreSQL ([`java-recipes/`](java-recipes/)) | `VITE_API_URL` + cookies — unmigrated features (e.g. recipes, DnD characters until their vertical moves). |
-| **New API** | **API Gateway (HTTP API)** + **Python Lambdas** + **DynamoDB** ([`infrastructure/`](infrastructure/)) | `VITE_API_GATEWAY_URL` — bounties today; more routes will join the same `HttpApiUrl`. **Writes** use **Clerk** session JWTs; **default authorizer** validates issuer from CDK `context.clerk`. |
+| **Legacy** | **Spring Boot** + PostgreSQL ([`java-recipes/`](java-recipes/)) | `VITE_API_URL` + cookies — unmigrated features (e.g. DnD glossary, custom races) until those routes move. |
+| **New API** | **API Gateway (HTTP API)** + **Python Lambdas** + **DynamoDB** ([`infrastructure/`](infrastructure/)) | `VITE_API_GATEWAY_URL` — bounties, Recipes, in-scope DnD characters, and shared files. **Writes** use **Clerk** session JWTs; **default authorizer** validates issuer from CDK `context.clerk`. |
 
-The **FargopolisApi** stack does **not** own the Vite *static* assets: those are **S3 + CloudFront** in **FargopolisFrontend** (separate from any future “user uploads” S3 work tracked in the migration plan). User-uploaded files still flow through the legacy app + bucket until the Recipes/DnD plan brings uploads under CDK.
+The **FargopolisApi** stack does **not** own the Vite *static* assets: those are **S3 + CloudFront** in **FargopolisFrontend** (separate from the **user uploads** bucket owned by CDK for presigned uploads).
 
 ## Documentation
 
 - **[`infrastructure/README.md`](infrastructure/README.md)** — CDK stacks, Clerk context, bounties reference, deploy commands.
 - **[`fargopolis-web/README.md`](fargopolis-web/README.md)** — env vars, `RequestManager` (Java vs API Gateway), strangler rules.
-- **[`recipes_dnd_migration.plan.md`](recipes_dnd_migration.plan.md)** — next steps: Recipes + S3, then DnD characters.
+- **[`recipes_dnd_migration.plan.md`](recipes_dnd_migration.plan.md)** — completed Recipes + DnD character migration record (principles, data migration notes).
+- **[`post_migration_cleanup.plan.md`](post_migration_cleanup.plan.md)** — post-ship platform follow-ons (custom API domain, local dev, Java retirement, optional Go).
 - **[`lambda_dynamodb_migration.plan.md`](lambda_dynamodb_migration.plan.md)** — archive pointer for the original bounties migration notes (no longer the live checklist).
 
 ## Machine setup

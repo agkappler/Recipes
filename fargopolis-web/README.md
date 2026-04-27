@@ -10,7 +10,7 @@ Copy `[.env.example](.env.example)` to `.env` or `.env.local`.
 | Variable                         | Role                                                                                                                                                                                                                          |
 | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `**VITE_API_URL`**               | Base URL of the **Spring** API (no trailing slash), e.g. `http://localhost:8080`. Used for **legacy** routes that still hit Java + Postgres.                                                                                  |
-| `**VITE_API_GATEWAY_URL`**       | Base URL of the **API Gateway** HTTP API (no trailing slash) — **Lambda** handlers. Bounties (and future migrated verticals) use this. **Production/CI:** set the same value to the `HttpApiUrl` output from `FargopolisApi`. |
+| `**VITE_API_GATEWAY_URL`**       | Base URL of the **API Gateway** HTTP API (no trailing slash) — **Lambda** handlers (bounties, Recipes, in-scope DnD, files). **Production/CI:** set the same value to the `HttpApiUrl` output from `FargopolisApi`. |
 | `**VITE_CLERK_PUBLISHABLE_KEY`** | Clerk publishable key (browser-only). Bounty **writes** send a session JWT; verification uses `context.clerk.jwtIssuer` on the **authorizer Lambda** in CDK, not the client.                                                  |
 
 
@@ -34,5 +34,6 @@ As verticals migrate, move their fetches from `get`/`post` to `getGateway` / `po
 
 - Repo root [README.md](../README.md) — runbooks and CDK static hosting.
 - [infrastructure/README.md](../infrastructure/README.md) — `FargopolisApi` / `FargopolisFrontend`, Clerk context, bounties reference wiring.
-- [recipes_dnd_migration.plan.md](../recipes_dnd_migration.plan.md) — upcoming Recipes and DnD migration steps.
+- [recipes_dnd_migration.plan.md](../recipes_dnd_migration.plan.md) — completed Recipes + DnD migration record.
+- [post_migration_cleanup.plan.md](../post_migration_cleanup.plan.md) — post-migration platform cleanup todos.
 
