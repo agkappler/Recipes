@@ -1,34 +1,25 @@
 # Recipes aka Fargopolis
+> [!WARNING]
+> This repository is **legacy** and the architecture documented here has been **deprecated**.
+> It is kept for historical reference and maintenance of old behavior only.
+> Active development has moved to the new architecture repository.
+
 This platform was built as a personal project to explore different technologies, manage my own recipes, gamify recurring tasks as bounties, and organize Dungeons & Dragons characters. It's also a way to showcase my work and experiment with new ideas. Feel free to explore and see what I've been working on!
 
 ## Architecture at a glance
 
-The app is in a **strangler** pattern: a **Vite** SPA ([`fargopolis-web/`](fargopolis-web/)) talks to two backends while domains migrate off Java.
+This legacy repository is centered on the original monolith:
 
 | Layer | What it is | How the client uses it |
-| ----- | ------------ | ------------------------ |
-| **Legacy** | **Spring Boot** + PostgreSQL ([`java-recipes/`](java-recipes/)) | `VITE_API_URL` + cookies — unmigrated features (e.g. DnD glossary, custom races) until those routes move. |
-| **New API** | **API Gateway (HTTP API)** + **Python Lambdas** + **DynamoDB** ([`infrastructure/`](infrastructure/)) | `VITE_API_GATEWAY_URL` — bounties, Recipes, in-scope DnD characters, and shared files. **Writes** use **Clerk** session JWTs; **default authorizer** validates issuer from CDK `context.clerk`. |
-
-The **FargopolisApi** stack does **not** own the Vite *static* assets: those are **S3 + CloudFront** in **FargopolisFrontend** (separate from the **user uploads** bucket owned by CDK for presigned uploads).
+| ----- | ---------- | ---------------------- |
+| **Backend** | **Spring Boot** + PostgreSQL ([`java-recipes/`](java-recipes/)) | API + cookies for legacy behavior. |
+| **Frontend** | Vite SPA ([`fargopolis-web/`](fargopolis-web/)) and older Next app ([`recipe-site/`](recipe-site/)) | Local development UI for legacy backend workflows. |
 
 ## Documentation
 
-- **[`infrastructure/README.md`](infrastructure/README.md)** — CDK stacks, Clerk context, bounties reference, deploy commands.
-- **[`fargopolis-web/README.md`](fargopolis-web/README.md)** — env vars, `RequestManager` (Java vs API Gateway), strangler rules.
-- **[`recipes_dnd_migration.plan.md`](recipes_dnd_migration.plan.md)** — completed Recipes + DnD character migration record (principles, data migration notes).
-- **[`post_migration_cleanup.plan.md`](post_migration_cleanup.plan.md)** — post-ship platform follow-ons (custom API domain, local dev, Java retirement, optional Go).
-- **[`lambda_dynamodb_migration.plan.md`](lambda_dynamodb_migration.plan.md)** — archive pointer for the original bounties migration notes (no longer the live checklist).
-
-## Machine setup
-
-For **CDK** (`npx cdk deploy` / `npx cdk synth` in `infrastructure/`) to bundle Python Lambdas **locally** (faster than Docker), your shell needs **Python 3.10+** on `PATH` — **3.12** matches the Lambda runtime. On macOS, the Xcode **Command Line Tools** `python3` is often **3.9** and is too old for that step (pip can error while compiling some wheel sources).
-
-- Install a current Python, e.g. `brew install python@3.12`, and follow Homebrew’s `PATH` note so **`python3.12` appears before** `/usr/bin` (or whatever provides the 3.9 build).
-- No extra environment variables are required: CDK picks `python3.12` → `python3.11` → `python3.10` → `python3` in that order, using the first that reports 3.10+.
-- Use `./scripts/setup-python-lambdas.sh` to create the repo **`.venv`** with that same family of interpreters; select `.venv/bin/python` in the editor for Pyright and local Lambda imports.
-
-If nothing suitable is on `PATH`, CDK **falls back to Docker** for bundling (slower, but still works once Docker is available).
+- **[`java-recipes/`](java-recipes/)** — legacy Spring Boot application source.
+- **[`fargopolis-web/README.md`](fargopolis-web/README.md)** — frontend setup details for local development.
+- **[`recipe-site/`](recipe-site/)** — older Next.js frontend kept for historical reference.
 
 ## Startup
 #### Backend
@@ -47,79 +38,4 @@ cp .env.example .env   # set VITE_API_URL to your API origin, e.g. http://localh
 pnpm dev
 ```
 
-The dev server listens on port **3000** (see `vite.config.ts`). The legacy Next app remains under `recipe-site/` until you remove it.
-
-#### Infrastructure Python Lambdas (local editor/runtime deps)
-From the repo root:
-
-```bash
-./scripts/setup-python-lambdas.sh
-source .venv/bin/activate
-```
-
-Then in Cursor/VS Code, run `Python: Select Interpreter` and choose `.venv/bin/python`.
-
-Dependency management model:
-- Source of truth for deployed Python dependencies is per-lambda `requirements.txt` files:
-  - `infrastructure/lambdas/bounties/requirements.txt`
-  - `infrastructure/lambdas/clerk_authorizer/requirements.txt`
-- `infrastructure/lambdas/requirements-dev.txt` references those same files for local development and editor type resolution, plus local-only helpers like `boto3`.
-- CDK bundling in `infrastructure/lib/constructs/` installs deployment packages from each lambda's `requirements.txt`.
-
-Adding a new Python dependency:
-1. Add it to the lambda-specific `requirements.txt` file for the handler that imports it.
-2. Re-sync local env:
-
-```bash
-./scripts/setup-python-lambdas.sh
-source .venv/bin/activate
-```
-
-3. Deploy from the `infrastructure/` directory so CDK picks up the same dependency:
-
-```bash
-cd infrastructure
-npx cdk deploy FargopolisApi --profile YOUR_PROFILE
-```
-
-Notes:
-- If a package is only needed locally (editor/tests) and not in the deployed artifact, add it only to `infrastructure/lambdas/requirements-dev.txt`.
-- `boto3` is currently local-only in `requirements-dev.txt` because AWS Lambda Python runtime already provides it.
-
-## AWS: CDK static hosting (`fargopolis-web`)
-
-Infrastructure for the Vite app lives in **`infrastructure/`**: a private S3 bucket, CloudFront (with OAC), and SPA-style error routing. The stack id is **`FargopolisFrontend`**.
-
-### Prerequisites
-
-- Node.js (LTS) and npm
-- AWS CLI configured (`aws sts get-caller-identity` succeeds)
-- IAM permissions sufficient to create the stack (bootstrap and deploy need CloudFormation plus IAM, S3, CloudFront, and related resources—or use a profile with admin/bootstrap rights)
-
-### One-time bootstrap (per AWS account and region)
-
-If this account/region has never been CDK-bootstrapped:
-
-```bash
-cd infrastructure
-npm ci
-npx cdk bootstrap
-```
-
-Use `--profile YOUR_PROFILE` if you rely on named credentials. Bootstrap only needs to succeed once per account/region.
-
-### Deploy or update the stack
-
-```bash
-cd infrastructure
-npm ci
-npx cdk deploy
-```
-
-With a named profile:
-
-```bash
-npx cdk deploy --profile YOUR_PROFILE
-```
-
-After a successful deploy, note the CloudFormation **Outputs**: **SiteBucketName**, **CloudFrontDistributionId**, and **SiteUrl**. Upload the Vite build to the bucket and invalidate CloudFront (see `.github/workflows/deploy-static-frontend.yml` for the CI version using repo secrets).
+The dev server listens on port **3000** (see `vite.config.ts`). The legacy Next app remains under `recipe-site/`.

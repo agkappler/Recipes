@@ -1,6 +1,0 @@
-cdk.out
-node_modules
-dist
-*.js
-*.d.ts
-!jest.config.js
